@@ -26,6 +26,12 @@ class _AuthState extends State<Auth> {
 
   bool _loadingOverlay = false;
 
+  _toggleLoadingOverlay() {
+    setState(() {
+      _loadingOverlay = !_loadingOverlay;
+    });
+  }
+
   _getLoginKey() async {
     setState(() {
       _loadingOverlay = true;
@@ -36,6 +42,16 @@ class _AuthState extends State<Auth> {
       _loadingOverlay = false;
       _loginKey = prefs.getString(LoginKeyPref) ?? '';
       _name = prefs.getString(DisplayNamePref) ?? '';
+    });
+  }
+
+  _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(LoginKeyPref, '');
+    setState(() {
+      _loginKey = '';
+      _currentForm = FormLogin;
+      _futureMessage = '';
     });
   }
 
@@ -90,7 +106,7 @@ class _AuthState extends State<Auth> {
         _loadingOverlay = false;
         _futureMessage = TextCode[data[DataMessage]];
         if (data[DataStatus] == StatusSuccess) {
-          _currentForm = EmailValidationText;
+          _currentForm = FormEmailValidation;
         }
       });
     });
@@ -159,7 +175,7 @@ class _AuthState extends State<Auth> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _loginKey == '' ? LoginRegister(currentForm: _getForm()) : GroupList(name: _name),
+        _loginKey == '' ? LoginRegister(currentForm: _getForm()) : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, loginKey: _loginKey, logout: _logout),
         if (_loadingOverlay)
           Container(
             width: MediaQuery.of(context).size.width,

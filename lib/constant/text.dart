@@ -8,7 +8,9 @@ const String PhoneRequired = 'Nomor Telepon diperlukan';
 const String EnterPassword = 'Password';
 const String PasswordRequired = 'Password diperlukan';
 const String LoginText = 'Login';
+const String LogoutText = 'Logout';
 const String RegisterText = 'Daftar';
+const String CancelText = 'Batal';
 const String EmailValidationText = 'Validasi Email';
 const String PhoneValidationText = 'Validasi Nomor Telpon';
 const String NoAccountYet = 'Belum punya akun? Daftar dengan ';
@@ -20,6 +22,7 @@ const String WelcomeMessage = 'Assalamua\'laikum, ';
 const String YourGroup = 'Group Anda';
 const String CreateGroup = 'Buat Group';
 const String JoinGroup = 'Gabung Group';
+const String MyGroupList = 'Group Saya';
 const String GroupRound = 'Putaran';
 const String GroupDeadline = 'Deadline';
 const String YourJuz = 'Juz ';
@@ -42,11 +45,25 @@ const String DataStatus = 'status';
 const String DataMessage = 'message';
 const String StatusSuccess = 'success';
 const String StatusError = 'error';
+const String LoadingGroups = 'Memuat group';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';
 const String FormRegisterPhone = 'form_register_phone';
 const String FormEmailValidation = 'form_email_validation';
+
+const String StateGroupList = 'state_group_list';
+const String StateCreateGroup = 'state_create_group';
+const String StateJoinGroup = 'state_joint_group';
+
+const String FormCreateGroupName = 'Nama group';
+const String FormCreateGroupAddress = 'Alamat group';
+const String FormCreateGroupLatlong = 'Kordinat group';
+const String FormCreateGroupColor = 'Warna group';
+const String FormCreateGroupNameError = 'Nama group diperlukan';
+const String FormCreateGroupAddressError = 'Alamat group diperlukan';
+const String FormCreateGroupLatlongError = 'Kordinat group diperlukan';
+const String FormCreateGroupPreview = 'Preview';
 
 const Map TextCode = {
   'RegisterSuccessCheckEmail': 'Kode validasi berupa 6 (enam) angka telah dikirim ke email Anda. Coba cari di folder spam bila tidak ada di inbox.',
@@ -57,4 +74,6 @@ const Map TextCode = {
   'TimeLimitExceededTryIn10Minutes': 'Waktu melebihi batas, silahkan coba 10 menit lagi',
   'InvalidKey': 'Kode kunci salah',
   'InvalidUserLoginDetail': 'Detail login salah',
+  'YouNotJoinAnyGroup': 'Anda tidak memiliki group, silahkan buat atau gabung dengan group yg ada.',
+  'FailCreateGroup': 'Gagal membuat group, mohon hubungi admmin.',
 };

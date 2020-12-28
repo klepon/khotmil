@@ -25,17 +25,3 @@ Future fetchLoginUser(String email, String password) async {
     throw Exception(FailValidateUser);
   }
 }
-
-// class ResponseRegisterUser {
-//   final String status;
-//   final String message;
-
-//   ResponseRegisterUser({this.status, this.message});
-
-//   factory ResponseRegisterUser.fromJson(Map<String, dynamic> json) {
-//     return ResponseRegisterUser(
-//       status: json['status'],
-//       message: TextCode[json['message']],
-//     );
-//   }
-// }
