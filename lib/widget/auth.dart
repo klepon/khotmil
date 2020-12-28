@@ -7,7 +7,8 @@ import 'package:khotmil/widget/group_list.dart';
 import 'package:khotmil/widget/login_form.dart';
 import 'package:khotmil/widget/login_register.dart';
 import 'package:khotmil/widget/register_form.dart';
-import 'package:khotmil/widget/validation_form.dart';
+import 'package:khotmil/widget/register_phone_form.dart';
+import 'package:khotmil/widget/email_validation_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth extends StatefulWidget {
@@ -89,7 +90,7 @@ class _AuthState extends State<Auth> {
         _loadingOverlay = false;
         _futureMessage = TextCode[data[DataMessage]];
         if (data[DataStatus] == StatusSuccess) {
-          _currentForm = ValidationText;
+          _currentForm = EmailValidationText;
         }
       });
     });
@@ -131,15 +132,18 @@ class _AuthState extends State<Auth> {
 
   _getForm() {
     switch (_currentForm) {
-      case ValidationText:
+      case FormEmailValidation:
         return ValidationForm(
           futureMessage: _futureMessage,
           changeForm: _changeForm,
           validationApi: _validationApi,
           requiredUserPass: '' == _email || '' == _password,
         );
-      case RegisterText:
+      case FormRegisterEmail:
         return RegisterForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
+
+      case FormRegisterPhone:
+        return RegisterPhoneForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
       default:
         return LoginForm(futureMessage: _futureMessage, changeForm: _changeForm, loginApi: _loginApi);
     }

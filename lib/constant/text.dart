@@ -9,10 +9,12 @@ const String EnterPassword = 'Password';
 const String PasswordRequired = 'Password diperlukan';
 const String LoginText = 'Login';
 const String RegisterText = 'Daftar';
-const String ValidationText = 'Validasi';
-const String NoAccountYet = 'Belum punya akun?';
-const String HasAccountYet = 'Sudah punya akun?';
-const String RegisterNow = 'Daftar Sekarang';
+const String EmailValidationText = 'Validasi Email';
+const String PhoneValidationText = 'Validasi Nomor Telpon';
+const String NoAccountYet = 'Belum punya akun? Daftar dengan ';
+const String AlreadyHasAccount = 'Sudah punya akun?';
+const String RegisterWithEmailNow = 'Email';
+const String RegisterWithPhoneNow = 'Telpon';
 const String CopyRight = 'Aplikai khotmil Quran ver 1.0';
 const String WelcomeMessage = 'Assalamua\'laikum, ';
 const String YourGroup = 'Group Anda';
@@ -32,13 +34,19 @@ const String ValidationCode = 'Kode validasi';
 const String ValidationCodeRequired = 'Kode validasi diperlukan';
 const String ValidatedEmailAddress = 'Atau validasi email';
 const String LoginFormTitle = 'Login';
-const String RegisterFormTitle = 'Daftar';
+const String RegisterWithEmailFormTitle = 'Daftar dengan Email';
+const String RegisterWithPhoneFormTitle = 'Daftar dengan Nomor Telpon';
 const String ValidatedEmailFormTitle = 'Validasi email';
 const String FailValidateUser = 'Gagal memvalidasi email.';
 const String DataStatus = 'status';
 const String DataMessage = 'message';
 const String StatusSuccess = 'success';
 const String StatusError = 'error';
+
+const String FormLogin = 'form_login';
+const String FormRegisterEmail = 'form_register_email';
+const String FormRegisterPhone = 'form_register_phone';
+const String FormEmailValidation = 'form_email_validation';
 
 const Map TextCode = {
   'RegisterSuccessCheckEmail': 'Kode validasi berupa 6 (enam) angka telah dikirim ke email Anda. Coba cari di folder spam bila tidak ada di inbox.',

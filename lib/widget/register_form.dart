@@ -29,7 +29,7 @@ class _RegisterFormState extends State<RegisterForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Center(child: Text(RegisterFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
+              Center(child: Text(RegisterWithEmailFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
               TextFormField(
                 controller: nameController,
                 keyboardType: TextInputType.text,
@@ -88,10 +88,11 @@ class _RegisterFormState extends State<RegisterForm> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(HasAccountYet),
-                  TextButton(onPressed: () => widget.changeForm(LoginText), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
+                  Text(AlreadyHasAccount),
+                  TextButton(onPressed: () => widget.changeForm(FormLogin), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
               ),
+              TextButton(onPressed: () => widget.changeForm(FormEmailValidation), child: Text(EmailValidationText, style: TextStyle(fontWeight: FontWeight.bold))),
             ],
           ),
         ));

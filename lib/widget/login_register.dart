@@ -32,7 +32,6 @@ class _LoginRegisterState extends State<LoginRegister> {
               widget.currentForm,
               Column(
                 children: [
-                  SizedBox(height: 16.0),
                   Container(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.width * 20 / 100, child: Image(image: AssetImage(FooterLogo))),
                   SizedBox(height: 16.0),
                   Text(CopyRight),

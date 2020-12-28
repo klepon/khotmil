@@ -87,14 +87,20 @@ class _ValidationFormState extends State<ValidationForm> {
                     widget.validationApi(emailController.text, passwordController.text, codeController.text);
                   }
                 },
-                child: Text(ValidationText),
+                child: Text(EmailValidationText),
               ),
               SizedBox(height: 16.0),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(HasAccountYet),
-                  TextButton(onPressed: () => widget.changeForm(LoginText), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
+                  Text(NoAccountYet),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold))),
+                      TextButton(onPressed: () => widget.changeForm(FormRegisterPhone), child: Text(RegisterWithPhoneNow, style: TextStyle(fontWeight: FontWeight.bold))),
+                    ],
+                  )
                 ],
               ),
             ],
