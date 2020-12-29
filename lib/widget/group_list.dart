@@ -34,15 +34,10 @@ class _GroupListState extends State<GroupList> {
   TextEditingController endDateFormController = TextEditingController();
   TextEditingController uidsFormController = TextEditingController();
 
-  DateTime selectedRoundEndDateForm = DateTime.now();
-
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
-    final DateTime picked = await showDatePicker(context: context, initialDate: selectedRoundEndDateForm, firstDate: date, lastDate: DateTime(date.year, date.month + 3));
-    if (picked != null && picked != selectedRoundEndDateForm) endDateFormController.text = (picked.toString()).split(' ')[0];
-    // setState(() {
-    //   selectedRoundEndDateForm = picked;
-    // });
+    final DateTime picked = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: date, lastDate: DateTime(date.year, date.month + 3));
+    if (picked != null) endDateFormController.text = (picked.toString()).split(' ')[0];
   }
 
   void _apiGroupList() {
@@ -74,7 +69,7 @@ class _GroupListState extends State<GroupList> {
           addressFormController.text = '';
           latlongFormController.text = '';
           colorFormController.text = '';
-          endDateFormController.text = '';
+          endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
           uidsFormController.text = '';
         });
       } else if (data[DataStatus] == StatusError) {
@@ -231,8 +226,6 @@ class _GroupListState extends State<GroupList> {
             readOnly: true,
             onTap: () => _renderSelectDate(context),
           ),
-          // Text((selectedRoundEndDateForm.toString()).split(' ')[0]),
-          // IconButton(icon: Icon(Icons.calendar_today), onPressed: () => _renderSelectDate(context)),
           TextFormField(
             controller: uidsFormController,
             keyboardType: TextInputType.text,
