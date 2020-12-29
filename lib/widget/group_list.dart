@@ -31,6 +31,19 @@ class _GroupListState extends State<GroupList> {
   TextEditingController addressFormController = TextEditingController();
   TextEditingController latlongFormController = TextEditingController();
   TextEditingController colorFormController = TextEditingController();
+  TextEditingController endDateFormController = TextEditingController();
+  TextEditingController uidsFormController = TextEditingController();
+
+  DateTime selectedRoundEndDateForm = DateTime.now();
+
+  Future<void> _renderSelectDate(BuildContext context) async {
+    DateTime date = DateTime.now();
+    final DateTime picked = await showDatePicker(context: context, initialDate: selectedRoundEndDateForm, firstDate: date, lastDate: DateTime(date.year, date.month + 3));
+    if (picked != null && picked != selectedRoundEndDateForm) endDateFormController.text = (picked.toString()).split(' ')[0];
+    // setState(() {
+    //   selectedRoundEndDateForm = picked;
+    // });
+  }
 
   void _apiGroupList() {
     setState(() {
@@ -50,11 +63,19 @@ class _GroupListState extends State<GroupList> {
       addressFormController.text,
       latlongFormController.text,
       colorFormController.text != '' ? colorFormController.text : _defaultColor,
+      endDateFormController.text,
+      uidsFormController.text.split(','),
     ).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _futureGetGroupList = fetchMyGroupList(widget.loginKey);
           _screenState = StateGroupList;
+          nameFormController.text = '';
+          addressFormController.text = '';
+          latlongFormController.text = '';
+          colorFormController.text = '';
+          endDateFormController.text = '';
+          uidsFormController.text = '';
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -63,6 +84,11 @@ class _GroupListState extends State<GroupList> {
       }
 
       widget.toggleLoading();
+    }).catchError((onError) {
+      widget.toggleLoading();
+      setState(() {
+        _messageText = onError.toString();
+      });
     });
   }
 
@@ -82,22 +108,22 @@ class _GroupListState extends State<GroupList> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return GroupDetail(
               groupName: group['name'],
-              progress: group['progress'] + '%',
-              round: group['round'],
-              deadline: group['end_date'],
-              yourJuz: group['my_juz'],
-              yourProgress: group['my_progress'] + '%',
+              progress: group['progress'].toString(),
+              round: group['round'].toString(),
+              deadline: group['end_date'].toString(),
+              yourJuz: group['my_juz'].toString(),
+              yourProgress: group['my_progress'].toString(),
               groupColor: group['color'],
             );
           }));
         },
         child: GroupItem(
           groupName: group['name'],
-          progress: group['progress'] + '%',
-          round: group['round'],
-          deadline: group['end_date'],
-          yourJuz: group['my_juz'],
-          yourProgress: group['my_progress'] + '%',
+          progress: group['progress'].toString(),
+          round: group['round'].toString(),
+          deadline: group['end_date'].toString(),
+          yourJuz: group['my_juz'].toString(),
+          yourProgress: group['my_progress'].toString(),
           groupColor: group['color'],
         ),
       ));
@@ -129,6 +155,11 @@ class _GroupListState extends State<GroupList> {
     );
   }
 
+  _getTimeStamp() {
+    String ts = DateTime.parse(endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
+    return ts.substring(0, ts.length - 3);
+  }
+
   Widget _createGroupForm() {
     return Form(
       key: _formKey,
@@ -140,11 +171,11 @@ class _GroupListState extends State<GroupList> {
           if (nameFormController.text != '')
             GroupItem(
               groupName: nameFormController.text,
-              progress: '95%',
-              round: '2',
-              deadline: DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch).toString().split(' ')[0],
+              progress: '95',
+              round: '1',
+              deadline: _getTimeStamp(),
               yourJuz: '25',
-              yourProgress: '50%',
+              yourProgress: '50',
               groupColor: colorFormController.text != '' ? colorFormController.text : _defaultColor,
             ),
           SizedBox(height: 16.0),
@@ -194,6 +225,21 @@ class _GroupListState extends State<GroupList> {
               hintText: FormCreateGroupColor,
             ),
           ),
+          TextFormField(
+            controller: endDateFormController,
+            keyboardType: TextInputType.text,
+            readOnly: true,
+            onTap: () => _renderSelectDate(context),
+          ),
+          // Text((selectedRoundEndDateForm.toString()).split(' ')[0]),
+          // IconButton(icon: Icon(Icons.calendar_today), onPressed: () => _renderSelectDate(context)),
+          TextFormField(
+            controller: uidsFormController,
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              hintText: FormCreateGroupUids,
+            ),
+          ),
         ],
       ),
     );
@@ -207,6 +253,7 @@ class _GroupListState extends State<GroupList> {
   void initState() {
     super.initState();
     _apiGroupList();
+    endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
   }
 
   @override
@@ -215,6 +262,8 @@ class _GroupListState extends State<GroupList> {
     addressFormController.dispose();
     latlongFormController.dispose();
     colorFormController.dispose();
+    endDateFormController.dispose();
+    uidsFormController.dispose();
     super.dispose();
   }
 
@@ -250,7 +299,7 @@ class _GroupListState extends State<GroupList> {
                     child: Container(
                         padding: mainPadding,
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          if (_messageText != '') Center(child: Text(_messageText)),
+                          if (_messageText != '') Container(padding: verticalPadding, child: Center(child: Text(_messageText))),
                           if (_screenState == StateGroupList) _myGroupList(context),
                           if (_screenState == StateCreateGroup) _createGroupForm(),
                           if (_screenState == StateJoinGroup) _joinGroupForm(),

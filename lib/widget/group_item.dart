@@ -13,6 +13,14 @@ class GroupItem extends StatelessWidget {
 
   GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor}) : super(key: key);
 
+  _getColor(color) {
+    try {
+      return Color(int.parse('0xff' + color));
+    } catch (e) {
+      return Color(int.parse('0xfff6d55c'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,18 +29,17 @@ class GroupItem extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(color: Color(int.parse('0xff' + groupColor))),
+            decoration: BoxDecoration(color: _getColor(groupColor)),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Expanded(
                   child: Text(groupName,
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold, color: Color(int.parse('0xff' + groupColor)).computeLuminance() > 0.5 ? Colors.black : Colors.white))),
+                      style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: _getColor(groupColor).computeLuminance() > 0.5 ? Colors.black : Colors.white))),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white, boxShadow: [
                   BoxShadow(color: Colors.orange, spreadRadius: 6.0, blurRadius: 5.0),
                 ]),
-                child: Text(progress, style: TextStyle(color: Colors.redAccent, fontSize: 32.0)),
+                child: Text((progress == 'null' ? '0' : progress) + '%', style: TextStyle(color: Colors.redAccent, fontSize: 32.0)),
               ),
             ]),
           ),
@@ -47,14 +54,17 @@ class GroupItem extends StatelessWidget {
                         padding: EdgeInsets.only(top: 2.0, bottom: 4.0),
                         margin: EdgeInsets.symmetric(horizontal: 1.0),
                         decoration: BoxDecoration(color: Colors.white),
-                        child: Column(children: [textExtraSmall(GroupRound), textSmall(round)]))),
+                        child: Column(children: [textExtraSmall(GroupRound), textSmall(round == '0' ? '-' : round)]))),
                 Expanded(
                     flex: 1,
                     child: Container(
                         padding: EdgeInsets.only(top: 2.0, bottom: 4.0),
                         margin: EdgeInsets.symmetric(horizontal: 1.0),
                         decoration: BoxDecoration(color: Colors.white),
-                        child: Column(children: [textExtraSmall(GroupDeadline), textSmall(deadline)]))),
+                        child: Column(children: [
+                          textExtraSmall(GroupDeadline),
+                          textSmall(deadline == '0' || deadline == '' ? '-' : (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0])
+                        ]))),
                 Expanded(
                     flex: 1,
                     child: Container(
@@ -63,7 +73,10 @@ class GroupItem extends StatelessWidget {
                         decoration: BoxDecoration(color: Colors.white),
                         child: Column(children: [
                           textExtraSmall(YourProgress),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [textSmall(YourJuz + yourJuz), textSmall(yourProgress)]),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                            textSmall(YourJuz + (yourJuz == '0' || yourJuz == 'null' ? '-' : yourJuz)),
+                            textSmall((yourProgress == 'null' ? '0' : yourProgress) + '%')
+                          ]),
                         ]))),
               ],
             ),
