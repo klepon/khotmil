@@ -46,3 +46,21 @@ Reconnect when connection lost
 Restart connection and do all the step
 
  $ adb kill-server
+
+ todo:
+ admin:
+ - group detail -> delete group, onprogress php:kp_khotmil_delete_group()
+ - group detail -> edit round deadline
+ - group detail -> invited member list
+ - group detail -> start next round
+
+ - create group -> get lat long by address
+ - create group -> set lat long by map
+ - create group -> color picker
+ - create group -> invite member/member search
+
+member:
+ - group detail -> juz list
+ - group detail -> juz select/join
+ - group detail -> juz leave
+ - group detail -> set progress

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
+import 'package:khotmil/fetch/delete_group.dart';
 
 import 'group_item.dart';
 
-class GroupDetail extends StatelessWidget {
+class GroupDetail extends StatefulWidget {
+  final int groupId;
   final String groupName;
   final String progress;
   final String round;
@@ -12,9 +14,40 @@ class GroupDetail extends StatelessWidget {
   final String yourJuz;
   final String yourProgress;
   final String groupColor;
-  final int groupId;
+  final String loginKey;
 
-  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor}) : super(key: key);
+  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor, this.loginKey}) : super(key: key);
+  @override
+  _GroupDetailState createState() => _GroupDetailState();
+}
+
+class _GroupDetailState extends State<GroupDetail> {
+  String _messageText = '';
+  bool _loadingOverlay = false;
+
+  void _apiDeleteGroup() async {
+    Navigator.pop(context);
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        Navigator.pop(context);
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = TextCode[data[DataMessage]];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
 
   Widget _memberItem(juz, name, progress) {
     return Container(
@@ -91,86 +124,137 @@ class GroupDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppTitle),
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: sidePadding,
-            child: GroupItem(groupName: groupName, progress: progress, round: round, deadline: deadline, yourJuz: yourJuz, yourProgress: yourProgress, groupColor: groupColor),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: Text(AppTitle),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.delete_forever),
+                tooltip: DeleteGroup,
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text(DeleteGroupWarningTitle),
+                        content: Text(DeleteGroupWarning),
+                        actions: [
+                          FlatButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(CancelText),
+                          ),
+                          RaisedButton(
+                            color: Colors.redAccent,
+                            onPressed: () {
+                              _apiDeleteGroup();
+                            },
+                            child: Text(DeleteGroupConfirm),
+                          ),
+                        ],
+                      ));
+                },
+              ),
+            ],
           ),
-          Container(
-            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
-            padding: sidePadding,
-            child: Row(
-              children: [
-                Container(padding: verticalPadding, width: 32.0, child: Text('Juz')),
-                Expanded(
-                  child: Container(padding: verticalPadding, width: 32.0, child: Text('Nama')),
+          body: Column(
+            children: [
+              if (_messageText != '') Container(padding: verticalPadding, child: Text(_messageText)),
+              Container(
+                padding: sidePadding,
+                child: GroupItem(
+                  groupName: widget.groupName,
+                  progress: widget.progress,
+                  round: widget.round,
+                  deadline: widget.deadline,
+                  yourJuz: widget.yourJuz,
+                  yourProgress: widget.yourProgress,
+                  groupColor: widget.groupColor,
                 ),
-                Container(padding: verticalPadding, width: 110.0, child: Text('Progres')),
-                Container(padding: verticalPadding, width: 50.0, child: Text('')),
-              ],
-            ),
-          ),
-          Expanded(child: _memberState(context)),
-          Container(
-            padding: mainPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
-                ),
-                SizedBox(height: 4.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              Container(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
+                padding: sidePadding,
+                child: Row(
                   children: [
+                    Container(padding: verticalPadding, width: 32.0, child: Text('Juz')),
                     Expanded(
-                        child: Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                                margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
-                                decoration: BoxDecoration(color: Colors.lightBlue),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [Text('Juz 8', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            radio(true, '20%'),
-                            radio(true, '50%'),
-                            radio(false, '80%'),
-                            radio(false, '100%'),
-                          ],
-                        )
-                      ],
-                    )),
-                    RaisedButton(
-                      padding: EdgeInsets.symmetric(vertical: 25.0),
-                      onPressed: () => {},
-                      child: Text(SubmitText),
+                      child: Container(padding: verticalPadding, width: 32.0, child: Text('Nama')),
                     ),
+                    Container(padding: verticalPadding, width: 110.0, child: Text('Progres')),
+                    Container(padding: verticalPadding, width: 50.0, child: Text('')),
                   ],
                 ),
-                SizedBox(height: 4.0),
-              ],
+              ),
+              Expanded(child: _memberState(context)),
+              Container(
+                padding: mainPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 4.0),
+                      child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
+                    ),
+                    SizedBox(height: 4.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                    margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
+                                    decoration: BoxDecoration(color: Colors.lightBlue),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [Text('Juz 8', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                radio(true, '20%'),
+                                radio(true, '50%'),
+                                radio(false, '80%'),
+                                radio(false, '100%'),
+                              ],
+                            )
+                          ],
+                        )),
+                        RaisedButton(
+                          padding: EdgeInsets.symmetric(vertical: 25.0),
+                          onPressed: () => {},
+                          child: Text(SubmitText),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.0),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+        if (_loadingOverlay)
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              color: Color(0xaaffffff),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(),
             ),
           )
-        ],
-      ),
+      ],
     );
   }
 }

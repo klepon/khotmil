@@ -42,11 +42,16 @@ const String RegisterWithPhoneFormTitle = 'Daftar dengan Nomor Telpon';
 const String ValidatedEmailFormTitle = 'Validasi email';
 const String FailValidateUser = 'Gagal memvalidasi email.';
 const String FailCreateGroup = 'Gagal membuat group.';
+const String FailDeleteGroup = 'Gagal menghapus group.';
 const String DataStatus = 'status';
 const String DataMessage = 'message';
 const String StatusSuccess = 'success';
 const String StatusError = 'error';
 const String LoadingGroups = 'Memuat group';
+const String DeleteGroupWarningTitle = 'Hapus group?';
+const String DeleteGroupWarning = 'Anda akan menghapus group\n\nSemua data di group ini akan hilang dan tidak bisa dikembalikan lagi';
+const String DeleteGroupConfirm = 'Hapus';
+const String DeleteGroup = 'Hapus group';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';
@@ -79,5 +84,5 @@ const Map TextCode = {
   'InvalidKey': 'Kode kunci salah',
   'InvalidUserLoginDetail': 'Detail login salah',
   'YouNotJoinAnyGroup': 'Anda tidak memiliki group, silahkan buat atau gabung dengan group yg ada.',
-  'FailCreateGroup': 'Gagal membuat group, mohon hubungi admmin.',
+  'FailCreateGroup': 'Gagal membuat group, mohon hubungi admin.',
 };

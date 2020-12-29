@@ -61,6 +61,7 @@ class _GroupListState extends State<GroupList> {
       endDateFormController.text,
       uidsFormController.text.split(','),
     ).then((data) {
+      widget.toggleLoading();
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _futureGetGroupList = fetchMyGroupList(widget.loginKey);
@@ -74,11 +75,9 @@ class _GroupListState extends State<GroupList> {
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
-          _messageText = data[DataMessage];
+          _messageText = TextCode[data[DataMessage]];
         });
       }
-
-      widget.toggleLoading();
     }).catchError((onError) {
       widget.toggleLoading();
       setState(() {
@@ -109,6 +108,7 @@ class _GroupListState extends State<GroupList> {
               yourJuz: group['my_juz'].toString(),
               yourProgress: group['my_progress'].toString(),
               groupColor: group['color'],
+              loginKey: widget.loginKey,
             );
           }));
         },
@@ -277,6 +277,7 @@ class _GroupListState extends State<GroupList> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (_messageText != '') Container(padding: verticalPadding, child: Center(child: Text(_messageText))),
           if (_screenState == StateGroupList)
             Container(
                 padding: mainPadding,
@@ -292,7 +293,6 @@ class _GroupListState extends State<GroupList> {
                     child: Container(
                         padding: mainPadding,
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          if (_messageText != '') Container(padding: verticalPadding, child: Center(child: Text(_messageText))),
                           if (_screenState == StateGroupList) _myGroupList(context),
                           if (_screenState == StateCreateGroup) _createGroupForm(),
                           if (_screenState == StateJoinGroup) _joinGroupForm(),
@@ -329,67 +329,3 @@ class _GroupListState extends State<GroupList> {
     );
   }
 }
-
-// Widget _groupList(context) {
-//   return SingleChildScrollView(
-//     child: ConstrainedBox(
-//       constraints: BoxConstraints(
-//         minWidth: MediaQuery.of(context).size.width,
-//       ),
-//       child: Container(
-//         padding: mainPadding,
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             FlatButton(
-//               padding: EdgeInsets.all(0.00),
-//               onPressed: () {
-//                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-//                   return GroupDetail(groupName: 'Nurul Hikmah', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '1', yourProgress: '50%', groupColor: 'ff0000');
-//                 }));
-//               },
-//               child: GroupItem(groupName: 'Nurul Hikmah', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '1', yourProgress: '50%', groupColor: 'ff0000'),
-//             ),
-//             FlatButton(
-//               padding: EdgeInsets.all(0.00),
-//               onPressed: () {
-//                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-//                   return GroupDetail(
-//                       groupName: 'Nurul Hikmah dengan nama panajang',
-//                       progress: '60%',
-//                       round: '1',
-//                       deadline: '21 Feb 2021',
-//                       yourJuz: '29',
-//                       yourProgress: '80%',
-//                       groupColor: 'ffffff');
-//                 }));
-//               },
-//               child: GroupItem(
-//                   groupName: 'Nurul Hikmah dengan nama panajang', progress: '60%', round: '1', deadline: '21 Feb 2021', yourJuz: '29', yourProgress: '80%', groupColor: 'ffffff'),
-//             ),
-//             FlatButton(
-//               padding: EdgeInsets.all(0.00),
-//               onPressed: () {
-//                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-//                   return GroupDetail(groupName: 'Nurul Hikmah', progress: '75%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: '66dd33');
-//                 }));
-//               },
-//               child: GroupItem(groupName: 'Nurul Hikmah', progress: '75%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: '66dd33'),
-//             ),
-//             GroupItem(groupName: 'not link', progress: '50%', round: '2', deadline: '21 jan 2021', yourJuz: '28', yourProgress: '50%', groupColor: '666666'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: '66dd33'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//             GroupItem(groupName: 'not link', progress: '80%', round: '2', deadline: '21 jan 2021', yourJuz: '29', yourProgress: '50%', groupColor: 'ff0000'),
-//           ],
-//         ),
-//       ),
-//     ),
-//   );
-// }
