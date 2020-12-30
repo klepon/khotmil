@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:khotmil/constant/text.dart';
 
-Future fetchDeleteGroup(String key, gid) async {
+Future fetchDeleteGroup(String key, String gid) async {
   final response = await http.post(
     ApiDomain + 'klepon/v1/delete-group',
     headers: <String, String>{

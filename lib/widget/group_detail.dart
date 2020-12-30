@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_group.dart';
+import 'package:khotmil/fetch/update_deadline.dart';
 
 import 'group_item.dart';
 
@@ -24,8 +25,17 @@ class GroupDetail extends StatefulWidget {
 }
 
 class _GroupDetailState extends State<GroupDetail> {
+  String deadline = '';
   String _messageText = '';
   bool _loadingOverlay = false;
+
+  TextEditingController endDateFormController = TextEditingController();
+  Future<void> _renderSelectDate(BuildContext context) async {
+    DateTime date = DateTime.now();
+    final DateTime picked = await showDatePicker(
+        context: context, initialDate: DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000), firstDate: date, lastDate: DateTime(date.year, date.month + 3));
+    if (picked != null) endDateFormController.text = (picked.toString()).split(' ')[0];
+  }
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
@@ -39,6 +49,39 @@ class _GroupDetailState extends State<GroupDetail> {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
         widget.reloadList(true);
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
+
+  void _apiUpdateDeadLine() async {
+    if (endDateFormController.text == (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0]) {
+      Navigator.pop(context);
+      return;
+    }
+
+    Navigator.pop(context);
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchUpdateDeadline(widget.loginKey, widget.groupId, endDateFormController.text).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        widget.reloadList(true);
+        setState(() {
+          _loadingOverlay = false;
+          deadline = data['deadline'].toString();
+        });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
@@ -127,6 +170,22 @@ class _GroupDetailState extends State<GroupDetail> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      deadline = widget.deadline;
+      endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0];
+    });
+  }
+
+  @override
+  void dispose() {
+    endDateFormController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -134,6 +193,36 @@ class _GroupDetailState extends State<GroupDetail> {
           appBar: AppBar(
             title: Text(AppTitle),
             actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.calendar_today),
+                tooltip: DeleteGroup,
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      child: AlertDialog(
+                        title: Text(UpdateDeadline),
+                        content: TextFormField(
+                          controller: endDateFormController,
+                          keyboardType: TextInputType.text,
+                          readOnly: true,
+                          onTap: () => _renderSelectDate(context),
+                        ),
+                        actions: [
+                          FlatButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(CancelText),
+                          ),
+                          RaisedButton(
+                            color: Colors.greenAccent,
+                            onPressed: () {
+                              _apiUpdateDeadLine();
+                            },
+                            child: Text(SubmitText),
+                          ),
+                        ],
+                      ));
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.delete_forever),
                 tooltip: DeleteGroup,
@@ -170,7 +259,7 @@ class _GroupDetailState extends State<GroupDetail> {
                   groupName: widget.groupName,
                   progress: widget.progress,
                   round: widget.round,
-                  deadline: widget.deadline,
+                  deadline: deadline == '' ? widget.deadline : deadline,
                   yourJuz: widget.yourJuz,
                   yourProgress: widget.yourProgress,
                   groupColor: widget.groupColor,

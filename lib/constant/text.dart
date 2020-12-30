@@ -44,6 +44,7 @@ const String FailValidateUser = 'Gagal memvalidasi email, mohon hubungi admin.';
 const String FailCreateGroup = 'Gagal membuat group, mohon hubungi admin.';
 const String FailDeleteGroup = 'Gagal menghapus group, mohon hubungi admin.';
 const String FailListingGroup = 'Gagal memuat group, mohon hubungi admin.';
+const String FailUpdateDeadline = 'Gagal memperbarui deadline, mohon hubungi admin.';
 const String DataStatus = 'status';
 const String DataMessage = 'message';
 const String StatusSuccess = 'success';
@@ -53,6 +54,7 @@ const String DeleteGroupWarningTitle = 'Hapus group?';
 const String DeleteGroupWarning = 'Anda akan menghapus group\n\nSemua data di group ini akan hilang dan tidak bisa dikembalikan lagi';
 const String DeleteGroupConfirm = 'Hapus';
 const String DeleteGroup = 'Hapus group';
+const String UpdateDeadline = 'Ganti deadline';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';

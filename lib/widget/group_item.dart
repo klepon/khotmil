@@ -54,17 +54,15 @@ class GroupItem extends StatelessWidget {
                         padding: EdgeInsets.only(top: 2.0, bottom: 4.0),
                         margin: EdgeInsets.symmetric(horizontal: 1.0),
                         decoration: BoxDecoration(color: Colors.white),
-                        child: Column(children: [textExtraSmall(GroupRound), textSmall(round == '0' ? '-' : round)]))),
+                        child: Column(children: [textExtraSmall(GroupRound), textSmall(round)]))),
                 Expanded(
                     flex: 1,
                     child: Container(
                         padding: EdgeInsets.only(top: 2.0, bottom: 4.0),
                         margin: EdgeInsets.symmetric(horizontal: 1.0),
                         decoration: BoxDecoration(color: Colors.white),
-                        child: Column(children: [
-                          textExtraSmall(GroupDeadline),
-                          textSmall(deadline == '0' ? '-' : (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0])
-                        ]))),
+                        child: Column(
+                            children: [textExtraSmall(GroupDeadline), textSmall((DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0])]))),
                 Expanded(
                     flex: 1,
                     child: Container(

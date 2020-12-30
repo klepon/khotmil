@@ -2,20 +2,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:khotmil/constant/text.dart';
 
-Future fetchCreateGroup(String key, String name, String address, String latlong, String color, String date, uids) async {
+Future fetchUpdateDeadline(String key, String gid, String deadLine) async {
   final response = await http.post(
-    ApiDomain + 'klepon/v1/create-group',
+    ApiDomain + 'klepon/v1/edit-round',
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, dynamic>{
       'user_key': key,
-      'name': name,
-      'address': address,
-      'latlong': latlong,
-      'color': color,
-      'round_end_date': date,
-      'member_ids': uids,
+      'gid': gid,
+      'dead_line': deadLine,
     }),
   );
 
@@ -24,9 +20,9 @@ Future fetchCreateGroup(String key, String name, String address, String latlong,
     if (data[DataStatus] == StatusSuccess || data[DataStatus] == StatusError) {
       return data;
     } else {
-      throw Exception(FailCreateGroup);
+      throw Exception(FailUpdateDeadline);
     }
   } else {
-    throw Exception(FailCreateGroup);
+    throw Exception(FailUpdateDeadline);
   }
 }
