@@ -71,7 +71,9 @@ class GroupItem extends StatelessWidget {
                         decoration: BoxDecoration(color: Colors.white),
                         child: Column(children: [
                           textExtraSmall(YourProgress),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [textSmall(YourJuz + (yourJuz == '0' ? '-' : yourJuz)), textSmall(yourProgress + '%')]),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [textSmall(LabelJuz + ' ' + (yourJuz == '0' ? '-' : yourJuz)), textSmall(yourProgress + '%')]),
                         ]))),
               ],
             ),

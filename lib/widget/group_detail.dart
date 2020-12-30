@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_group.dart';
+import 'package:khotmil/fetch/round_member.dart';
 import 'package:khotmil/fetch/update_deadline.dart';
 
 import 'group_item.dart';
@@ -41,6 +42,8 @@ class _GroupDetailState extends State<GroupDetail> {
   String deadline = '';
   String _messageText = '';
   bool _loadingOverlay = false;
+  bool _invitedMember = false;
+  Future _futureRoundMember;
 
   TextEditingController endDateFormController = TextEditingController();
   Future<void> _renderSelectDate(BuildContext context) async {
@@ -118,6 +121,12 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
+  void _apiGetRoundMember() async {
+    setState(() {
+      _futureRoundMember = fetchRoundMember(widget.loginKey, widget.groupId);
+    });
+  }
+
   Widget _memberItem(juz, name, progress) {
     return Container(
       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
@@ -147,7 +156,7 @@ class _GroupDetailState extends State<GroupDetail> {
                   padding: EdgeInsets.all(0.0),
                   color: progress == '100' ? Colors.redAccent : Colors.green,
                   onPressed: () => {},
-                  child: Text(progress == '100' ? 'Keluar' : 'Join'))),
+                  child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
         ],
       ),
     );
@@ -191,6 +200,69 @@ class _GroupDetailState extends State<GroupDetail> {
     );
   }
 
+  Widget _invitedMemberItem(juz, name) {
+    return Container(
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+      padding: EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        children: [
+          Container(width: 32.0, child: Text(juz)),
+          Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(name))),
+          Container(
+              width: 50.0,
+              child: RaisedButton(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, padding: EdgeInsets.all(0.0), color: Colors.redAccent, onPressed: () => {}, child: Text('hapus'))),
+        ],
+      ),
+    );
+  }
+
+  Widget _invitedMemberList(context) {
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Container(
+          padding: sidePadding,
+          child: FutureBuilder(
+            future: _futureRoundMember,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                // print(snapshot.data);
+                List<Widget> members = new List<Widget>();
+                for (var i = 0; i < snapshot.data['users'].length; i += 1) {
+                  members.add(_invitedMemberItem((i + 1).toString(), snapshot.data['users'][i]['uid']));
+                }
+
+                return Column(
+                  children: members,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              return Column(
+                children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
+              );
+            },
+          ),
+
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     _invitedMemberItem('1', 'zuli'),
+          //     _invitedMemberItem('2', 'zulu'),
+          //     _invitedMemberItem('4', 'zula'),
+          //     _invitedMemberItem('5', 'zulo'),
+          //     _invitedMemberItem('9', 'zule'),
+          //   ],
+          // ),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -199,6 +271,8 @@ class _GroupDetailState extends State<GroupDetail> {
       deadline = widget.deadline;
       endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0];
     });
+
+    _apiGetRoundMember();
   }
 
   @override
@@ -215,6 +289,26 @@ class _GroupDetailState extends State<GroupDetail> {
           appBar: AppBar(
             title: Text(AppTitle),
             actions: <Widget>[
+              if (widget.owner && _invitedMember)
+                IconButton(
+                  icon: const Icon(Icons.menu_book),
+                  tooltip: DeleteGroup,
+                  onPressed: () {
+                    setState(() {
+                      _invitedMember = false;
+                    });
+                  },
+                ),
+              if (widget.owner && !_invitedMember)
+                IconButton(
+                  icon: const Icon(Icons.group_add),
+                  tooltip: DeleteGroup,
+                  onPressed: () {
+                    setState(() {
+                      _invitedMember = true;
+                    });
+                  },
+                ),
               if (widget.owner)
                 IconButton(
                   icon: const Icon(Icons.calendar_today),
@@ -277,33 +371,47 @@ class _GroupDetailState extends State<GroupDetail> {
           body: Column(
             children: [
               if (_messageText != '') Container(padding: verticalPadding, child: Text(_messageText)),
-              Container(
-                padding: sidePadding,
-                child: GroupItem(
-                  groupName: widget.groupName,
-                  progress: widget.progress,
-                  round: widget.round,
-                  deadline: deadline == '' ? widget.deadline : deadline,
-                  yourJuz: widget.yourJuz,
-                  yourProgress: widget.yourProgress,
-                  groupColor: widget.groupColor,
-                ),
+              GroupItem(
+                groupName: widget.groupName,
+                progress: widget.progress,
+                round: widget.round,
+                deadline: deadline == '' ? widget.deadline : deadline,
+                yourJuz: widget.yourJuz,
+                yourProgress: widget.yourProgress,
+                groupColor: widget.groupColor,
               ),
-              Container(
-                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
-                padding: sidePadding,
-                child: Row(
-                  children: [
-                    Container(padding: verticalPadding, width: 32.0, child: Text('Juz')),
-                    Expanded(
-                      child: Container(padding: verticalPadding, width: 32.0, child: Text('Nama')),
-                    ),
-                    Container(padding: verticalPadding, width: 110.0, child: Text('Progres')),
-                    Container(padding: verticalPadding, width: 50.0, child: Text('')),
-                  ],
+              if (_invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
+              if (_invitedMember)
+                Container(
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
+                  padding: sidePadding,
+                  child: Row(
+                    children: [
+                      Container(padding: verticalPadding, width: 32.0, child: Text('No')),
+                      Expanded(
+                        child: Container(padding: verticalPadding, child: Text(LabelName)),
+                      ),
+                      Container(padding: verticalPadding, width: 50.0, child: Text('')),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(child: _memberState(context)),
+              if (_invitedMember) Expanded(child: _invitedMemberList(context)),
+              if (!_invitedMember)
+                Container(
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
+                  padding: sidePadding,
+                  child: Row(
+                    children: [
+                      Container(padding: verticalPadding, width: 32.0, child: Text(LabelJuz)),
+                      Expanded(
+                        child: Container(padding: verticalPadding, child: Text(LabelName)),
+                      ),
+                      Container(padding: verticalPadding, width: 110.0, child: Text(LabelProgress)),
+                      Container(padding: verticalPadding, width: 50.0, child: Text('')),
+                    ],
+                  ),
+                ),
+              if (!_invitedMember) Expanded(child: _memberState(context)),
               Container(
                 padding: mainPadding,
                 child: Column(

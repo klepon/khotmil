@@ -178,88 +178,93 @@ class _GroupListState extends State<GroupList> {
   Widget _createGroupForm() {
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          SizedBox(height: 16.0),
-          Text(CreateGroup, style: bold),
-          SizedBox(height: 16.0),
-          if (nameFormController.text != '')
-            GroupItem(
-              groupName: nameFormController.text,
-              progress: '95',
-              round: '1',
-              deadline: _getTimeStamp(),
-              yourJuz: '25',
-              yourProgress: '50',
-              groupColor: colorFormController.text != '' ? colorFormController.text : _defaultColor,
-            ),
-          SizedBox(height: 16.0),
-          TextFormField(
-            controller: nameFormController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: FormCreateGroupName,
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return FormCreateGroupNameError;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: addressFormController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: FormCreateGroupAddress,
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return FormCreateGroupAddressError;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: latlongFormController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: FormCreateGroupLatlong,
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return FormCreateGroupLatlongError;
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: colorFormController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: FormCreateGroupColor,
-            ),
-          ),
-          TextFormField(
-            controller: endDateFormController,
-            keyboardType: TextInputType.text,
-            readOnly: true,
-            onTap: () => _renderSelectDate(context),
-          ),
-          TextFormField(
-            controller: uidsFormController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              hintText: FormCreateGroupUids,
-            ),
-          ),
-        ],
-      ),
+      child: Container(
+          padding: mainPadding,
+          child: Column(
+            children: [
+              SizedBox(height: 16.0),
+              Text(CreateGroup, style: bold),
+              SizedBox(height: 16.0),
+              if (nameFormController.text != '')
+                GroupItem(
+                  groupName: nameFormController.text,
+                  progress: '95',
+                  round: '1',
+                  deadline: _getTimeStamp(),
+                  yourJuz: '25',
+                  yourProgress: '50',
+                  groupColor: colorFormController.text != '' ? colorFormController.text : _defaultColor,
+                ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: nameFormController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: FormCreateGroupName,
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return FormCreateGroupNameError;
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: addressFormController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: FormCreateGroupAddress,
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return FormCreateGroupAddressError;
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: latlongFormController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: FormCreateGroupLatlong,
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return FormCreateGroupLatlongError;
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: colorFormController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: FormCreateGroupColor,
+                ),
+              ),
+              TextFormField(
+                controller: endDateFormController,
+                keyboardType: TextInputType.text,
+                readOnly: true,
+                onTap: () => _renderSelectDate(context),
+              ),
+              TextFormField(
+                controller: uidsFormController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: FormCreateGroupUids,
+                ),
+              ),
+            ],
+          )),
     );
   }
 
   Widget _joinGroupForm() {
-    return Text('join group form here');
+    return Container(
+      padding: mainPadding,
+      child: Text('join group form here'),
+    );
   }
 
   @override
@@ -310,13 +315,11 @@ class _GroupListState extends State<GroupList> {
             child: SingleChildScrollView(
                 child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                    child: Container(
-                        padding: mainPadding,
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          if (_screenState == StateGroupList) _myGroupList(context),
-                          if (_screenState == StateCreateGroup) _createGroupForm(),
-                          if (_screenState == StateJoinGroup) _joinGroupForm(),
-                        ])))),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      if (_screenState == StateGroupList) _myGroupList(context),
+                      if (_screenState == StateCreateGroup) _createGroupForm(),
+                      if (_screenState == StateJoinGroup) _joinGroupForm(),
+                    ]))),
           ),
 
           // Expanded(child: _groupList(context)),
