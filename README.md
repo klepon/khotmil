@@ -49,15 +49,16 @@ Restart connection and do all the step
 
  todo:
  admin:
- - group detail -> delete group, onprogress php:kp_khotmil_delete_group()
- - group detail -> edit round deadline
- - group detail -> invited member list
+ - group detail -> delete group -- /wp-json/klepon/v1/delete-group
+ - group detail -> edit round deadline -- /wp-json/klepon/v1/edit-round
+ - group detail -> invited member list -- /wp-json/klepon/v1/get-round-user
  - group detail -> start next round
 
+ - create group -> validate required on api -- /wp-json/klepon/v1/create-group
  - create group -> get lat long by address
  - create group -> set lat long by map
  - create group -> color picker
- - create group -> invite member/member search
+ - create group -> invite member/member search  -- /wp-json/klepon/v1/search-user
 
 member:
  - group detail -> juz list

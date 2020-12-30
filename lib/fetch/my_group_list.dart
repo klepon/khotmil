@@ -19,9 +19,9 @@ Future fetchMyGroupList(String key) async {
     if (data[DataStatus] == StatusSuccess || data[DataStatus] == StatusError) {
       return data;
     } else {
-      throw Exception(FailCreateGroup);
+      throw Exception(FailListingGroup);
     }
   } else {
-    throw Exception(FailCreateGroup);
+    throw Exception(FailListingGroup);
   }
 }

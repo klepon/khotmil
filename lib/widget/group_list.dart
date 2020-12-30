@@ -75,7 +75,7 @@ class _GroupListState extends State<GroupList> {
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
-          _messageText = TextCode[data[DataMessage]];
+          _messageText = data[DataMessage];
         });
       }
     }).catchError((onError) {
@@ -135,7 +135,7 @@ class _GroupListState extends State<GroupList> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data['message'] != null) {
-            return Text(TextCode[snapshot.data['message']]);
+            return Text(snapshot.data['message']);
           }
 
           return _loopGroups(snapshot.data['groups'], context);

@@ -72,7 +72,7 @@ class _AuthState extends State<Auth> {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = TextCode[data[DataMessage]];
+          _futureMessage = data[DataMessage];
         });
         return;
       }
@@ -104,7 +104,7 @@ class _AuthState extends State<Auth> {
     await fetchRegisterUser(name, email, password).then((data) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = TextCode[data[DataMessage]];
+        _futureMessage = data[DataMessage];
         if (data[DataStatus] == StatusSuccess) {
           _currentForm = FormEmailValidation;
         }
@@ -126,7 +126,7 @@ class _AuthState extends State<Auth> {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = TextCode[data[DataMessage]];
+          _futureMessage = data[DataMessage];
         });
         return;
       }

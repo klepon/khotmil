@@ -40,9 +40,10 @@ const String LoginFormTitle = 'Login';
 const String RegisterWithEmailFormTitle = 'Daftar dengan Email';
 const String RegisterWithPhoneFormTitle = 'Daftar dengan Nomor Telpon';
 const String ValidatedEmailFormTitle = 'Validasi email';
-const String FailValidateUser = 'Gagal memvalidasi email.';
-const String FailCreateGroup = 'Gagal membuat group.';
-const String FailDeleteGroup = 'Gagal menghapus group.';
+const String FailValidateUser = 'Gagal memvalidasi email, mohon hubungi admin.';
+const String FailCreateGroup = 'Gagal membuat group, mohon hubungi admin.';
+const String FailDeleteGroup = 'Gagal menghapus group, mohon hubungi admin.';
+const String FailListingGroup = 'Gagal memuat group, mohon hubungi admin.';
 const String DataStatus = 'status';
 const String DataMessage = 'message';
 const String StatusSuccess = 'success';
@@ -73,16 +74,3 @@ const String FormCreateGroupAddressError = 'Alamat group diperlukan';
 const String FormCreateGroupLatlongError = 'Kordinat group diperlukan';
 const String FormCreateGroupEndDateError = 'Date line diperlukan';
 const String FormCreateGroupPreview = 'Preview';
-
-const Map TextCode = {
-  'RegisterSuccessCheckEmail': 'Kode validasi berupa 6 (enam) angka telah dikirim ke email Anda. Coba cari di folder spam bila tidak ada di inbox.',
-  'ErrorUserExist': 'Email sudah terdaftar, silahkan login atau gunakan email yg lain.',
-  'ErrorEmailExist': 'Email sudah terdaftar, silahkan login atau gunakan email yg lain.',
-  'RegisterNoUserAndPasswordFound': 'Tidak ditemukan nama, email, dan atau password',
-  'InvalidVerificationCode': 'Kode verifikasi salah',
-  'TimeLimitExceededTryIn10Minutes': 'Waktu melebihi batas, silahkan coba 10 menit lagi',
-  'InvalidKey': 'Kode kunci salah',
-  'InvalidUserLoginDetail': 'Detail login salah',
-  'YouNotJoinAnyGroup': 'Anda tidak memiliki group, silahkan buat atau gabung dengan group yg ada.',
-  'FailCreateGroup': 'Gagal membuat group, mohon hubungi admin.',
-};

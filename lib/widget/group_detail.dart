@@ -38,7 +38,7 @@ class _GroupDetailState extends State<GroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = TextCode[data[DataMessage]];
+          _messageText = data[DataMessage];
         });
       }
     }).catchError((onError) {
