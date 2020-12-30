@@ -39,7 +39,7 @@ class GroupItem extends StatelessWidget {
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white, boxShadow: [
                   BoxShadow(color: Colors.orange, spreadRadius: 6.0, blurRadius: 5.0),
                 ]),
-                child: Text((progress == 'null' ? '0' : progress) + '%', style: TextStyle(color: Colors.redAccent, fontSize: 32.0)),
+                child: Text(progress + '%', style: TextStyle(color: Colors.redAccent, fontSize: 32.0)),
               ),
             ]),
           ),
@@ -63,7 +63,7 @@ class GroupItem extends StatelessWidget {
                         decoration: BoxDecoration(color: Colors.white),
                         child: Column(children: [
                           textExtraSmall(GroupDeadline),
-                          textSmall(deadline == '0' || deadline == '' ? '-' : (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0])
+                          textSmall(deadline == '0' ? '-' : (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0])
                         ]))),
                 Expanded(
                     flex: 1,
@@ -73,10 +73,7 @@ class GroupItem extends StatelessWidget {
                         decoration: BoxDecoration(color: Colors.white),
                         child: Column(children: [
                           textExtraSmall(YourProgress),
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                            textSmall(YourJuz + (yourJuz == '0' || yourJuz == 'null' ? '-' : yourJuz)),
-                            textSmall((yourProgress == 'null' ? '0' : yourProgress) + '%')
-                          ]),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [textSmall(YourJuz + (yourJuz == '0' ? '-' : yourJuz)), textSmall(yourProgress + '%')]),
                         ]))),
               ],
             ),

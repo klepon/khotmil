@@ -49,7 +49,6 @@ Restart connection and do all the step
 
  todo:
  admin:
- - group detail -> delete group -- /wp-json/klepon/v1/delete-group
  - group detail -> edit round deadline -- /wp-json/klepon/v1/edit-round
  - group detail -> invited member list -- /wp-json/klepon/v1/get-round-user
  - group detail -> start next round

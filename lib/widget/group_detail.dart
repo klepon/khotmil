@@ -6,7 +6,7 @@ import 'package:khotmil/fetch/delete_group.dart';
 import 'group_item.dart';
 
 class GroupDetail extends StatefulWidget {
-  final int groupId;
+  final String groupId;
   final String groupName;
   final String progress;
   final String round;
@@ -15,8 +15,10 @@ class GroupDetail extends StatefulWidget {
   final String yourProgress;
   final String groupColor;
   final String loginKey;
+  final Function reloadList;
 
-  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor, this.loginKey}) : super(key: key);
+  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor, this.loginKey, this.reloadList})
+      : super(key: key);
   @override
   _GroupDetailState createState() => _GroupDetailState();
 }
@@ -27,6 +29,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
+    widget.reloadList(false);
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
@@ -35,6 +38,7 @@ class _GroupDetailState extends State<GroupDetail> {
     await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
+        widget.reloadList(true);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;

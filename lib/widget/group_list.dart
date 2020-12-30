@@ -92,6 +92,23 @@ class _GroupListState extends State<GroupList> {
     });
   }
 
+  void _reloadGroupList(bool list) {
+    // tricky here, first change the state before await, then change it back tolist after await
+    setState(() {
+      if (list) {
+        _screenState = StateGroupList;
+        _futureGetGroupList = fetchMyGroupList(widget.loginKey);
+      } else {
+        _screenState = StateJoinGroup;
+      }
+    });
+  }
+
+  String _getTimeStamp() {
+    String ts = DateTime.parse(endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
+    return ts.substring(0, ts.length - 3);
+  }
+
   Widget _loopGroups(groups, context) {
     List<Widget> buttons = new List<Widget>();
     for (var i = 0; i < groups.length; i += 1) {
@@ -101,15 +118,16 @@ class _GroupListState extends State<GroupList> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return GroupDetail(
-              groupName: group['name'],
-              progress: group['progress'].toString(),
-              round: group['round'].toString(),
-              deadline: group['end_date'].toString(),
-              yourJuz: group['my_juz'].toString(),
-              yourProgress: group['my_progress'].toString(),
-              groupColor: group['color'],
-              loginKey: widget.loginKey,
-            );
+                groupId: group['id'],
+                groupName: group['name'],
+                progress: group['progress'].toString(),
+                round: group['round'].toString(),
+                deadline: group['end_date'].toString(),
+                yourJuz: group['my_juz'].toString(),
+                yourProgress: group['my_progress'].toString(),
+                groupColor: group['color'],
+                loginKey: widget.loginKey,
+                reloadList: _reloadGroupList);
           }));
         },
         child: GroupItem(
@@ -148,11 +166,6 @@ class _GroupListState extends State<GroupList> {
         );
       },
     );
-  }
-
-  _getTimeStamp() {
-    String ts = DateTime.parse(endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
-    return ts.substring(0, ts.length - 3);
   }
 
   Widget _createGroupForm() {
