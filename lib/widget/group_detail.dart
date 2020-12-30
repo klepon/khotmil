@@ -16,9 +16,22 @@ class GroupDetail extends StatefulWidget {
   final String yourProgress;
   final String groupColor;
   final String loginKey;
+  final bool owner;
   final Function reloadList;
 
-  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor, this.loginKey, this.reloadList})
+  GroupDetail(
+      {Key key,
+      this.groupId,
+      this.groupName,
+      this.progress,
+      this.round,
+      this.deadline,
+      this.yourJuz,
+      this.yourProgress,
+      this.groupColor,
+      this.loginKey,
+      this.owner,
+      this.reloadList})
       : super(key: key);
   @override
   _GroupDetailState createState() => _GroupDetailState();
@@ -39,7 +52,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
-    widget.reloadList(false);
+    widget.reloadList(1);
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
@@ -48,14 +61,18 @@ class _GroupDetailState extends State<GroupDetail> {
     await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
-        widget.reloadList(true);
+        widget.reloadList(2);
       } else if (data[DataStatus] == StatusError) {
+        widget.reloadList(3);
         setState(() {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
+      } else {
+        widget.reloadList(3);
       }
     }).catchError((onError) {
+      widget.reloadList(3);
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
@@ -69,6 +86,7 @@ class _GroupDetailState extends State<GroupDetail> {
       return;
     }
 
+    widget.reloadList(1);
     Navigator.pop(context);
     setState(() {
       _loadingOverlay = true;
@@ -77,18 +95,22 @@ class _GroupDetailState extends State<GroupDetail> {
 
     await fetchUpdateDeadline(widget.loginKey, widget.groupId, endDateFormController.text).then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList(true);
+        widget.reloadList(2);
         setState(() {
           _loadingOverlay = false;
           deadline = data['deadline'].toString();
         });
       } else if (data[DataStatus] == StatusError) {
+        widget.reloadList(3);
         setState(() {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
+      } else {
+        widget.reloadList(3);
       }
     }).catchError((onError) {
+      widget.reloadList(3);
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
@@ -193,61 +215,63 @@ class _GroupDetailState extends State<GroupDetail> {
           appBar: AppBar(
             title: Text(AppTitle),
             actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.calendar_today),
-                tooltip: DeleteGroup,
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text(UpdateDeadline),
-                        content: TextFormField(
-                          controller: endDateFormController,
-                          keyboardType: TextInputType.text,
-                          readOnly: true,
-                          onTap: () => _renderSelectDate(context),
-                        ),
-                        actions: [
-                          FlatButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(CancelText),
+              if (widget.owner)
+                IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  tooltip: DeleteGroup,
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text(UpdateDeadline),
+                          content: TextFormField(
+                            controller: endDateFormController,
+                            keyboardType: TextInputType.text,
+                            readOnly: true,
+                            onTap: () => _renderSelectDate(context),
                           ),
-                          RaisedButton(
-                            color: Colors.greenAccent,
-                            onPressed: () {
-                              _apiUpdateDeadLine();
-                            },
-                            child: Text(SubmitText),
-                          ),
-                        ],
-                      ));
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete_forever),
-                tooltip: DeleteGroup,
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      child: AlertDialog(
-                        title: Text(DeleteGroupWarningTitle),
-                        content: Text(DeleteGroupWarning),
-                        actions: [
-                          FlatButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(CancelText),
-                          ),
-                          RaisedButton(
-                            color: Colors.redAccent,
-                            onPressed: () {
-                              _apiDeleteGroup();
-                            },
-                            child: Text(DeleteGroupConfirm),
-                          ),
-                        ],
-                      ));
-                },
-              ),
+                          actions: [
+                            FlatButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(CancelText),
+                            ),
+                            RaisedButton(
+                              color: Colors.greenAccent,
+                              onPressed: () {
+                                _apiUpdateDeadLine();
+                              },
+                              child: Text(SubmitText),
+                            ),
+                          ],
+                        ));
+                  },
+                ),
+              if (widget.owner)
+                IconButton(
+                  icon: const Icon(Icons.delete_forever),
+                  tooltip: DeleteGroup,
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          title: Text(DeleteGroupWarningTitle),
+                          content: Text(DeleteGroupWarning),
+                          actions: [
+                            FlatButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(CancelText),
+                            ),
+                            RaisedButton(
+                              color: Colors.redAccent,
+                              onPressed: () {
+                                _apiDeleteGroup();
+                              },
+                              child: Text(DeleteGroupConfirm),
+                            ),
+                          ],
+                        ));
+                  },
+                ),
             ],
           ),
           body: Column(

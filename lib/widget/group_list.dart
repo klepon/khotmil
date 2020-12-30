@@ -92,14 +92,20 @@ class _GroupListState extends State<GroupList> {
     });
   }
 
-  void _reloadGroupList(bool list) {
+  void _reloadGroupList(int action) {
     // tricky here, first change the state before await, then change it back tolist after await
     setState(() {
-      if (list) {
-        _screenState = StateGroupList;
-        _futureGetGroupList = fetchMyGroupList(widget.loginKey);
-      } else {
-        _screenState = StateJoinGroup;
+      switch (action) {
+        case 1:
+          _screenState = StateJoinGroup;
+          break;
+        case 2:
+          _screenState = StateGroupList;
+          _futureGetGroupList = fetchMyGroupList(widget.loginKey);
+          break;
+        case 3:
+          _screenState = StateGroupList;
+          break;
       }
     });
   }
@@ -126,6 +132,7 @@ class _GroupListState extends State<GroupList> {
                 yourJuz: group['my_juz'].toString(),
                 yourProgress: group['my_progress'].toString(),
                 groupColor: group['color'],
+                owner: group['owner'],
                 loginKey: widget.loginKey,
                 reloadList: _reloadGroupList);
           }));
