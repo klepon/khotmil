@@ -41,3 +41,16 @@ Row radio(checked, label) {
     ],
   );
 }
+
+Container loadingOverlay(context) {
+  return Container(
+    width: MediaQuery.of(context).size.width,
+    height: MediaQuery.of(context).size.height,
+    decoration: BoxDecoration(
+      color: Color(0xbb000000),
+    ),
+    child: Center(
+      child: CircularProgressIndicator(),
+    ),
+  );
+}

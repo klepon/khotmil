@@ -3,7 +3,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_group.dart';
 import 'package:khotmil/fetch/round_member.dart';
-import 'package:khotmil/fetch/update_deadline.dart';
+import 'package:khotmil/widget/add_edit_group.dart';
 
 import 'group_item.dart';
 
@@ -39,24 +39,13 @@ class GroupDetail extends StatefulWidget {
 }
 
 class _GroupDetailState extends State<GroupDetail> {
-  String deadline = '';
   String _messageText = '';
+  String _detailName = '';
+  String _detailDeadline = '';
+  String _detailColor = '';
   bool _loadingOverlay = false;
   bool _invitedMember = false;
   Future _futureRoundMember;
-
-  TextEditingController endDateFormController = TextEditingController();
-  Future<void> _renderSelectDate(BuildContext context) async {
-    DateTime date = DateTime.now();
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000),
-      firstDate: date,
-      lastDate: DateTime(date.year, date.month + 3),
-      helpText: UpdateDeadline,
-    );
-    if (picked != null) endDateFormController.text = (picked.toString()).split(' ')[0];
-  }
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
@@ -70,44 +59,6 @@ class _GroupDetailState extends State<GroupDetail> {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
         widget.reloadList(2);
-      } else if (data[DataStatus] == StatusError) {
-        widget.reloadList(3);
-        setState(() {
-          _loadingOverlay = false;
-          _messageText = data[DataMessage];
-        });
-      } else {
-        widget.reloadList(3);
-      }
-    }).catchError((onError) {
-      widget.reloadList(3);
-      setState(() {
-        _loadingOverlay = false;
-        _messageText = onError.toString();
-      });
-    });
-  }
-
-  void _apiUpdateDeadLine() async {
-    if (endDateFormController.text == (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0]) {
-      Navigator.pop(context);
-      return;
-    }
-
-    widget.reloadList(1);
-    Navigator.pop(context);
-    setState(() {
-      _loadingOverlay = true;
-      _messageText = '';
-    });
-
-    await fetchUpdateDeadline(widget.loginKey, widget.groupId, endDateFormController.text).then((data) {
-      if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList(2);
-        setState(() {
-          _loadingOverlay = false;
-          deadline = data['deadline'].toString();
-        });
       } else if (data[DataStatus] == StatusError) {
         widget.reloadList(3);
         setState(() {
@@ -232,9 +183,11 @@ class _GroupDetailState extends State<GroupDetail> {
               if (snapshot.hasData) {
                 // print(snapshot.data);
                 List<Widget> members = new List<Widget>();
-                for (var i = 0; i < snapshot.data['users'].length; i += 1) {
-                  members.add(_invitedMemberItem((i + 1).toString(), snapshot.data['users'][i]['name']));
-                }
+                var i = 1;
+                (snapshot.data['users']).values.forEach((user) {
+                  members.add(_invitedMemberItem((i).toString(), user['name']));
+                  i += 1;
+                });
 
                 return Column(
                   children: members,
@@ -248,17 +201,6 @@ class _GroupDetailState extends State<GroupDetail> {
               );
             },
           ),
-
-          // Column(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     _invitedMemberItem('1', 'zuli'),
-          //     _invitedMemberItem('2', 'zulu'),
-          //     _invitedMemberItem('4', 'zula'),
-          //     _invitedMemberItem('5', 'zulo'),
-          //     _invitedMemberItem('9', 'zule'),
-          //   ],
-          // ),
         ),
       ),
     );
@@ -269,17 +211,12 @@ class _GroupDetailState extends State<GroupDetail> {
     super.initState();
 
     setState(() {
-      deadline = widget.deadline;
-      endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0];
+      _detailName = widget.groupName;
+      _detailDeadline = widget.deadline;
+      _detailColor = widget.groupColor;
     });
 
     _apiGetRoundMember();
-  }
-
-  @override
-  void dispose() {
-    endDateFormController.dispose();
-    super.dispose();
   }
 
   @override
@@ -312,33 +249,37 @@ class _GroupDetailState extends State<GroupDetail> {
                 ),
               if (widget.owner)
                 IconButton(
-                  icon: const Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.edit),
                   tooltip: DeleteGroup,
                   onPressed: () {
-                    showDialog(
-                        context: context,
-                        child: AlertDialog(
-                          title: Text(UpdateDeadline),
-                          content: TextFormField(
-                            controller: endDateFormController,
-                            keyboardType: TextInputType.text,
-                            readOnly: true,
-                            onTap: () => _renderSelectDate(context),
-                          ),
-                          actions: [
-                            FlatButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(CancelText),
-                            ),
-                            RaisedButton(
-                              color: Colors.greenAccent,
-                              onPressed: () {
-                                _apiUpdateDeadLine();
-                              },
-                              child: Text(SubmitText),
-                            ),
-                          ],
-                        ));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return AddGroup(
+                        loginKey: widget.loginKey,
+                        title: EditGroup,
+                        reloadList: (caseNumber) {
+                          switch (caseNumber) {
+                            case 1:
+                              widget.reloadList(1);
+                              break;
+                            case 2:
+                              widget.reloadList(2);
+                              break;
+                            case 3:
+                              widget.reloadList(3);
+                              break;
+                          }
+                        },
+                        groupId: widget.groupId,
+                        deadline: widget.deadline,
+                        reloadDetail: (name, deadline, color) {
+                          setState(() {
+                            _detailName = name;
+                            _detailDeadline = deadline;
+                            _detailColor = color;
+                          });
+                        },
+                      );
+                    }));
                   },
                 ),
               if (widget.owner)
@@ -373,13 +314,13 @@ class _GroupDetailState extends State<GroupDetail> {
             children: [
               if (_messageText != '') Container(padding: verticalPadding, child: Text(_messageText)),
               GroupItem(
-                groupName: widget.groupName,
+                groupName: _detailName,
                 progress: widget.progress,
                 round: widget.round,
-                deadline: deadline == '' ? widget.deadline : deadline,
+                deadline: _detailDeadline,
                 yourJuz: widget.yourJuz,
                 yourProgress: widget.yourProgress,
-                groupColor: widget.groupColor,
+                groupColor: _detailColor,
               ),
               if (_invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
               if (_invitedMember)
@@ -469,17 +410,7 @@ class _GroupDetailState extends State<GroupDetail> {
             ],
           ),
         ),
-        if (_loadingOverlay)
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              color: Color(0xaaffffff),
-            ),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+        if (_loadingOverlay) loadingOverlay(context)
       ],
     );
   }

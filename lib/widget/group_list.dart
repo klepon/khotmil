@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
-import 'package:khotmil/widget/add_group.dart';
+import 'package:khotmil/widget/add_edit_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
 
 import 'group_item.dart';
@@ -176,7 +176,14 @@ class _GroupListState extends State<GroupList> {
                   RaisedButton(
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return AddGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                          return AddGroup(
+                            loginKey: widget.loginKey,
+                            title: CreateGroup,
+                            groupId: '',
+                            reloadList: _reloadGroupList,
+                            deadline: '',
+                            reloadDetail: () => {},
+                          );
                         }));
                       },
                       child: Text(CreateGroup),

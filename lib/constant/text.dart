@@ -21,6 +21,7 @@ const String CopyRight = 'Aplikai khotmil Quran ver 1.0';
 const String WelcomeMessage = 'Assalamua\'laikum, ';
 const String YourGroup = 'Group Anda';
 const String CreateGroup = 'Buat Group';
+const String EditGroup = 'Edit Group';
 const String JoinGroup = 'Gabung Group';
 const String MyGroupList = 'Group Saya';
 const String GroupRound = 'Putaran';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/login_user.dart';
 import 'package:khotmil/fetch/register_user.dart';
@@ -176,17 +177,7 @@ class _AuthState extends State<Auth> {
     return Stack(
       children: [
         _loginKey == '' ? LoginRegister(currentForm: _getForm()) : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, loginKey: _loginKey, logout: _logout),
-        if (_loadingOverlay)
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              color: Color(0xaaffffff),
-            ),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+        if (_loadingOverlay) loadingOverlay(context)
       ],
     );
   }
