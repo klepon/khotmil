@@ -208,10 +208,6 @@ class _GroupDetailState extends State<GroupDetail> {
         children: [
           Container(width: 32.0, child: Text(juz)),
           Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(name))),
-          Container(
-              width: 50.0,
-              child: RaisedButton(
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, padding: EdgeInsets.all(0.0), color: Colors.redAccent, onPressed: () => {}, child: Text('hapus'))),
         ],
       ),
     );
@@ -232,7 +228,7 @@ class _GroupDetailState extends State<GroupDetail> {
                 // print(snapshot.data);
                 List<Widget> members = new List<Widget>();
                 for (var i = 0; i < snapshot.data['users'].length; i += 1) {
-                  members.add(_invitedMemberItem((i + 1).toString(), snapshot.data['users'][i]['uid']));
+                  members.add(_invitedMemberItem((i + 1).toString(), snapshot.data['users'][i]['name']));
                 }
 
                 return Column(

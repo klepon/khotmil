@@ -49,10 +49,8 @@ Restart connection and do all the step
 
  todo:
  admin:
- - group detail -> invited member list -- /wp-json/klepon/v1/get-round-user
  - group detail -> start next round
 
- - create group -> validate required on api -- /wp-json/klepon/v1/create-group
  - create group -> get lat long by address
  - create group -> set lat long by map
  - create group -> color picker
