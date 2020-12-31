@@ -30,6 +30,7 @@ class _AddGroupState extends State<AddGroup> {
   bool _searchLatlong = false;
   bool _hasAddressData = false;
   String _addressSeacrhError = '';
+  String _lastCheckedAddress = '';
   Address _addressSuggestion;
 
   TextEditingController _nameFormController = TextEditingController();
@@ -98,10 +99,13 @@ class _AddGroupState extends State<AddGroup> {
   }
 
   void _getLatLong() async {
+    if (_lastCheckedAddress == _addressFormController.text) return;
+
     setState(() {
       _hasAddressData = false;
       _addressSeacrhError = '';
       _searchLatlong = true;
+      _lastCheckedAddress = _addressFormController.text;
     });
     await Geocoder.local.findAddressesFromQuery(_addressFormController.text).then((data) {
       setState(() {
@@ -199,21 +203,31 @@ class _AddGroupState extends State<AddGroup> {
                                   },
                                 ),
                                 SizedBox(height: 16.0),
-                                TextFormField(
-                                  controller: _addressFormController,
-                                  keyboardType: TextInputType.multiline,
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                                    hintText: FormCreateGroupAddress,
-                                  ),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return FormCreateGroupAddressError;
-                                    }
-                                    return null;
-                                  },
-                                  maxLines: null,
-                                  focusNode: _focusAddressNode,
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: TextFormField(
+                                      controller: _addressFormController,
+                                      keyboardType: TextInputType.multiline,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                                        hintText: FormCreateGroupAddress,
+                                      ),
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return FormCreateGroupAddressError;
+                                        }
+                                        return null;
+                                      },
+                                      maxLines: null,
+                                      focusNode: _focusAddressNode,
+                                    )),
+                                    IconButton(
+                                        icon: Icon(Icons.search),
+                                        onPressed: () {
+                                          _getLatLong();
+                                        })
+                                  ],
                                 ),
                                 SizedBox(height: 16.0),
                                 if (_searchLatlong)
@@ -268,6 +282,7 @@ class _AddGroupState extends State<AddGroup> {
                                                 onPressed: () {
                                                   setState(() {
                                                     _addressFormController.text = _addressSuggestion.addressLine;
+                                                    _lastCheckedAddress = _addressSuggestion.addressLine;
                                                     _hasAddressData = false;
                                                   });
                                                 },
