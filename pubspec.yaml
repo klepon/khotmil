@@ -34,7 +34,8 @@ dev_dependencies:
   path:
   shared_preferences:
   http: ^0.12.2
-  email_validator: '^1.0.5'
+  email_validator: ^1.0.5
+  flutter_colorpicker: ^0.3.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

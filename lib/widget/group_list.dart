@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
@@ -26,18 +27,20 @@ class _GroupListState extends State<GroupList> {
   String _screenState = StateGroupList;
   String _defaultColor = 'f6d55c';
   String _messageText = '';
+  Color _currentColor = Color(0xfff6d55c);
+  bool _showColorPicker = false;
 
-  TextEditingController nameFormController = TextEditingController();
-  TextEditingController addressFormController = TextEditingController();
-  TextEditingController latlongFormController = TextEditingController();
-  TextEditingController colorFormController = TextEditingController();
-  TextEditingController endDateFormController = TextEditingController();
-  TextEditingController uidsFormController = TextEditingController();
+  TextEditingController _nameFormController = TextEditingController();
+  TextEditingController _addressFormController = TextEditingController();
+  TextEditingController _latlongFormController = TextEditingController();
+  TextEditingController _colorFormController = TextEditingController();
+  TextEditingController _endDateFormController = TextEditingController();
+  TextEditingController _uidsFormController = TextEditingController();
 
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
     final DateTime picked = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: date, lastDate: DateTime(date.year, date.month + 3));
-    if (picked != null) endDateFormController.text = (picked.toString()).split(' ')[0];
+    if (picked != null) _endDateFormController.text = (picked.toString()).split(' ')[0];
   }
 
   void _apiGroupList() {
@@ -54,24 +57,24 @@ class _GroupListState extends State<GroupList> {
 
     await fetchCreateGroup(
       widget.loginKey,
-      nameFormController.text,
-      addressFormController.text,
-      latlongFormController.text,
-      colorFormController.text != '' ? colorFormController.text : _defaultColor,
-      endDateFormController.text,
-      uidsFormController.text.split(','),
+      _nameFormController.text,
+      _addressFormController.text,
+      _latlongFormController.text,
+      _colorFormController.text != '' ? _colorFormController.text : _defaultColor,
+      _endDateFormController.text,
+      _uidsFormController.text.split(','),
     ).then((data) {
       widget.toggleLoading();
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _futureGetGroupList = fetchMyGroupList(widget.loginKey);
           _screenState = StateGroupList;
-          nameFormController.text = '';
-          addressFormController.text = '';
-          latlongFormController.text = '';
-          colorFormController.text = '';
-          endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
-          uidsFormController.text = '';
+          _nameFormController.text = '';
+          _addressFormController.text = '';
+          _latlongFormController.text = '';
+          _colorFormController.text = '';
+          _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
+          _uidsFormController.text = '';
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -110,8 +113,16 @@ class _GroupListState extends State<GroupList> {
     });
   }
 
+  void _changeColor(Color color) {
+    setState(() {
+      _currentColor = color;
+      _colorFormController.text = '#' + color.value.toRadixString(16).substring(2).toUpperCase();
+      _showColorPicker = false;
+    });
+  }
+
   String _getTimeStamp() {
-    String ts = DateTime.parse(endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
+    String ts = DateTime.parse(_endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
     return ts.substring(0, ts.length - 3);
   }
 
@@ -185,21 +196,22 @@ class _GroupListState extends State<GroupList> {
               SizedBox(height: 16.0),
               Text(CreateGroup, style: bold),
               SizedBox(height: 16.0),
-              if (nameFormController.text != '')
+              if (_nameFormController.text != '')
                 GroupItem(
-                  groupName: nameFormController.text,
+                  groupName: _nameFormController.text,
                   progress: '95',
                   round: '1',
                   deadline: _getTimeStamp(),
                   yourJuz: '25',
                   yourProgress: '50',
-                  groupColor: colorFormController.text != '' ? colorFormController.text : _defaultColor,
+                  groupColor: _colorFormController.text != '' ? _colorFormController.text : _defaultColor,
                 ),
               SizedBox(height: 16.0),
               TextFormField(
-                controller: nameFormController,
+                controller: _nameFormController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                   hintText: FormCreateGroupName,
                 ),
                 validator: (value) {
@@ -210,9 +222,10 @@ class _GroupListState extends State<GroupList> {
                 },
               ),
               TextFormField(
-                controller: addressFormController,
+                controller: _addressFormController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                   hintText: FormCreateGroupAddress,
                 ),
                 validator: (value) {
@@ -223,9 +236,10 @@ class _GroupListState extends State<GroupList> {
                 },
               ),
               TextFormField(
-                controller: latlongFormController,
+                controller: _latlongFormController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                   hintText: FormCreateGroupLatlong,
                 ),
                 validator: (value) {
@@ -235,23 +249,64 @@ class _GroupListState extends State<GroupList> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: colorFormController,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  hintText: FormCreateGroupColor,
+              Container(
+                decoration: BoxDecoration(color: _currentColor),
+                child: TextFormField(
+                  controller: _colorFormController,
+                  keyboardType: TextInputType.text,
+                  readOnly: true,
+                  onTap: () {
+                    setState(() {
+                      _showColorPicker = true;
+                    });
+                    // showDialog(
+                    //     context: context,
+                    //     child: AlertDialog(
+                    //       title: Text(PickColorTitle),
+                    //       content: MaterialPicker(
+                    //         pickerColor: _currentColor,
+                    //         onColorChanged: _changeColor,
+                    //         enableLabel: true,
+                    //       ),
+                    //       actions: [
+                    //         FlatButton(
+                    //           onPressed: () => Navigator.pop(context),
+                    //           child: Text(PickColorText),
+                    //           color: Colors.green,
+                    //         )
+                    //       ],
+                    //     ));
+                  },
+                  style: TextStyle(color: _currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white),
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    hintText: FormCreateGroupColor,
+                  ),
                 ),
               ),
+              if (_showColorPicker)
+                Container(
+                  height: MediaQuery.of(context).size.width * 0.8,
+                  child: MaterialPicker(
+                    pickerColor: _currentColor,
+                    onColorChanged: _changeColor,
+                    enableLabel: true,
+                  ),
+                ),
               TextFormField(
-                controller: endDateFormController,
+                controller: _endDateFormController,
                 keyboardType: TextInputType.text,
                 readOnly: true,
                 onTap: () => _renderSelectDate(context),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                ),
               ),
               TextFormField(
-                controller: uidsFormController,
+                controller: _uidsFormController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                   hintText: FormCreateGroupUids,
                 ),
               ),
@@ -271,17 +326,18 @@ class _GroupListState extends State<GroupList> {
   void initState() {
     super.initState();
     _apiGroupList();
-    endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
+    _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
+    _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
   }
 
   @override
   void dispose() {
-    nameFormController.dispose();
-    addressFormController.dispose();
-    latlongFormController.dispose();
-    colorFormController.dispose();
-    endDateFormController.dispose();
-    uidsFormController.dispose();
+    _nameFormController.dispose();
+    _addressFormController.dispose();
+    _latlongFormController.dispose();
+    _colorFormController.dispose();
+    _endDateFormController.dispose();
+    _uidsFormController.dispose();
     super.dispose();
   }
 

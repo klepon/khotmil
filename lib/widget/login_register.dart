@@ -46,27 +46,3 @@ class _LoginRegisterState extends State<LoginRegister> {
     );
   }
 }
-
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(
-//       title: Text('Fetch Data Example'),
-//     ),
-//     body: Center(
-//       child: FutureBuilder(
-//         future: futureRegisterUser,
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             return Text(snapshot.data.title + '-' + snapshot.data.userId.toString());
-//           } else if (snapshot.hasError) {
-//             return Text("${snapshot.error}");
-//           }
-
-//           // By default, show a loading spinner.
-//           return CircularProgressIndicator();
-//         },
-//       ),
-//     ),
-//   );
-// }
