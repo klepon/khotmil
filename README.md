@@ -53,7 +53,6 @@ Restart connection and do all the step
 
  - create group -> get lat long by address
  - create group -> set lat long by map
- - create group -> color picker
  - create group -> invite member/member search  -- /wp-json/klepon/v1/search-user
 
 member:

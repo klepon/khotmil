@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
@@ -27,15 +28,22 @@ class _GroupListState extends State<GroupList> {
   String _screenState = StateGroupList;
   String _defaultColor = 'f6d55c';
   String _messageText = '';
+
   Color _currentColor = Color(0xfff6d55c);
   bool _showColorPicker = false;
 
+  bool _searchLatlong = false;
+  bool _hasAddressData = false;
+  String _addressSeacrhError = '';
+  String _addressLatlong = '';
+  Address _addressSuggestion;
+
   TextEditingController _nameFormController = TextEditingController();
   TextEditingController _addressFormController = TextEditingController();
-  TextEditingController _latlongFormController = TextEditingController();
   TextEditingController _colorFormController = TextEditingController();
   TextEditingController _endDateFormController = TextEditingController();
   TextEditingController _uidsFormController = TextEditingController();
+  FocusNode _focusAddressNode = FocusNode();
 
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
@@ -59,7 +67,7 @@ class _GroupListState extends State<GroupList> {
       widget.loginKey,
       _nameFormController.text,
       _addressFormController.text,
-      _latlongFormController.text,
+      _addressLatlong,
       _colorFormController.text != '' ? _colorFormController.text : _defaultColor,
       _endDateFormController.text,
       _uidsFormController.text.split(','),
@@ -71,7 +79,7 @@ class _GroupListState extends State<GroupList> {
           _screenState = StateGroupList;
           _nameFormController.text = '';
           _addressFormController.text = '';
-          _latlongFormController.text = '';
+          _addressLatlong = '';
           _colorFormController.text = '';
           _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
           _uidsFormController.text = '';
@@ -118,6 +126,28 @@ class _GroupListState extends State<GroupList> {
       _currentColor = color;
       _colorFormController.text = '#' + color.value.toRadixString(16).substring(2).toUpperCase();
       _showColorPicker = false;
+    });
+  }
+
+  void _getLatLong() async {
+    setState(() {
+      _hasAddressData = false;
+      _addressSeacrhError = '';
+      _searchLatlong = true;
+      _addressLatlong = '';
+    });
+    await Geocoder.local.findAddressesFromQuery(_addressFormController.text).then((data) {
+      setState(() {
+        _addressSuggestion = data.first;
+        _hasAddressData = true;
+        _searchLatlong = false;
+        _addressLatlong = data.first.coordinates.latitude.toString() + ',' + data.first.coordinates.longitude.toString();
+      });
+    }).catchError((onError) {
+      setState(() {
+        _addressSeacrhError = AddressSuggestionErrorText;
+        _searchLatlong = false;
+      });
     });
   }
 
@@ -234,21 +264,47 @@ class _GroupListState extends State<GroupList> {
                   }
                   return null;
                 },
+                focusNode: _focusAddressNode,
               ),
-              TextFormField(
-                controller: _latlongFormController,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                  hintText: FormCreateGroupLatlong,
-                ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return FormCreateGroupLatlongError;
-                  }
-                  return null;
-                },
-              ),
+              if (_searchLatlong)
+                Container(
+                    padding: verticalPadding,
+                    child: Column(children: [
+                      Text(AddressValidateTitle, style: bold),
+                      SizedBox(height: 16.0),
+                      Center(child: CircularProgressIndicator()),
+                    ])),
+              if (_addressSeacrhError != '')
+                Container(
+                    padding: verticalPadding,
+                    child: Column(children: [
+                      Text(_addressSeacrhError, style: bold),
+                      SizedBox(height: 16.0),
+                      Text(ClosedAddressFoundDesc),
+                    ])),
+              if (_hasAddressData)
+                Container(
+                    padding: verticalPadding,
+                    child: Column(
+                      children: [
+                        Text(ClosedAddressFoundTitle, style: bold),
+                        SizedBox(height: 16.0),
+                        Text(_addressSuggestion.featureName),
+                        SizedBox(height: 8.0),
+                        Text(FormCreateGroupLatlong + _addressLatlong),
+                        SizedBox(height: 8.0),
+                        RaisedButton(
+                          onPressed: () {
+                            setState(() {
+                              _hasAddressData = false;
+                            });
+                          },
+                          child: Text(OkButtonText),
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(ClosedAddressFoundDesc),
+                      ],
+                    )),
               Container(
                 decoration: BoxDecoration(color: _currentColor),
                 child: TextFormField(
@@ -257,25 +313,8 @@ class _GroupListState extends State<GroupList> {
                   readOnly: true,
                   onTap: () {
                     setState(() {
-                      _showColorPicker = true;
+                      _showColorPicker = !_showColorPicker;
                     });
-                    // showDialog(
-                    //     context: context,
-                    //     child: AlertDialog(
-                    //       title: Text(PickColorTitle),
-                    //       content: MaterialPicker(
-                    //         pickerColor: _currentColor,
-                    //         onColorChanged: _changeColor,
-                    //         enableLabel: true,
-                    //       ),
-                    //       actions: [
-                    //         FlatButton(
-                    //           onPressed: () => Navigator.pop(context),
-                    //           child: Text(PickColorText),
-                    //           color: Colors.green,
-                    //         )
-                    //       ],
-                    //     ));
                   },
                   style: TextStyle(color: _currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white),
                   decoration: const InputDecoration(
@@ -328,16 +367,23 @@ class _GroupListState extends State<GroupList> {
     _apiGroupList();
     _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
     _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
+
+    // handle search address coordinate
+    _focusAddressNode.addListener(() {
+      if (_addressFormController.text != '' && !_focusAddressNode.hasFocus) {
+        _getLatLong();
+      }
+    });
   }
 
   @override
   void dispose() {
     _nameFormController.dispose();
     _addressFormController.dispose();
-    _latlongFormController.dispose();
     _colorFormController.dispose();
     _endDateFormController.dispose();
     _uidsFormController.dispose();
+    _focusAddressNode.dispose();
     super.dispose();
   }
 

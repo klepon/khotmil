@@ -64,6 +64,11 @@ const String DeleteGroup = 'Hapus group';
 const String UpdateDeadline = 'Ganti deadline';
 const String MemberDidNotJoinJuz = 'Daftar nama teman yg belum memilih juz';
 const String LoadingMember = 'Memuat anggota group';
+const String AddressSuggestionErrorText = 'Alamat tidak ditemukan';
+const String AddressValidateTitle = 'Mohon tunggu, mencari titik kordinat';
+const String ClosedAddressFoundTitle = 'Alamat terdekat yg ditemukan';
+const String ClosedAddressFoundDesc = 'Jika kurang tepat coba masukkan:\nNama jalan, Kota, Provinsi';
+const String OkButtonText = 'Ok';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';
@@ -76,12 +81,11 @@ const String StateJoinGroup = 'state_joint_group';
 
 const String FormCreateGroupName = 'Nama group';
 const String FormCreateGroupAddress = 'Alamat group';
-const String FormCreateGroupLatlong = 'Kordinat group';
+const String FormCreateGroupLatlong = 'Kordinat: ';
 const String FormCreateGroupColor = 'Warna group';
 const String FormCreateGroupEndDate = 'Date line putaran 1';
 const String FormCreateGroupUids = 'Undang teman';
 const String FormCreateGroupNameError = 'Nama group diperlukan';
 const String FormCreateGroupAddressError = 'Alamat group diperlukan';
-const String FormCreateGroupLatlongError = 'Kordinat group diperlukan';
 const String FormCreateGroupEndDateError = 'Date line diperlukan';
 const String FormCreateGroupPreview = 'Preview';
