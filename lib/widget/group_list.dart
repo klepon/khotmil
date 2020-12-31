@@ -123,6 +123,7 @@ class _GroupListState extends State<GroupList> {
   void _changeColor(Color color) {
     setState(() {
       _currentColor = color;
+      _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
       _showColorPicker = false;
     });
   }
