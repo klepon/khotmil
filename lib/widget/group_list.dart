@@ -26,7 +26,6 @@ class _GroupListState extends State<GroupList> {
 
   Future _futureGetGroupList;
   String _screenState = StateGroupList;
-  String _defaultColor = 'f6d55c';
   String _messageText = '';
 
   Color _currentColor = Color(0xfff6d55c);
@@ -68,7 +67,7 @@ class _GroupListState extends State<GroupList> {
       _nameFormController.text,
       _addressFormController.text,
       _addressLatlong,
-      _colorFormController.text != '' ? _colorFormController.text : _defaultColor,
+      _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
       _endDateFormController.text,
       _uidsFormController.text.split(','),
     ).then((data) {
@@ -124,7 +123,6 @@ class _GroupListState extends State<GroupList> {
   void _changeColor(Color color) {
     setState(() {
       _currentColor = color;
-      _colorFormController.text = '#' + color.value.toRadixString(16).substring(2).toUpperCase();
       _showColorPicker = false;
     });
   }
@@ -234,7 +232,7 @@ class _GroupListState extends State<GroupList> {
                   deadline: _getTimeStamp(),
                   yourJuz: '25',
                   yourProgress: '50',
-                  groupColor: _colorFormController.text != '' ? _colorFormController.text : _defaultColor,
+                  groupColor: _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
                 ),
               SizedBox(height: 16.0),
               TextFormField(
