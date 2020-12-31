@@ -5,6 +5,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
+import 'package:khotmil/widget/add_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
 
 import 'group_item.dart';
@@ -305,7 +306,7 @@ class _GroupListState extends State<GroupList> {
                               _hasAddressData = false;
                             });
                           },
-                          child: Text(OkButtonText),
+                          child: Text('Ok'),
                         ),
                         SizedBox(height: 16.0),
                         Text(ClosedAddressFoundDesc),
@@ -456,7 +457,14 @@ class _GroupListState extends State<GroupList> {
                 if (_screenState == StateCreateGroup || _screenState == StateJoinGroup)
                   RaisedButton(onPressed: () => _toggleScreenState(StateGroupList), child: Text(CancelText), color: Colors.blueGrey),
                 if (_screenState != StateCreateGroup && _screenState != StateJoinGroup)
-                  RaisedButton(onPressed: () => _toggleScreenState(StateCreateGroup), child: Text(CreateGroup), color: Colors.redAccent),
+                  RaisedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return AddGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                        }));
+                      },
+                      child: Text(CreateGroup),
+                      color: Colors.redAccent),
                 if (_screenState != StateCreateGroup && _screenState != StateJoinGroup) RaisedButton(onPressed: () => _toggleScreenState(StateJoinGroup), child: Text(JoinGroup)),
               ],
             ),

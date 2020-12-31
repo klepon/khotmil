@@ -49,9 +49,9 @@ Restart connection and do all the step
 
  todo:
  admin:
+ - group detail -> edit detail
  - group detail -> start next round
 
- - create group -> get lat long by address - add city, provinsi on result
  - create group -> invite member/member search  -- /wp-json/klepon/v1/search-user
 
 member:

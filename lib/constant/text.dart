@@ -68,7 +68,8 @@ const String AddressSuggestionErrorText = 'Alamat tidak ditemukan';
 const String AddressValidateTitle = 'Mohon tunggu, mencari titik kordinat';
 const String ClosedAddressFoundTitle = 'Alamat terdekat yg ditemukan';
 const String ClosedAddressFoundDesc = 'Jika kurang tepat coba masukkan:\nNama jalan, Kota, Provinsi';
-const String OkButtonText = 'Ok';
+const String UseCoordinateButtonText = 'Pakai kordinat';
+const String UseAddressButtonText = 'Pakai semua';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';
