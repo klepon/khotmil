@@ -49,7 +49,12 @@ class _GroupDetailState extends State<GroupDetail> {
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
     final DateTime picked = await showDatePicker(
-        context: context, initialDate: DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000), firstDate: date, lastDate: DateTime(date.year, date.month + 3));
+      context: context,
+      initialDate: DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000),
+      firstDate: date,
+      lastDate: DateTime(date.year, date.month + 3),
+      helpText: UpdateDeadline,
+    );
     if (picked != null) endDateFormController.text = (picked.toString()).split(' ')[0];
   }
 

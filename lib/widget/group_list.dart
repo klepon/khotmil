@@ -34,7 +34,6 @@ class _GroupListState extends State<GroupList> {
   bool _searchLatlong = false;
   bool _hasAddressData = false;
   String _addressSeacrhError = '';
-  String _addressLatlong = '';
   Address _addressSuggestion;
 
   TextEditingController _nameFormController = TextEditingController();
@@ -46,7 +45,13 @@ class _GroupListState extends State<GroupList> {
 
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
-    final DateTime picked = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: date, lastDate: DateTime(date.year, date.month + 3));
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: date,
+      lastDate: DateTime(date.year, date.month + 3),
+      helpText: FormCreateGroupEndDate,
+    );
     if (picked != null) _endDateFormController.text = (picked.toString()).split(' ')[0];
   }
 
@@ -66,7 +71,7 @@ class _GroupListState extends State<GroupList> {
       widget.loginKey,
       _nameFormController.text,
       _addressFormController.text,
-      _addressLatlong,
+      _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString(),
       _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
       _endDateFormController.text,
       _uidsFormController.text.split(','),
@@ -78,9 +83,8 @@ class _GroupListState extends State<GroupList> {
           _screenState = StateGroupList;
           _nameFormController.text = '';
           _addressFormController.text = '';
-          _addressLatlong = '';
           _colorFormController.text = '';
-          _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
+          _endDateFormController.text = '';
           _uidsFormController.text = '';
         });
       } else if (data[DataStatus] == StatusError) {
@@ -133,14 +137,12 @@ class _GroupListState extends State<GroupList> {
       _hasAddressData = false;
       _addressSeacrhError = '';
       _searchLatlong = true;
-      _addressLatlong = '';
     });
     await Geocoder.local.findAddressesFromQuery(_addressFormController.text).then((data) {
       setState(() {
         _addressSuggestion = data.first;
         _hasAddressData = true;
         _searchLatlong = false;
-        _addressLatlong = data.first.coordinates.latitude.toString() + ',' + data.first.coordinates.longitude.toString();
       });
     }).catchError((onError) {
       setState(() {
@@ -151,7 +153,9 @@ class _GroupListState extends State<GroupList> {
   }
 
   String _getTimeStamp() {
-    String ts = DateTime.parse(_endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
+    String ts = _endDateFormController.text == ''
+        ? DateTime.now().millisecondsSinceEpoch.toString()
+        : DateTime.parse(_endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
     return ts.substring(0, ts.length - 3);
   }
 
@@ -275,22 +279,25 @@ class _GroupListState extends State<GroupList> {
                     ])),
               if (_addressSeacrhError != '')
                 Container(
+                    width: MediaQuery.of(context).size.width,
                     padding: verticalPadding,
-                    child: Column(children: [
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(_addressSeacrhError, style: bold),
                       SizedBox(height: 16.0),
                       Text(ClosedAddressFoundDesc),
                     ])),
               if (_hasAddressData)
                 Container(
+                    width: MediaQuery.of(context).size.width,
                     padding: verticalPadding,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(ClosedAddressFoundTitle, style: bold),
                         SizedBox(height: 16.0),
-                        Text(_addressSuggestion.featureName),
+                        Text(_addressSuggestion.addressLine),
                         SizedBox(height: 8.0),
-                        Text(FormCreateGroupLatlong + _addressLatlong),
+                        Text(FormCreateGroupLatlong + _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString()),
                         SizedBox(height: 8.0),
                         RaisedButton(
                           onPressed: () {
@@ -338,7 +345,14 @@ class _GroupListState extends State<GroupList> {
                 onTap: () => _renderSelectDate(context),
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                  hintText: FormCreateGroupEndDate,
                 ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return FormCreateGroupEndDateError;
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: _uidsFormController,
@@ -364,7 +378,7 @@ class _GroupListState extends State<GroupList> {
   void initState() {
     super.initState();
     _apiGroupList();
-    _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
+    // _endDateFormController.text = (DateTime.now().toString()).split(' ')[0];
     _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
 
     // handle search address coordinate

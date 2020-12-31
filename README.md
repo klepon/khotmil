@@ -51,8 +51,7 @@ Restart connection and do all the step
  admin:
  - group detail -> start next round
 
- - create group -> get lat long by address
- - create group -> set lat long by map
+ - create group -> get lat long by address - add city, provinsi on result
  - create group -> invite member/member search  -- /wp-json/klepon/v1/search-user
 
 member:
