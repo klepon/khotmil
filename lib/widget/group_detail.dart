@@ -230,7 +230,7 @@ class _GroupDetailState extends State<GroupDetail> {
               if (widget.owner && _invitedMember)
                 IconButton(
                   icon: const Icon(Icons.menu_book),
-                  tooltip: DeleteGroup,
+                  tooltip: JuzMember,
                   onPressed: () {
                     setState(() {
                       _invitedMember = false;
@@ -240,7 +240,7 @@ class _GroupDetailState extends State<GroupDetail> {
               if (widget.owner && !_invitedMember)
                 IconButton(
                   icon: const Icon(Icons.group_add),
-                  tooltip: DeleteGroup,
+                  tooltip: GroupMember,
                   onPressed: () {
                     setState(() {
                       _invitedMember = true;
@@ -250,7 +250,7 @@ class _GroupDetailState extends State<GroupDetail> {
               if (widget.owner)
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  tooltip: DeleteGroup,
+                  tooltip: EditGroup,
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return AddGroup(

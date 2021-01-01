@@ -5,6 +5,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
 import 'package:khotmil/fetch/get_group.dart';
+import 'package:khotmil/fetch/search_user.dart';
 import 'package:khotmil/fetch/update_deadline.dart';
 
 import 'group_item.dart';
@@ -40,11 +41,14 @@ class _AddGroupState extends State<AddGroup> {
   String _latlongOri = '';
   Address _addressSuggestion;
 
+  var _apiReturnUsers = [];
+  var _usersSelectedForInvite = [];
+
   TextEditingController _nameFormController = TextEditingController();
   TextEditingController _addressFormController = TextEditingController();
   TextEditingController _colorFormController = TextEditingController();
   TextEditingController _endDateFormController = TextEditingController();
-  TextEditingController _uidsFormController = TextEditingController();
+  TextEditingController _searchUserFormController = TextEditingController();
   FocusNode _focusAddressNode = FocusNode();
 
   Future<void> _renderSelectDate(BuildContext context) async {
@@ -106,15 +110,20 @@ class _AddGroupState extends State<AddGroup> {
       _loadingOverlay = true;
     });
 
+    var uids = [];
+    for (var user in _usersSelectedForInvite) {
+      uids.add(user[0].toString());
+    }
+
     await fetchCreateGroup(
-      widget.loginKey,
-      _nameFormController.text,
-      _addressFormController.text,
-      _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString(),
-      _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
-      _endDateFormController.text,
-      _uidsFormController.text.split(','),
-    ).then((data) {
+            widget.loginKey,
+            _nameFormController.text,
+            _addressFormController.text,
+            _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString(),
+            _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
+            _endDateFormController.text,
+            uids)
+        .then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList(2);
         Navigator.pop(context);
@@ -168,6 +177,25 @@ class _AddGroupState extends State<AddGroup> {
     });
   }
 
+  void _apiSearchUser(value) async {
+    await fetchSearchUser(widget.loginKey, value).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _apiReturnUsers = data['users'];
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _apiReturnUsers = [];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _apiReturnUsers = [];
+      });
+    });
+  }
+
   void _changeColor(Color color) {
     setState(() {
       _currentColor = color;
@@ -196,6 +224,28 @@ class _AddGroupState extends State<AddGroup> {
         _addressSeacrhError = AddressSuggestionErrorText;
         _searchLatlong = false;
       });
+    });
+  }
+
+  void _addUid(userData) {
+    _searchUserFormController.text = '';
+    _usersSelectedForInvite.add(userData);
+
+    setState(() {
+      _apiReturnUsers = [];
+      _usersSelectedForInvite = [
+        ...{..._usersSelectedForInvite}
+      ];
+    });
+  }
+
+  void _removeUid(userData) {
+    _usersSelectedForInvite.removeWhere((user) => user == userData);
+
+    setState(() {
+      _usersSelectedForInvite = [
+        ...{..._usersSelectedForInvite}
+      ];
     });
   }
 
@@ -229,7 +279,7 @@ class _AddGroupState extends State<AddGroup> {
     _addressFormController.dispose();
     _colorFormController.dispose();
     _endDateFormController.dispose();
-    _uidsFormController.dispose();
+    _searchUserFormController.dispose();
     _focusAddressNode.dispose();
     super.dispose();
   }
@@ -429,16 +479,49 @@ class _AddGroupState extends State<AddGroup> {
                                   },
                                 ),
                                 SizedBox(height: 16.0),
+                                if ('' == widget.groupId && _apiReturnUsers.length > 0)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Row(children: [
+                                      for (var user in _apiReturnUsers)
+                                        if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
+                                          TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                                    ]),
+                                  ),
                                 if ('' == widget.groupId)
                                   TextFormField(
-                                    controller: _uidsFormController,
+                                    controller: _searchUserFormController,
                                     keyboardType: TextInputType.text,
                                     decoration: const InputDecoration(
                                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                                       hintText: FormCreateGroupUids,
                                     ),
+                                    onChanged: (value) {
+                                      if (value.length >= 3) {
+                                        _apiSearchUser(value);
+                                      } else if (_apiReturnUsers.length > 0) {
+                                        setState(() {
+                                          _apiReturnUsers = [];
+                                        });
+                                      }
+                                    },
                                   ),
                                 if ('' == widget.groupId) SizedBox(height: 16.0),
+                                if ('' == widget.groupId && _usersSelectedForInvite.length > 0)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Column(children: [
+                                      for (var user in _usersSelectedForInvite)
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('@' + user[1]),
+                                            IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => _removeUid(user)),
+                                          ],
+                                        ),
+                                      SizedBox(height: 16.0),
+                                    ]),
+                                  )
                               ],
                             )),
                       ),

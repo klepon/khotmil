@@ -49,11 +49,7 @@ Restart connection and do all the step
 
  todo:
  admin:
- - group detail -> edit detail 
- -- invited ids salah, masih pake uid
  - group detail -> start next round
-
- - create group -> invite member/member search  -- /wp-json/klepon/v1/search-user
 
 member:
  - group detail -> juz list
