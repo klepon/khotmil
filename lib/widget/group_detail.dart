@@ -50,6 +50,7 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailColor = '';
   bool _loadingOverlay = false;
   bool _invitedMember = false;
+  List _activeJuz = ['-', '0'];
 
   Future _getMemberAPI;
 
@@ -203,32 +204,40 @@ class _GroupDetailState extends State<GroupDetail> {
             List<Widget> members = new List<Widget>();
             bool snapShootLoading = false;
             String snapShootMessage = '';
+            Map<int, dynamic> joinedUsers = Map();
+            List unjoinedUsers = [];
+            List activeJuz = [_activeJuz[0], _activeJuz[1]];
 
             if (snapshot.connectionState != ConnectionState.done) {
               snapShootLoading = true;
             }
 
-            if (snapshot.hasData && !_invitedMember) {
-              var gid = '0';
+            if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
-                if (user['isMe'] == true) {
-                  gid = (user['gid']).toString();
-                  break;
+                if (user['juz'] == '0') {
+                  unjoinedUsers.add(user);
+                } else {
+                  joinedUsers[int.parse(user['juz'])] = user;
                 }
               }
+            }
 
+            if (snapshot.hasData && !_invitedMember) {
               for (int i = 1; i < 31; i += 1) {
                 var names = [];
                 var isMe = false;
                 var progress = '0';
                 bool disableButton = false;
 
-                for (var user in snapshot.data['users']) {
-                  if (user['juz'].toString() == i.toString()) {
-                    names.add(user['name']);
-                    progress = user['progress'];
-                    disableButton = user['progress'] != '100';
-                    if (user['isMe'] == true) isMe = true;
+                if (joinedUsers[i] != null) {
+                  names.add(joinedUsers[i]['name']);
+                  progress = joinedUsers[i]['progress'];
+                  disableButton = joinedUsers[i]['progress'] != '100';
+                  if (joinedUsers[i]['isMe'] == true) {
+                    isMe = true;
+                    if (activeJuz[0] == '-') {
+                      activeJuz[0] = i;
+                    }
                   }
                 }
 
@@ -277,7 +286,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                           color: Colors.redAccent,
                                           onPressed: () {
                                             Navigator.pop(context);
-                                            _apiJoinRound(gid, i.toString());
+                                            _apiJoinRound(widget.groupId, i.toString());
                                           },
                                           child: Text(ConfirmTakingJuzButton),
                                         ),
@@ -291,20 +300,18 @@ class _GroupDetailState extends State<GroupDetail> {
               }
             } else if (snapshot.hasData && _invitedMember) {
               var i = 1;
-              for (var user in snapshot.data['users']) {
-                if (user['juz'] == '0') {
-                  members.add(Container(
-                    decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
-                    padding: EdgeInsets.symmetric(vertical: 6.0),
-                    child: Row(
-                      children: [
-                        Container(width: 32.0, child: Text(i.toString())),
-                        Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(user['name']))),
-                      ],
-                    ),
-                  ));
-                  i += 1;
-                }
+              for (var user in unjoinedUsers) {
+                members.add(Container(
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                  padding: EdgeInsets.symmetric(vertical: 6.0),
+                  child: Row(
+                    children: [
+                      Container(width: 32.0, child: Text(i.toString())),
+                      Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(user['name']))),
+                    ],
+                  ),
+                ));
+                i += 1;
               }
             } else if (snapshot.hasError) {
               snapShootMessage = snapshot.error.toString();
@@ -325,9 +332,15 @@ class _GroupDetailState extends State<GroupDetail> {
                   SizedBox(height: 16.0),
                   if (_messageText != '') Container(child: Text(_messageText)),
                   if (snapShootMessage != '') Center(child: Text(snapShootMessage)),
-                  if (members.length == 0) Container(padding: mainPadding, child: Text(LoadingMember)),
+                  if (members.length == 0)
+                    Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      if (!_invitedMember) Container(padding: mainPadding, child: Text(LoadingMember)),
+                      if (_invitedMember) Container(padding: mainPadding, child: Text(AllMemberJoinJuz)),
+                    ])),
                   if (_messageText != '' || snapShootMessage != '' || members.length == 0) SizedBox(height: 16.0),
                   if (members.length > 0 && _invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
+                  if (members.length > 0 && _invitedMember) SizedBox(height: 16.0),
                   if (members.length > 0 && _invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
@@ -384,7 +397,6 @@ class _GroupDetailState extends State<GroupDetail> {
                           children: [
                             Expanded(
                                 child: Column(
-                              // crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -393,21 +405,51 @@ class _GroupDetailState extends State<GroupDetail> {
                                         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                                         margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
                                         decoration: BoxDecoration(color: Colors.lightBlue),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [Text('Juz 8', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))],
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            List keys = joinedUsers.keys.toList();
+                                            keys.sort();
+                                            showDialog(
+                                                context: context,
+                                                child: SimpleDialog(
+                                                  title: const Text(SelectEditedJuz),
+                                                  children: keys.map((juz) {
+                                                    if (joinedUsers[juz]['isMe']) {
+                                                      return SimpleDialogOption(
+                                                        onPressed: () {
+                                                          Navigator.pop(context);
+                                                          activeJuz[0] = juz;
+                                                          activeJuz[1] = joinedUsers[juz]['progress'];
+                                                          setState(() {
+                                                            _activeJuz[0] = juz;
+                                                            _activeJuz[1] = joinedUsers[juz]['progress'];
+                                                          });
+                                                        },
+                                                        child: Text(sprintf(OptionJuz, [juz, joinedUsers[juz]['progress']])),
+                                                      );
+                                                    }
+                                                  }).toList(),
+                                                ));
+                                          },
+                                          child: Center(
+                                            child: Text(sprintf(CurrentJuz, [activeJuz[0]]), style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                                          ),
                                         ),
                                       ),
                                     )
                                   ],
                                 ),
                                 Row(
-                                  children: [
-                                    radio(true, '20%'),
-                                    radio(true, '50%'),
-                                    radio(false, '80%'),
-                                    radio(false, '100%'),
-                                  ],
+                                  children: [20, 40, 80, 100]
+                                      .map((progress) => GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _activeJuz[1] = _activeJuz[1] == '20' && progress == 20 ? '0' : progress.toString();
+                                              });
+                                            },
+                                            child: radio(int.parse(activeJuz[1]) >= progress, progress.toString() + '%'),
+                                          ))
+                                      .toList(),
                                 )
                               ],
                             )),

@@ -70,6 +70,7 @@ const String GroupMember = 'Anggota group';
 const String JuzMember = 'Progres anggota group';
 const String UpdateDeadline = 'Ganti deadline';
 const String MemberDidNotJoinJuz = 'Daftar nama teman yg belum memilih juz';
+const String AllMemberJoinJuz = 'Semua teman telah memilih juz';
 const String LoadingMember = 'Memuat anggota group';
 const String AddressSuggestionErrorText = 'Alamat tidak ditemukan';
 const String AddressValidateTitle = 'Mohon tunggu, mencari titik kordinat';
@@ -103,3 +104,7 @@ const String FormCreateGroupPreview = 'Preview';
 const String ConfirmTakingJuzTitle = 'Ambil Juz %s';
 const String ConfirmTakingJuzDesc = "Anda yakin akan bergabung dan mengambil juz %s?\n\nAnda tidak bisa membatalkan dan keluar hingga progress 100%";
 const String ConfirmTakingJuzButton = 'Ambil';
+
+const String SelectEditedJuz = 'Pilih setoran juz';
+const String OptionJuz = 'Juz %s progres %s';
+const String CurrentJuz = 'Juz %s';

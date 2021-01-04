@@ -51,9 +51,7 @@ admin:
  - group detail -> start next round
 
 member:
- - group detail -> silence loading after select juz
- - group detail -> juz leave
- - group detail -> set juz for progress
  - group detail -> set progress
+ - group detail -> juz leave
  
  - group list -> join group
