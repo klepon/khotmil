@@ -241,7 +241,7 @@ class _GroupDetailState extends State<GroupDetail> {
               if (snapshot.hasData) {
                 List<Widget> members = new List<Widget>();
                 var i = 1;
-                (snapshot.data['users']).values.forEach((user) {
+                for (var user in snapshot.data['users']) {
                   if (user['juz'] == '0') {
                     members.add(Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
@@ -255,7 +255,7 @@ class _GroupDetailState extends State<GroupDetail> {
                     ));
                     i += 1;
                   }
-                });
+                }
 
                 return Column(
                   children: members,
