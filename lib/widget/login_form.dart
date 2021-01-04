@@ -65,11 +65,14 @@ class _LoginFormState extends State<LoginForm> {
                   },
                   child: Text(LoginText)),
               SizedBox(height: 16.0),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(NoAccountYet),
-                  TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold))),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Text(NoAccountYet),
+                    TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold)))
+                  ]),
+                  TextButton(onPressed: () => widget.changeForm(FormRecoveryPassword), child: Text(RecoveryPassword, style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
               ),
             ],

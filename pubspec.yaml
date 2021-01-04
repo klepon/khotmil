@@ -33,7 +33,6 @@ dev_dependencies:
     sdk: flutter
   path:
   shared_preferences:
-  http: ^0.12.2
   email_validator: ^1.0.5
   flutter_colorpicker: ^0.3.4
   geocoder: ^0.2.1

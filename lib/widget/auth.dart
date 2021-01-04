@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/login_user.dart';
+import 'package:khotmil/fetch/recovery_pasword.dart';
 import 'package:khotmil/fetch/register_user.dart';
 import 'package:khotmil/fetch/validate_email.dart';
+import 'package:khotmil/fetch/validate_recovery_pasword.dart';
 import 'package:khotmil/widget/group_list.dart';
 import 'package:khotmil/widget/login_form.dart';
 import 'package:khotmil/widget/login_register.dart';
+import 'package:khotmil/widget/recovery_password_form.dart';
+import 'package:khotmil/widget/recovery_password_validation_form.dart';
 import 'package:khotmil/widget/register_form.dart';
-import 'package:khotmil/widget/register_phone_form.dart';
 import 'package:khotmil/widget/email_validation_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -147,6 +150,58 @@ class _AuthState extends State<Auth> {
     });
   }
 
+  _recoveryPasswordApi(String email) async {
+    setState(() {
+      _loadingOverlay = true;
+      _futureMessage = '';
+      _email = email;
+    });
+
+    await fetchRecoveryPassword(email).then((data) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = data[DataMessage];
+        if (data[DataStatus] == StatusSuccess) {
+          _currentForm = FormRecoveryPasswordValidation;
+        }
+      });
+    });
+  }
+
+  _validationRecoveryPasswordApi(String email, String password, String code) async {
+    setState(() {
+      _loadingOverlay = true;
+      _futureMessage = '';
+      if ('' == _email || '' == _password) {
+        _email = email;
+        _password = password;
+      }
+    });
+
+    await fetchRecoveryPasword('' == _email ? email : _email, '' == _password ? password : _password, code).then((data) async {
+      if (data[DataMessage] != null && data[DataMessage] != '') {
+        setState(() {
+          _loadingOverlay = false;
+          _futureMessage = data[DataMessage];
+        });
+        return;
+      }
+
+      if (data['key'] != null && data['key'] != '') {
+        await SharedPreferences.getInstance().then((prefs) async {
+          prefs.setString(LoginKeyPref, data['key']);
+          prefs.setString(DisplayNamePref, data['display_name']);
+          return true;
+        }).then((rs) {
+          setState(() {
+            _loadingOverlay = false;
+          });
+          _getLoginKey();
+        });
+      }
+    });
+  }
+
   _getForm() {
     switch (_currentForm) {
       case FormEmailValidation:
@@ -156,11 +211,26 @@ class _AuthState extends State<Auth> {
           validationApi: _validationApi,
           requiredUserPass: '' == _email || '' == _password,
         );
+
       case FormRegisterEmail:
         return RegisterForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
 
-      case FormRegisterPhone:
-        return RegisterPhoneForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
+      case FormRecoveryPasswordValidation:
+        return RecoveryEmailValidationForm(
+          futureMessage: _futureMessage,
+          changeForm: _changeForm,
+          validationRecoveryPasswordApi: _validationRecoveryPasswordApi,
+          requiredEmail: '' == _email,
+        );
+
+      case FormRecoveryPassword:
+        return RecoveryPasswordForm(
+          futureMessage: _futureMessage,
+          changeForm: _changeForm,
+          recoveryPasswordApi: _recoveryPasswordApi,
+          newPassword: false,
+        );
+
       default:
         return LoginForm(futureMessage: _futureMessage, changeForm: _changeForm, loginApi: _loginApi);
     }
