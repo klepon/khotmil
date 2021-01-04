@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/fetch/delete_my_member.dart';
+import 'package:khotmil/fetch/get_single_group.dart';
 import 'package:khotmil/fetch/update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
@@ -50,11 +51,39 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailName = '';
   String _detailDeadline = '';
   String _detailColor = '';
+  String _detailProgress = '';
+  String _detailMyJuz = '';
+  String _detailMyProgress = '';
+
   bool _loadingOverlay = false;
   bool _invitedMember = false;
   List _activeJuz = ['-', '0', '0'];
 
   Future _getMemberAPI;
+
+  void _apiGetDetail() async {
+    await fetchGetSingleGroup(widget.loginKey, widget.groupId).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _loadingOverlay = false;
+          _detailProgress = data['group']['progress'].toString();
+          _detailMyJuz = data['group']['my_juz'].toString();
+          _detailMyProgress = data['group']['my_progress'].toString();
+          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
@@ -81,19 +110,18 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  void _apiJoinRound(String gid, String juz) async {
+  void _apiJoinRound(String juz) async {
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
     });
 
-    await fetchJoinRound(widget.loginKey, gid, juz).then((data) {
+    await fetchJoinRound(widget.loginKey, widget.groupId, juz).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
 
         setState(() {
-          _loadingOverlay = false;
-          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+          _apiGetDetail();
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -120,8 +148,7 @@ class _GroupDetailState extends State<GroupDetail> {
         widget.reloadList();
 
         setState(() {
-          _loadingOverlay = false;
-          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+          _apiGetDetail();
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -148,8 +175,7 @@ class _GroupDetailState extends State<GroupDetail> {
         widget.reloadList();
 
         setState(() {
-          _loadingOverlay = false;
-          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+          _apiGetDetail();
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -368,7 +394,7 @@ class _GroupDetailState extends State<GroupDetail> {
                                             color: Colors.redAccent,
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              _apiJoinRound(widget.groupId, i.toString());
+                                              _apiJoinRound(i.toString());
                                             },
                                             child: Text(ConfirmTakingJuzButton),
                                           ),
@@ -404,11 +430,11 @@ class _GroupDetailState extends State<GroupDetail> {
                 children: [
                   GroupItem(
                     groupName: _detailName,
-                    progress: widget.progress,
+                    progress: _detailProgress != '' ? _detailProgress : widget.progress,
                     round: widget.round,
                     deadline: _detailDeadline,
-                    yourJuz: widget.yourJuz,
-                    yourProgress: widget.yourProgress,
+                    yourJuz: _detailMyJuz != '' ? _detailMyJuz : widget.yourJuz,
+                    yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
                     groupColor: _detailColor,
                   ),
                   SizedBox(height: 16.0),

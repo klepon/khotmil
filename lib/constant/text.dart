@@ -110,5 +110,5 @@ const String ConfirmLeaveJuzDesc = "Anda yakin akan keluar juz %s?\n\nAnda tetap
 const String ConfirmLeaveJuzButton = 'Keluar';
 
 const String SelectEditedJuz = 'Pilih setoran juz';
-const String OptionJuz = 'Juz %s progres %s';
+const String OptionJuz = 'Juz %s progres %s%';
 const String CurrentJuz = 'Juz %s';
