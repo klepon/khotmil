@@ -33,9 +33,7 @@ class _RegisterFormState extends State<RegisterForm> {
               TextFormField(
                 controller: nameController,
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  hintText: EnterName,
-                ),
+                decoration: InputDecoration(hintText: EnterName, errorStyle: errorTextStyle),
                 validator: (value) {
                   if (value.isEmpty) {
                     return NameRequired;
@@ -47,9 +45,7 @@ class _RegisterFormState extends State<RegisterForm> {
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  hintText: EnterEmail,
-                ),
+                decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
                 validator: (value) {
                   if (value.isEmpty || !EmailValidator.validate(value)) {
                     return EmailRequired;
@@ -64,9 +60,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 enableSuggestions: false,
                 autocorrect: false,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: EnterPassword,
-                ),
+                decoration: InputDecoration(hintText: EnterPassword, errorStyle: errorTextStyle),
                 validator: (value) {
                   if (value.isEmpty) {
                     return PasswordRequired;

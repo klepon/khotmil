@@ -73,18 +73,19 @@ class _GroupListState extends State<GroupList> {
     );
   }
 
-  Widget _errorResponse(_errorMessage) {
+  Widget _errorResponse(_errorMessage, [showRefresh = true]) {
     return Column(
       children: [
         Container(padding: mainPadding, child: Text(_errorMessage)),
         SizedBox(
           height: 16.0,
         ),
-        RaisedButton(
-            onPressed: () {
-              setState(() {});
-            },
-            child: Text(ButtonRefresh)),
+        if (showRefresh)
+          RaisedButton(
+              onPressed: () {
+                setState(() {});
+              },
+              child: Text(ButtonRefresh)),
       ],
     );
   }
@@ -101,7 +102,7 @@ class _GroupListState extends State<GroupList> {
 
         if (snapshot.hasData) {
           if (snapshot.data['message'] != null) {
-            return _errorResponse(snapshot.data['message']);
+            return _errorResponse(snapshot.data['message'], false);
           }
 
           return _loopGroups(snapshot.data['groups'], context);

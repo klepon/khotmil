@@ -2,13 +2,18 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchSearchUser(String key, String keyword) async {
+Future fetchUpdateGroup(String key, String name, String address, String latlong, String color, String date, String id) async {
   try {
     Response response = await Dio(dioOptions).post(
-      'klepon/v1/search-user',
+      'klepon/v1/update-group',
       data: {
         'user_key': key,
-        'keyword': keyword,
+        'name': name,
+        'address': address,
+        'latlong': latlong,
+        'color': color,
+        'round_end_date': date,
+        'id': id,
       },
     );
 
@@ -16,10 +21,10 @@ Future fetchSearchUser(String key, String keyword) async {
       if (response.data[DataStatus] == StatusSuccess || response.data[DataStatus] == StatusError) {
         return response.data;
       } else {
-        throw Exception(FailLoadingUser);
+        throw Exception(FailUpdateGroup);
       }
     } else {
-      throw Exception(FailLoadingUser);
+      throw Exception(FailUpdateGroup);
     }
   } catch (e) {
     throw Exception(e.toString());

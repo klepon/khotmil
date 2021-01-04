@@ -45,7 +45,6 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailColor = '';
   bool _loadingOverlay = false;
   bool _invitedMember = false;
-  Future _futureRoundMember;
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
@@ -69,12 +68,6 @@ class _GroupDetailState extends State<GroupDetail> {
         _loadingOverlay = false;
         _messageText = onError.toString();
       });
-    });
-  }
-
-  void _apiGetRoundMember() async {
-    setState(() {
-      _futureRoundMember = fetchRoundMember(widget.loginKey, widget.groupId);
     });
   }
 
@@ -173,10 +166,15 @@ class _GroupDetailState extends State<GroupDetail> {
         child: Container(
           padding: sidePadding,
           child: FutureBuilder(
-            future: _futureRoundMember,
+            future: fetchRoundMember(widget.loginKey, widget.groupId),
             builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Column(
+                  children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
+                );
+              }
+
               if (snapshot.hasData) {
-                // print(snapshot.data);
                 List<Widget> members = new List<Widget>();
                 var i = 1;
                 (snapshot.data['users']).values.forEach((user) {
@@ -210,8 +208,6 @@ class _GroupDetailState extends State<GroupDetail> {
       _detailDeadline = widget.deadline;
       _detailColor = widget.groupColor;
     });
-
-    _apiGetRoundMember();
   }
 
   @override

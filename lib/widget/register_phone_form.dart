@@ -59,8 +59,8 @@ class _RegisterPhoneFormState extends State<RegisterPhoneForm> {
   //             TextFormField(
   //               controller: nameController,
   //               keyboardType: TextInputType.text,
-  //               decoration: const InputDecoration(
-  //                 hintText: EnterName,
+  //               decoration:  InputDecoration(
+  //                 hintText: EnterName, errorStyle: errorTextStyle
   //               ),
   //               validator: (value) {
   //                 if (value.isEmpty) {
@@ -73,8 +73,8 @@ class _RegisterPhoneFormState extends State<RegisterPhoneForm> {
   //             TextFormField(
   //               controller: phoneController,
   //               keyboardType: TextInputType.number,
-  //               decoration: const InputDecoration(
-  //                 hintText: EnterPhone,
+  //               decoration:  InputDecoration(
+  //                 hintText: EnterPhone, errorStyle: errorTextStyle
   //               ),
   //               validator: (value) {
   //                 if (value.isEmpty || value.length < 10) {
@@ -90,8 +90,8 @@ class _RegisterPhoneFormState extends State<RegisterPhoneForm> {
   //               enableSuggestions: false,
   //               autocorrect: false,
   //               obscureText: true,
-  //               decoration: const InputDecoration(
-  //                 hintText: EnterPassword,
+  //               decoration:  InputDecoration(
+  //                 hintText: EnterPassword, errorStyle: errorTextStyle
   //               ),
   //               validator: (value) {
   //                 if (value.isEmpty) {

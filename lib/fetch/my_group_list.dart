@@ -12,15 +12,13 @@ Future fetchMyGroupList(String key) async {
     );
 
     if (response.statusCode == 200) {
-      var data = response.data;
-
-      if (data[DataStatus] == StatusSuccess || data[DataStatus] == StatusError) {
-        return data;
+      if (response.data[DataStatus] == StatusSuccess || response.data[DataStatus] == StatusError) {
+        return response.data;
       } else {
-        throw Exception(FailListingGroup);
+        throw Exception(FailLoadingGroup);
       }
     } else {
-      throw Exception(FailListingGroup);
+      throw Exception(FailLoadingGroup);
     }
   } catch (e) {
     throw Exception(e.toString());

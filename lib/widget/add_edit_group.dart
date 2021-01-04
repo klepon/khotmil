@@ -6,7 +6,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
 import 'package:khotmil/fetch/get_group.dart';
 import 'package:khotmil/fetch/search_user.dart';
-import 'package:khotmil/fetch/update_deadline.dart';
+import 'package:khotmil/fetch/update_group.dart';
 
 import 'group_item.dart';
 
@@ -34,12 +34,12 @@ class _AddEditGroupState extends State<AddEditGroup> {
   Color _currentColor = Color(0xfff6d55c);
   bool _showColorPicker = false;
 
-  bool _searchLatlong = false;
-  bool _hasAddressData = false;
-  String _addressSeacrhError = '';
+  bool _searchAddressLoading = false;
+  bool _searchAddressSuccess = false;
+  String _searchAddressErrorMessage = '';
   String _lastCheckedAddress = '';
   String _latlongOri = '';
-  Address _addressSuggestion;
+  Address _closedValidAddress;
 
   var _apiReturnUsers = [];
   var _usersSelectedForInvite = [];
@@ -73,7 +73,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
             widget.loginKey,
             _nameFormController.text,
             _addressFormController.text,
-            _latlongOri == '' ? _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString() : _latlongOri,
+            _latlongOri == '' ? _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString() : _latlongOri,
             _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
             _endDateFormController.text,
             widget.groupId)
@@ -111,7 +111,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
             widget.loginKey,
             _nameFormController.text,
             _addressFormController.text,
-            _addressSuggestion.coordinates.latitude.toString() + ',' + _addressSuggestion.coordinates.longitude.toString(),
+            _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString(),
             _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
             _endDateFormController.text,
             uids)
@@ -192,29 +192,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
     });
   }
 
-  void _getLatLong() async {
-    if (_lastCheckedAddress == _addressFormController.text) return;
-
-    setState(() {
-      _hasAddressData = false;
-      _addressSeacrhError = '';
-      _searchLatlong = true;
-      _lastCheckedAddress = _addressFormController.text;
-    });
-    await Geocoder.local.findAddressesFromQuery(_addressFormController.text).then((data) {
-      setState(() {
-        _addressSuggestion = data.first;
-        _hasAddressData = true;
-        _searchLatlong = false;
-      });
-    }).catchError((onError) {
-      setState(() {
-        _addressSeacrhError = AddressSuggestionErrorText;
-        _searchLatlong = false;
-      });
-    });
-  }
-
   void _addUid(userData) {
     _searchUserFormController.text = '';
     _usersSelectedForInvite.add(userData);
@@ -234,6 +211,30 @@ class _AddEditGroupState extends State<AddEditGroup> {
       _usersSelectedForInvite = [
         ...{..._usersSelectedForInvite}
       ];
+    });
+  }
+
+  Future _getLatLong() async {
+    if (_lastCheckedAddress == _addressFormController.text) return;
+
+    setState(() {
+      _closedValidAddress = null;
+      _searchAddressSuccess = false;
+      _searchAddressErrorMessage = '';
+      _searchAddressLoading = true;
+      _lastCheckedAddress = _addressFormController.text;
+    });
+    await Geocoder.local.findAddressesFromQuery(_addressFormController.text).then((data) {
+      setState(() {
+        _closedValidAddress = data.first;
+        _searchAddressSuccess = true;
+        _searchAddressLoading = false;
+      });
+    }).catchError((onError) {
+      setState(() {
+        _searchAddressErrorMessage = AddressSuggestionErrorText;
+        _searchAddressLoading = false;
+      });
     });
   }
 
@@ -313,10 +314,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                 TextFormField(
                                   controller: _nameFormController,
                                   keyboardType: TextInputType.text,
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                                    hintText: FormCreateGroupName,
-                                  ),
+                                  decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
                                   validator: (value) {
                                     if (value.isEmpty) {
                                       return FormCreateGroupNameError;
@@ -331,14 +329,16 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                         child: TextFormField(
                                       controller: _addressFormController,
                                       keyboardType: TextInputType.multiline,
-                                      decoration: const InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                                        hintText: FormCreateGroupAddress,
-                                      ),
+                                      decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupAddress, errorStyle: errorTextStyle),
                                       validator: (value) {
                                         if (value.isEmpty) {
                                           return FormCreateGroupAddressError;
                                         }
+
+                                        if (value.isNotEmpty && _closedValidAddress == null) {
+                                          return FormCreateGroupAddressInvalid;
+                                        }
+
                                         return null;
                                       },
                                       maxLines: null,
@@ -352,7 +352,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                   ],
                                 ),
                                 SizedBox(height: 16.0),
-                                if (_searchLatlong)
+                                if (_searchAddressLoading)
                                   Container(
                                       padding: verticalPadding,
                                       child: Column(children: [
@@ -361,17 +361,17 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                         Center(child: CircularProgressIndicator()),
                                         SizedBox(height: 16.0),
                                       ])),
-                                if (_addressSeacrhError != '')
+                                if (_searchAddressErrorMessage != '')
                                   Container(
                                       width: MediaQuery.of(context).size.width,
                                       padding: verticalPadding,
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                        Text(_addressSeacrhError, style: bold),
+                                        Text(_searchAddressErrorMessage, style: bold),
                                         SizedBox(height: 16.0),
                                         Text(ClosedAddressFoundDesc),
                                         SizedBox(height: 16.0),
                                       ])),
-                                if (_hasAddressData)
+                                if (_searchAddressSuccess)
                                   Container(
                                       width: MediaQuery.of(context).size.width,
                                       padding: verticalPadding,
@@ -380,12 +380,12 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                         children: [
                                           Text(ClosedAddressFoundTitle, style: bold),
                                           SizedBox(height: 16.0),
-                                          Text(_addressSuggestion.addressLine),
+                                          Text(_closedValidAddress.addressLine),
                                           SizedBox(height: 8.0),
                                           Text(FormCreateGroupLatlong +
-                                              _addressSuggestion.coordinates.latitude.toString() +
+                                              _closedValidAddress.coordinates.latitude.toString() +
                                               ',' +
-                                              _addressSuggestion.coordinates.longitude.toString()),
+                                              _closedValidAddress.coordinates.longitude.toString()),
                                           SizedBox(height: 8.0),
                                           Row(
                                             children: [
@@ -393,8 +393,8 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                                   child: RaisedButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    _lastCheckedAddress = _addressSuggestion.addressLine;
-                                                    _hasAddressData = false;
+                                                    _lastCheckedAddress = _closedValidAddress.addressLine;
+                                                    _searchAddressSuccess = false;
                                                     _latlongOri = '';
                                                   });
                                                 },
@@ -405,9 +405,9 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                                   child: RaisedButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    _addressFormController.text = _addressSuggestion.addressLine;
-                                                    _lastCheckedAddress = _addressSuggestion.addressLine;
-                                                    _hasAddressData = false;
+                                                    _addressFormController.text = _closedValidAddress.addressLine;
+                                                    _lastCheckedAddress = _closedValidAddress.addressLine;
+                                                    _searchAddressSuccess = false;
                                                     _latlongOri = '';
                                                   });
                                                 },
@@ -432,8 +432,8 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                       });
                                     },
                                     style: TextStyle(color: _currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white),
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    decoration: InputDecoration(
+                                      contentPadding: sidePaddingNarrow,
                                       hintText: FormCreateGroupColor,
                                     ),
                                   ),
@@ -455,10 +455,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                   keyboardType: TextInputType.text,
                                   readOnly: true,
                                   onTap: () => _renderSelectDate(context),
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                                    hintText: FormCreateGroupEndDate,
-                                  ),
+                                  decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
                                   validator: (value) {
                                     if (value.isEmpty) {
                                       return FormCreateGroupEndDateError;
@@ -469,7 +466,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                 SizedBox(height: 16.0),
                                 if ('' == widget.groupId && _apiReturnUsers.length > 0)
                                   Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    padding: sidePaddingNarrow,
                                     child: Row(children: [
                                       for (var user in _apiReturnUsers)
                                         if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
@@ -480,8 +477,8 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                   TextFormField(
                                     controller: _searchUserFormController,
                                     keyboardType: TextInputType.text,
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    decoration: InputDecoration(
+                                      contentPadding: sidePaddingNarrow,
                                       hintText: FormCreateGroupUids,
                                     ),
                                     onChanged: (value) {
@@ -497,7 +494,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                 if ('' == widget.groupId) SizedBox(height: 16.0),
                                 if ('' == widget.groupId && _usersSelectedForInvite.length > 0)
                                   Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                    padding: sidePaddingNarrow,
                                     child: Column(children: [
                                       for (var user in _usersSelectedForInvite)
                                         Row(
@@ -521,7 +518,9 @@ class _AddEditGroupState extends State<AddEditGroup> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         RaisedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              await _getLatLong();
+
                               if (_formKey.currentState.validate()) {
                                 if (widget.groupId == '') {
                                   _apiCreateGroup();

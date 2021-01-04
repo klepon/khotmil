@@ -4,6 +4,7 @@ import 'package:khotmil/constant/text.dart';
 
 final EdgeInsets mainPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 final EdgeInsets sidePadding = EdgeInsets.symmetric(horizontal: 16.0);
+final EdgeInsets sidePaddingNarrow = EdgeInsets.symmetric(horizontal: 8.0);
 final EdgeInsets verticalPadding = EdgeInsets.symmetric(vertical: 8.0);
 final BoxDecoration mainShadow = BoxDecoration(color: Colors.white, boxShadow: [
   BoxShadow(
@@ -14,6 +15,7 @@ final BoxDecoration mainShadow = BoxDecoration(color: Colors.white, boxShadow: [
   ),
 ]);
 final TextStyle bold = TextStyle(fontWeight: FontWeight.bold);
+TextStyle errorTextStyle = TextStyle(color: Colors.white);
 
 Text textSmall(text) {
   return Text(

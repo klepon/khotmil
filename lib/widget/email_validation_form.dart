@@ -35,9 +35,7 @@ class _ValidationFormState extends State<ValidationForm> {
                 TextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    hintText: EnterEmail,
-                  ),
+                  decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
                   validator: (value) {
                     if (value.isEmpty || !EmailValidator.validate(value)) {
                       return EmailRequired;
@@ -53,9 +51,7 @@ class _ValidationFormState extends State<ValidationForm> {
                   enableSuggestions: false,
                   autocorrect: false,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: EnterPassword,
-                  ),
+                  decoration: InputDecoration(hintText: EnterPassword, errorStyle: errorTextStyle),
                   validator: (value) {
                     if (value.isEmpty) {
                       return PasswordRequired;
@@ -68,9 +64,7 @@ class _ValidationFormState extends State<ValidationForm> {
                 controller: codeController,
                 maxLength: 6,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  hintText: ValidationCode,
-                ),
+                decoration: InputDecoration(hintText: ValidationCode, errorStyle: errorTextStyle),
                 validator: (value) {
                   if (value.isEmpty) {
                     return ValidationCodeRequired;
@@ -90,17 +84,11 @@ class _ValidationFormState extends State<ValidationForm> {
                 child: Text(EmailValidationText),
               ),
               SizedBox(height: 16.0),
-              Column(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(NoAccountYet),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold))),
-                      TextButton(onPressed: () => widget.changeForm(FormRegisterPhone), child: Text(RegisterWithPhoneNow, style: TextStyle(fontWeight: FontWeight.bold))),
-                    ],
-                  )
+                  TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
               ),
             ],
