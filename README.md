@@ -51,7 +51,6 @@ admin:
  - group detail -> start next round
 
 member:
- - group detail -> set progress
  - group detail -> juz leave
  
  - group list -> join group

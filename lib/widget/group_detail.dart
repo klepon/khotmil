@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/fetch/update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
@@ -50,7 +51,7 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailColor = '';
   bool _loadingOverlay = false;
   bool _invitedMember = false;
-  List _activeJuz = ['-', '0'];
+  List _activeJuz = ['-', '0', '0'];
 
   Future _getMemberAPI;
 
@@ -86,6 +87,34 @@ class _GroupDetailState extends State<GroupDetail> {
     });
 
     await fetchJoinRound(widget.loginKey, mid, juz).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        widget.reloadList();
+
+        setState(() {
+          _loadingOverlay = false;
+          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
+
+  void _apiUpdateProgress(String juz, String progress, String id) async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchUpdateProgress(widget.loginKey, id, juz, progress).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
 
@@ -206,7 +235,7 @@ class _GroupDetailState extends State<GroupDetail> {
             String snapShootMessage = '';
             Map<int, dynamic> joinedUsers = Map();
             List unjoinedUsers = [];
-            List activeJuz = [_activeJuz[0], _activeJuz[1]];
+            List activeJuz = [_activeJuz[0], _activeJuz[1], _activeJuz[2]];
 
             if (snapshot.connectionState != ConnectionState.done) {
               snapShootLoading = true;
@@ -237,6 +266,7 @@ class _GroupDetailState extends State<GroupDetail> {
                     isMe = true;
                     if (activeJuz[0] == '-') {
                       activeJuz[0] = i;
+                      activeJuz[2] = joinedUsers[i]['id'];
                     }
                   }
                 }
@@ -418,11 +448,10 @@ class _GroupDetailState extends State<GroupDetail> {
                                                       return SimpleDialogOption(
                                                         onPressed: () {
                                                           Navigator.pop(context);
-                                                          activeJuz[0] = juz;
-                                                          activeJuz[1] = joinedUsers[juz]['progress'];
                                                           setState(() {
                                                             _activeJuz[0] = juz;
                                                             _activeJuz[1] = joinedUsers[juz]['progress'];
+                                                            _activeJuz[2] = joinedUsers[juz]['id'];
                                                           });
                                                         },
                                                         child: Text(sprintf(OptionJuz, [juz, joinedUsers[juz]['progress']])),
@@ -455,7 +484,14 @@ class _GroupDetailState extends State<GroupDetail> {
                             )),
                             RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 25.0),
-                              onPressed: () => {},
+                              onPressed: () {
+                                print(activeJuz);
+                                _apiUpdateProgress(
+                                  activeJuz[0].toString(),
+                                  activeJuz[1].toString(),
+                                  activeJuz[2].toString(),
+                                );
+                              },
                               child: Text(SubmitText),
                             ),
                           ],
