@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/fetch/delete_my_member.dart';
 import 'package:khotmil/fetch/update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
@@ -80,13 +81,13 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  void _apiJoinRound(String mid, String juz) async {
+  void _apiJoinRound(String gid, String juz) async {
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
     });
 
-    await fetchJoinRound(widget.loginKey, mid, juz).then((data) {
+    await fetchJoinRound(widget.loginKey, gid, juz).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
 
@@ -101,6 +102,39 @@ class _GroupDetailState extends State<GroupDetail> {
         });
       }
     }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
+
+  void _apiLeaveRound(String mid) async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    print(mid);
+
+    await fetchDeleteMyMember(widget.loginKey, mid).then((data) {
+      print(data);
+      if (data[DataStatus] == StatusSuccess) {
+        widget.reloadList();
+
+        setState(() {
+          _loadingOverlay = false;
+          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      print(onError.toString());
+
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
@@ -253,9 +287,10 @@ class _GroupDetailState extends State<GroupDetail> {
 
             if (snapshot.hasData && !_invitedMember) {
               for (int i = 1; i < 31; i += 1) {
-                var names = [];
-                var isMe = false;
-                var progress = '0';
+                List names = [];
+                String mid = '';
+                String progress = '0';
+                bool isMe = false;
                 bool disableButton = false;
 
                 if (joinedUsers[i] != null) {
@@ -264,6 +299,7 @@ class _GroupDetailState extends State<GroupDetail> {
                   disableButton = joinedUsers[i]['progress'] != '100';
                   if (joinedUsers[i]['isMe'] == true) {
                     isMe = true;
+                    mid = joinedUsers[i]['id'];
                     if (activeJuz[0] == '-') {
                       activeJuz[0] = i;
                       activeJuz[2] = joinedUsers[i]['id'];
@@ -300,28 +336,49 @@ class _GroupDetailState extends State<GroupDetail> {
                               padding: EdgeInsets.all(0.0),
                               color: progress == '100' && isMe ? Colors.redAccent : (disableButton ? Colors.grey : Colors.green),
                               onPressed: () {
-                                if (disableButton) return;
+                                if (progress == '100' && isMe)
+                                  showDialog(
+                                      context: context,
+                                      child: AlertDialog(
+                                        title: Text(sprintf(ConfirmLeaveJuzTitle, [i])),
+                                        content: Text(sprintf(ConfirmLeaveJuzDesc, [i])),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: Text(CancelText),
+                                          ),
+                                          RaisedButton(
+                                            color: Colors.redAccent,
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              _apiLeaveRound(mid);
+                                            },
+                                            child: Text(ConfirmLeaveJuzButton),
+                                          ),
+                                        ],
+                                      ));
 
-                                showDialog(
-                                    context: context,
-                                    child: AlertDialog(
-                                      title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
-                                      content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
-                                      actions: [
-                                        FlatButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: Text(CancelText),
-                                        ),
-                                        RaisedButton(
-                                          color: Colors.redAccent,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            _apiJoinRound(widget.groupId, i.toString());
-                                          },
-                                          child: Text(ConfirmTakingJuzButton),
-                                        ),
-                                      ],
-                                    ));
+                                if (progress != '100' && !isMe)
+                                  showDialog(
+                                      context: context,
+                                      child: AlertDialog(
+                                        title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
+                                        content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: Text(CancelText),
+                                          ),
+                                          RaisedButton(
+                                            color: Colors.redAccent,
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              _apiJoinRound(widget.groupId, i.toString());
+                                            },
+                                            child: Text(ConfirmTakingJuzButton),
+                                          ),
+                                        ],
+                                      ));
                               },
                               child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
                     ],
@@ -360,8 +417,8 @@ class _GroupDetailState extends State<GroupDetail> {
                     groupColor: _detailColor,
                   ),
                   SizedBox(height: 16.0),
-                  if (_messageText != '') Container(child: Text(_messageText)),
-                  if (snapShootMessage != '') Center(child: Text(snapShootMessage)),
+                  if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
+                  if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),
                   if (members.length == 0)
                     Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

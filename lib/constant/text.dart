@@ -105,6 +105,10 @@ const String ConfirmTakingJuzTitle = 'Ambil Juz %s';
 const String ConfirmTakingJuzDesc = "Anda yakin akan bergabung dan mengambil juz %s?\n\nAnda tidak bisa membatalkan dan keluar hingga progress 100%";
 const String ConfirmTakingJuzButton = 'Ambil';
 
+const String ConfirmLeaveJuzTitle = 'Keluar Juz %s';
+const String ConfirmLeaveJuzDesc = "Anda yakin akan keluar juz %s?\n\nAnda tetap bisa bergabung sewaktu-waktu";
+const String ConfirmLeaveJuzButton = 'Keluar';
+
 const String SelectEditedJuz = 'Pilih setoran juz';
 const String OptionJuz = 'Juz %s progres %s';
 const String CurrentJuz = 'Juz %s';
