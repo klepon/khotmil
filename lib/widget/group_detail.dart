@@ -488,9 +488,15 @@ class _GroupDetailState extends State<GroupDetail> {
                                         margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
                                         decoration: BoxDecoration(color: Colors.lightBlue),
                                         child: GestureDetector(
+                                          child: Center(
+                                            child: Text(sprintf(CurrentJuz, [activeJuz[0]]), style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                                          ),
                                           onTap: () {
                                             List keys = joinedUsers.keys.toList();
                                             keys.sort();
+
+                                            if (keys.length == 1) return;
+
                                             showDialog(
                                                 context: context,
                                                 child: SimpleDialog(
@@ -512,9 +518,6 @@ class _GroupDetailState extends State<GroupDetail> {
                                                   }).toList(),
                                                 ));
                                           },
-                                          child: Center(
-                                            child: Text(sprintf(CurrentJuz, [activeJuz[0]]), style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                                          ),
                                         ),
                                       ),
                                     )
