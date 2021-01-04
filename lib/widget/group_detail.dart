@@ -49,7 +49,6 @@ class _GroupDetailState extends State<GroupDetail> {
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
-    widget.reloadList(1);
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
@@ -58,18 +57,14 @@ class _GroupDetailState extends State<GroupDetail> {
     await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
-        widget.reloadList(2);
+        widget.reloadList();
       } else if (data[DataStatus] == StatusError) {
-        widget.reloadList(3);
         setState(() {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
-      } else {
-        widget.reloadList(3);
       }
     }).catchError((onError) {
-      widget.reloadList(3);
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
@@ -253,22 +248,10 @@ class _GroupDetailState extends State<GroupDetail> {
                   tooltip: EditGroup,
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return AddGroup(
+                      return AddEditGroup(
                         loginKey: widget.loginKey,
                         title: EditGroup,
-                        reloadList: (caseNumber) {
-                          switch (caseNumber) {
-                            case 1:
-                              widget.reloadList(1);
-                              break;
-                            case 2:
-                              widget.reloadList(2);
-                              break;
-                            case 3:
-                              widget.reloadList(3);
-                              break;
-                          }
-                        },
+                        reloadList: () => widget.reloadList(),
                         groupId: widget.groupId,
                         deadline: widget.deadline,
                         reloadDetail: (name, deadline, color) {

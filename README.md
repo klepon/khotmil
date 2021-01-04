@@ -47,8 +47,11 @@ Restart connection and do all the step
 
  $ adb kill-server
 
- todo:
- admin:
+todo:
+
+refactor fetch ganti pake await.then.catchError
+
+admin:
  - group detail -> start next round
 
 member:
@@ -56,3 +59,5 @@ member:
  - group detail -> juz select/join
  - group detail -> juz leave
  - group detail -> set progress
+ 
+ - group list -> join group

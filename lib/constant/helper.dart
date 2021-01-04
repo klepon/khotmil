@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:khotmil/constant/text.dart';
 
 final EdgeInsets mainPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 final EdgeInsets sidePadding = EdgeInsets.symmetric(horizontal: 16.0);
@@ -54,3 +56,9 @@ Container loadingOverlay(context) {
     ),
   );
 }
+
+BaseOptions dioOptions = new BaseOptions(
+  baseUrl: ApiDomain,
+  connectTimeout: 5000,
+  receiveTimeout: 3000,
+);

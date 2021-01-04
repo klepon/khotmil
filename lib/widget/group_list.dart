@@ -21,15 +21,8 @@ class GroupList extends StatefulWidget {
 class _GroupListState extends State<GroupList> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future _futureGetGroupList;
   String _screenState = StateGroupList;
   String _messageText = '';
-
-  void _apiGroupList() {
-    setState(() {
-      _futureGetGroupList = fetchMyGroupList(widget.loginKey);
-    });
-  }
 
   void _toggleScreenState(state) {
     setState(() {
@@ -37,22 +30,8 @@ class _GroupListState extends State<GroupList> {
     });
   }
 
-  void _reloadGroupList(int action) {
-    // tricky here, first change the state before await, then change it back tolist after await
-    setState(() {
-      switch (action) {
-        case 1:
-          _screenState = '';
-          break;
-        case 2:
-          _screenState = StateGroupList;
-          _futureGetGroupList = fetchMyGroupList(widget.loginKey);
-          break;
-        case 3:
-          _screenState = StateGroupList;
-          break;
-      }
-    });
+  void _reloadGroupList() {
+    setState(() {});
   }
 
   Widget _loopGroups(groups, context) {
@@ -94,18 +73,40 @@ class _GroupListState extends State<GroupList> {
     );
   }
 
+  Widget _errorResponse(_errorMessage) {
+    return Column(
+      children: [
+        Container(padding: mainPadding, child: Text(_errorMessage)),
+        SizedBox(
+          height: 16.0,
+        ),
+        RaisedButton(
+            onPressed: () {
+              setState(() {});
+            },
+            child: Text(ButtonRefresh)),
+      ],
+    );
+  }
+
   Widget _myGroupList(context) {
     return FutureBuilder(
-      future: _futureGetGroupList,
+      future: fetchMyGroupList(widget.loginKey),
       builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return Column(
+            children: [Container(padding: mainPadding, child: Text(LoadingGroups)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
+          );
+        }
+
         if (snapshot.hasData) {
           if (snapshot.data['message'] != null) {
-            return Text(snapshot.data['message']);
+            return _errorResponse(snapshot.data['message']);
           }
 
           return _loopGroups(snapshot.data['groups'], context);
         } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
+          return _errorResponse("${snapshot.error}");
         }
 
         return Column(
@@ -120,12 +121,6 @@ class _GroupListState extends State<GroupList> {
       padding: mainPadding,
       child: Text('join group form here'),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _apiGroupList();
   }
 
   @override
@@ -145,7 +140,7 @@ class _GroupListState extends State<GroupList> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_messageText != '') Container(padding: verticalPadding, child: Center(child: Text(_messageText))),
+          if (_messageText != '') Container(padding: mainPadding, child: Center(child: Text(_messageText))),
           if (_screenState == StateGroupList)
             Container(
                 padding: mainPadding,
@@ -159,7 +154,6 @@ class _GroupListState extends State<GroupList> {
                 child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      if (_screenState == '') Text(''),
                       if (_screenState == StateGroupList) _myGroupList(context),
                       if (_screenState == StateJoinGroup) _joinGroupForm(),
                     ]))),
@@ -176,7 +170,7 @@ class _GroupListState extends State<GroupList> {
                   RaisedButton(
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return AddGroup(
+                          return AddEditGroup(
                             loginKey: widget.loginKey,
                             title: CreateGroup,
                             groupId: '',

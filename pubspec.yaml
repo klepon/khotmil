@@ -37,6 +37,7 @@ dev_dependencies:
   email_validator: ^1.0.5
   flutter_colorpicker: ^0.3.4
   geocoder: ^0.2.1
+  dio: ^3.0.10
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

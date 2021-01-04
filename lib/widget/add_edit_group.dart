@@ -10,20 +10,20 @@ import 'package:khotmil/fetch/update_deadline.dart';
 
 import 'group_item.dart';
 
-class AddGroup extends StatefulWidget {
+class AddEditGroup extends StatefulWidget {
   final String loginKey;
   final String title;
   final String groupId;
   final String deadline;
   final Function reloadList;
   final Function reloadDetail;
-  AddGroup({Key key, this.loginKey, this.title, this.groupId, this.deadline, this.reloadList, this.reloadDetail}) : super(key: key);
+  AddEditGroup({Key key, this.loginKey, this.title, this.groupId, this.deadline, this.reloadList, this.reloadDetail}) : super(key: key);
 
   @override
-  _AddGroupState createState() => _AddGroupState();
+  _AddEditGroupState createState() => _AddEditGroupState();
 }
 
-class _AddGroupState extends State<AddGroup> {
+class _AddEditGroupState extends State<AddEditGroup> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -64,8 +64,6 @@ class _AddGroupState extends State<AddGroup> {
   }
 
   void _apiUpdateGroup() async {
-    widget.reloadList(1);
-
     setState(() {
       _messageText = '';
       _loadingOverlay = true;
@@ -81,20 +79,16 @@ class _AddGroupState extends State<AddGroup> {
             widget.groupId)
         .then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList(2);
+        widget.reloadList();
         widget.reloadDetail(_nameFormController.text, _getTimeStamp(), _currentColor.value.toRadixString(16).substring(2).toUpperCase());
         Navigator.pop(context);
       } else if (data[DataStatus] == StatusError) {
-        widget.reloadList(3);
-
         setState(() {
           _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
       }
     }).catchError((onError) {
-      widget.reloadList(3);
-
       setState(() {
         _messageText = onError.toString();
         _loadingOverlay = false;
@@ -103,8 +97,6 @@ class _AddGroupState extends State<AddGroup> {
   }
 
   void _apiCreateGroup() async {
-    widget.reloadList(1);
-
     setState(() {
       _messageText = '';
       _loadingOverlay = true;
@@ -125,19 +117,15 @@ class _AddGroupState extends State<AddGroup> {
             uids)
         .then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList(2);
+        widget.reloadList();
         Navigator.pop(context);
       } else if (data[DataStatus] == StatusError) {
-        widget.reloadList(3);
-
         setState(() {
           _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
       }
     }).catchError((onError) {
-      widget.reloadList(3);
-
       setState(() {
         _messageText = onError.toString();
         _loadingOverlay = false;
