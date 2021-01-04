@@ -115,10 +115,7 @@ class _GroupDetailState extends State<GroupDetail> {
       _messageText = '';
     });
 
-    print(mid);
-
     await fetchDeleteMyMember(widget.loginKey, mid).then((data) {
-      print(data);
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
 
@@ -133,8 +130,6 @@ class _GroupDetailState extends State<GroupDetail> {
         });
       }
     }).catchError((onError) {
-      print(onError.toString());
-
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
@@ -542,7 +537,6 @@ class _GroupDetailState extends State<GroupDetail> {
                             RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 25.0),
                               onPressed: () {
-                                print(activeJuz);
                                 _apiUpdateProgress(
                                   activeJuz[0].toString(),
                                   activeJuz[1].toString(),
