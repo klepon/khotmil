@@ -86,6 +86,8 @@ class _GroupDetailState extends State<GroupDetail> {
 
     await fetchJoinRound(widget.loginKey, mid, juz).then((data) {
       if (data[DataStatus] == StatusSuccess) {
+        widget.reloadList();
+
         setState(() {
           _loadingOverlay = false;
           _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
@@ -104,176 +106,6 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  Widget _joiningMemberList(context) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: MediaQuery.of(context).size.width,
-        ),
-        child: Container(
-          padding: sidePadding,
-          child: FutureBuilder(
-            future: _getMemberAPI,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return Column(
-                  children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-                );
-              }
-
-              if (snapshot.hasData) {
-                var gid = '0';
-                for (var user in snapshot.data['users']) {
-                  if (user['isMe'] == true) {
-                    gid = (user['gid']).toString();
-                    break;
-                  }
-                }
-
-                List<Widget> members = new List<Widget>();
-                for (int i = 1; i < 31; i += 1) {
-                  var names = [];
-                  var isMe = false;
-                  var progress = '0';
-                  bool disableButton = false;
-
-                  for (var user in snapshot.data['users']) {
-                    if (user['juz'].toString() == i.toString()) {
-                      names.add(user['name']);
-                      progress = user['progress'];
-                      disableButton = user['progress'] != '100';
-                      if (user['isMe'] == true) isMe = true;
-                    }
-                  }
-
-                  members.add(Container(
-                    decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
-                    padding: EdgeInsets.symmetric(vertical: 6.0),
-                    child: Row(
-                      children: [
-                        Container(width: 32.0, child: Text(i.toString())),
-                        Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(names.join(', ')))),
-                        Container(
-                            padding: EdgeInsets.only(right: 8.0),
-                            width: 110.0,
-                            child: Stack(children: [
-                              Container(
-                                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
-                                  width: (int.parse(progress) / 100) * 110,
-                                  child: Text('')),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(progress + '%'))],
-                              )
-                            ])),
-                        Container(
-                            width: 50.0,
-                            child: RaisedButton(
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                padding: EdgeInsets.all(0.0),
-                                color: progress == '100' && isMe ? Colors.redAccent : (disableButton ? Colors.grey : Colors.green),
-                                onPressed: () {
-                                  if (disableButton) return;
-
-                                  showDialog(
-                                      context: context,
-                                      child: AlertDialog(
-                                        title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
-                                        content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
-                                        actions: [
-                                          FlatButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: Text(CancelText),
-                                          ),
-                                          RaisedButton(
-                                            color: Colors.redAccent,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              _apiJoinRound(gid, i.toString());
-                                            },
-                                            child: Text(ConfirmTakingJuzButton),
-                                          ),
-                                        ],
-                                      ));
-                                },
-                                child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
-                      ],
-                    ),
-                  ));
-                }
-
-                return Column(
-                  children: members,
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              return Column(
-                children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _invitedMemberList(context) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: MediaQuery.of(context).size.width,
-        ),
-        child: Container(
-          padding: sidePadding,
-          child: FutureBuilder(
-            future: _getMemberAPI,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return Column(
-                  children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-                );
-              }
-
-              if (snapshot.hasData) {
-                List<Widget> members = new List<Widget>();
-                var i = 1;
-                for (var user in snapshot.data['users']) {
-                  if (user['juz'] == '0') {
-                    members.add(Container(
-                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
-                      padding: EdgeInsets.symmetric(vertical: 6.0),
-                      child: Row(
-                        children: [
-                          Container(width: 32.0, child: Text(i.toString())),
-                          Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(user['name']))),
-                        ],
-                      ),
-                    ));
-                    i += 1;
-                  }
-                }
-
-                return Column(
-                  children: members,
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              return Column(
-                children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -289,188 +121,312 @@ class _GroupDetailState extends State<GroupDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text(AppTitle),
-            actions: <Widget>[
-              if (widget.owner && _invitedMember)
-                IconButton(
-                  icon: const Icon(Icons.menu_book),
-                  tooltip: JuzMember,
-                  onPressed: () {
-                    setState(() {
-                      _invitedMember = false;
-                    });
-                  },
-                ),
-              if (widget.owner && !_invitedMember)
-                IconButton(
-                  icon: const Icon(Icons.group_add),
-                  tooltip: GroupMember,
-                  onPressed: () {
-                    setState(() {
-                      _invitedMember = true;
-                    });
-                  },
-                ),
-              if (widget.owner)
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  tooltip: EditGroup,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return AddEditGroup(
-                        loginKey: widget.loginKey,
-                        title: EditGroup,
-                        reloadList: () => widget.reloadList(),
-                        groupId: widget.groupId,
-                        deadline: widget.deadline,
-                        reloadDetail: (name, deadline, color) {
-                          setState(() {
-                            _detailName = name;
-                            _detailDeadline = deadline;
-                            _detailColor = color;
-                          });
-                        },
-                      );
-                    }));
-                  },
-                ),
-              if (widget.owner)
-                IconButton(
-                  icon: const Icon(Icons.delete_forever),
-                  tooltip: DeleteGroup,
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        child: AlertDialog(
-                          title: Text(DeleteGroupWarningTitle),
-                          content: Text(DeleteGroupWarning),
-                          actions: [
-                            FlatButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(CancelText),
-                            ),
-                            RaisedButton(
-                              color: Colors.redAccent,
-                              onPressed: () {
-                                _apiDeleteGroup();
-                              },
-                              child: Text(DeleteGroupConfirm),
-                            ),
-                          ],
-                        ));
-                  },
-                ),
-            ],
-          ),
-          body: Column(
-            children: [
-              GroupItem(
-                groupName: _detailName,
-                progress: widget.progress,
-                round: widget.round,
-                deadline: _detailDeadline,
-                yourJuz: widget.yourJuz,
-                yourProgress: widget.yourProgress,
-                groupColor: _detailColor,
-              ),
-              if (_messageText != '') SizedBox(height: 8.0),
-              if (_messageText != '') Container(child: Text(_messageText)),
-              if (_messageText != '') SizedBox(height: 8.0),
-              if (_invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
-              if (_invitedMember)
-                Container(
-                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
-                  padding: sidePadding,
-                  child: Row(
-                    children: [
-                      Container(padding: verticalPadding, width: 32.0, child: Text('No')),
-                      Expanded(
-                        child: Container(padding: verticalPadding, child: Text(LabelName)),
-                      ),
-                      Container(padding: verticalPadding, width: 50.0, child: Text('')),
-                    ],
-                  ),
-                ),
-              if (_invitedMember) Expanded(child: _invitedMemberList(context)),
-              if (!_invitedMember)
-                Container(
-                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
-                  padding: sidePadding,
-                  child: Row(
-                    children: [
-                      Container(padding: verticalPadding, width: 32.0, child: Text(LabelJuz)),
-                      Expanded(
-                        child: Container(padding: verticalPadding, child: Text(LabelName)),
-                      ),
-                      Container(padding: verticalPadding, width: 110.0, child: Text(LabelProgress)),
-                      Container(padding: verticalPadding, width: 50.0, child: Text('')),
-                    ],
-                  ),
-                ),
-              if (!_invitedMember) Expanded(child: _joiningMemberList(context)),
-              Container(
-                padding: mainPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
-                    ),
-                    SizedBox(height: 4.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                            child: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                                    margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
-                                    decoration: BoxDecoration(color: Colors.lightBlue),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [Text('Juz 8', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                radio(true, '20%'),
-                                radio(true, '50%'),
-                                radio(false, '80%'),
-                                radio(false, '100%'),
-                              ],
-                            )
-                          ],
-                        )),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(AppTitle),
+        actions: <Widget>[
+          if (widget.owner && _invitedMember)
+            IconButton(
+              icon: const Icon(Icons.menu_book),
+              tooltip: JuzMember,
+              onPressed: () {
+                setState(() {
+                  _invitedMember = false;
+                });
+              },
+            ),
+          if (widget.owner && !_invitedMember)
+            IconButton(
+              icon: const Icon(Icons.group_add),
+              tooltip: GroupMember,
+              onPressed: () {
+                setState(() {
+                  _invitedMember = true;
+                });
+              },
+            ),
+          if (widget.owner)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              tooltip: EditGroup,
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return AddEditGroup(
+                    loginKey: widget.loginKey,
+                    title: EditGroup,
+                    reloadList: () => widget.reloadList(),
+                    groupId: widget.groupId,
+                    deadline: widget.deadline,
+                    reloadDetail: (name, deadline, color) {
+                      setState(() {
+                        _detailName = name;
+                        _detailDeadline = deadline;
+                        _detailColor = color;
+                      });
+                    },
+                  );
+                }));
+              },
+            ),
+          if (widget.owner)
+            IconButton(
+              icon: const Icon(Icons.delete_forever),
+              tooltip: DeleteGroup,
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    child: AlertDialog(
+                      title: Text(DeleteGroupWarningTitle),
+                      content: Text(DeleteGroupWarning),
+                      actions: [
+                        FlatButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(CancelText),
+                        ),
                         RaisedButton(
-                          padding: EdgeInsets.symmetric(vertical: 25.0),
-                          onPressed: () => {},
-                          child: Text(SubmitText),
+                          color: Colors.redAccent,
+                          onPressed: () {
+                            _apiDeleteGroup();
+                          },
+                          child: Text(DeleteGroupConfirm),
                         ),
                       ],
+                    ));
+              },
+            ),
+        ],
+      ),
+      body: FutureBuilder(
+          future: _getMemberAPI,
+          builder: (context, snapshot) {
+            List<Widget> members = new List<Widget>();
+            bool snapShootLoading = false;
+            String snapShootMessage = '';
+
+            if (snapshot.connectionState != ConnectionState.done) {
+              snapShootLoading = true;
+            }
+
+            if (snapshot.hasData && !_invitedMember) {
+              var gid = '0';
+              for (var user in snapshot.data['users']) {
+                if (user['isMe'] == true) {
+                  gid = (user['gid']).toString();
+                  break;
+                }
+              }
+
+              for (int i = 1; i < 31; i += 1) {
+                var names = [];
+                var isMe = false;
+                var progress = '0';
+                bool disableButton = false;
+
+                for (var user in snapshot.data['users']) {
+                  if (user['juz'].toString() == i.toString()) {
+                    names.add(user['name']);
+                    progress = user['progress'];
+                    disableButton = user['progress'] != '100';
+                    if (user['isMe'] == true) isMe = true;
+                  }
+                }
+
+                members.add(Container(
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                  padding: EdgeInsets.symmetric(vertical: 6.0),
+                  child: Row(
+                    children: [
+                      Container(width: 32.0, child: Text(i.toString())),
+                      Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(names.join(', ')))),
+                      Container(
+                          padding: EdgeInsets.only(right: 8.0),
+                          width: 110.0,
+                          child: Stack(children: [
+                            Container(
+                                padding: EdgeInsets.symmetric(vertical: 10.0),
+                                decoration:
+                                    BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
+                                width: (int.parse(progress) / 100) * 110,
+                                child: Text('')),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(progress + '%'))],
+                            )
+                          ])),
+                      Container(
+                          width: 50.0,
+                          child: RaisedButton(
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              padding: EdgeInsets.all(0.0),
+                              color: progress == '100' && isMe ? Colors.redAccent : (disableButton ? Colors.grey : Colors.green),
+                              onPressed: () {
+                                if (disableButton) return;
+
+                                showDialog(
+                                    context: context,
+                                    child: AlertDialog(
+                                      title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
+                                      content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
+                                      actions: [
+                                        FlatButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: Text(CancelText),
+                                        ),
+                                        RaisedButton(
+                                          color: Colors.redAccent,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _apiJoinRound(gid, i.toString());
+                                          },
+                                          child: Text(ConfirmTakingJuzButton),
+                                        ),
+                                      ],
+                                    ));
+                              },
+                              child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
+                    ],
+                  ),
+                ));
+              }
+            } else if (snapshot.hasData && _invitedMember) {
+              var i = 1;
+              for (var user in snapshot.data['users']) {
+                if (user['juz'] == '0') {
+                  members.add(Container(
+                    decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                    padding: EdgeInsets.symmetric(vertical: 6.0),
+                    child: Row(
+                      children: [
+                        Container(width: 32.0, child: Text(i.toString())),
+                        Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(user['name']))),
+                      ],
                     ),
-                    SizedBox(height: 4.0),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        if (_loadingOverlay) loadingOverlay(context)
-      ],
+                  ));
+                  i += 1;
+                }
+              }
+            } else if (snapshot.hasError) {
+              snapShootMessage = snapshot.error.toString();
+            }
+
+            return Stack(children: [
+              Column(
+                children: [
+                  GroupItem(
+                    groupName: _detailName,
+                    progress: widget.progress,
+                    round: widget.round,
+                    deadline: _detailDeadline,
+                    yourJuz: widget.yourJuz,
+                    yourProgress: widget.yourProgress,
+                    groupColor: _detailColor,
+                  ),
+                  SizedBox(height: 16.0),
+                  if (_messageText != '') Container(child: Text(_messageText)),
+                  if (snapShootMessage != '') Center(child: Text(snapShootMessage)),
+                  if (members.length == 0) Container(padding: mainPadding, child: Text(LoadingMember)),
+                  if (_messageText != '' || snapShootMessage != '' || members.length == 0) SizedBox(height: 16.0),
+                  if (members.length > 0 && _invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
+                  if (members.length > 0 && _invitedMember)
+                    Container(
+                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
+                      padding: sidePadding,
+                      child: Row(
+                        children: [
+                          Container(padding: verticalPadding, width: 32.0, child: Text('No')),
+                          Expanded(
+                            child: Container(padding: verticalPadding, child: Text(LabelName)),
+                          ),
+                          Container(padding: verticalPadding, width: 50.0, child: Text('')),
+                        ],
+                      ),
+                    ),
+                  if (members.length > 0 && _invitedMember)
+                    Expanded(
+                        child: SingleChildScrollView(
+                            child: ConstrainedBox(
+                                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                child: Container(padding: sidePadding, child: Column(children: members))))),
+                  if (members.length > 0 && !_invitedMember)
+                    Container(
+                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
+                      padding: sidePadding,
+                      child: Row(
+                        children: [
+                          Container(padding: verticalPadding, width: 32.0, child: Text(LabelJuz)),
+                          Expanded(
+                            child: Container(padding: verticalPadding, child: Text(LabelName)),
+                          ),
+                          Container(padding: verticalPadding, width: 110.0, child: Text(LabelProgress)),
+                          Container(padding: verticalPadding, width: 50.0, child: Text('')),
+                        ],
+                      ),
+                    ),
+                  if (members.length > 0 && !_invitedMember)
+                    Expanded(
+                        child: SingleChildScrollView(
+                            child: ConstrainedBox(
+                                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                child: Container(padding: sidePadding, child: Column(children: members))))),
+                  Container(
+                    padding: mainPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 4.0),
+                          child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
+                        ),
+                        SizedBox(height: 4.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Column(
+                              // crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                        margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
+                                        decoration: BoxDecoration(color: Colors.lightBlue),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [Text('Juz 8', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    radio(true, '20%'),
+                                    radio(true, '50%'),
+                                    radio(false, '80%'),
+                                    radio(false, '100%'),
+                                  ],
+                                )
+                              ],
+                            )),
+                            RaisedButton(
+                              padding: EdgeInsets.symmetric(vertical: 25.0),
+                              onPressed: () => {},
+                              child: Text(SubmitText),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4.0),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              if (snapShootLoading || _loadingOverlay) loadingOverlay(context)
+            ]);
+          }),
     );
   }
 }
