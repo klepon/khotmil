@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_group.dart';
+import 'package:khotmil/fetch/join_round.dart';
 import 'package:khotmil/fetch/round_member.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
 
@@ -34,17 +36,22 @@ class GroupDetail extends StatefulWidget {
       this.owner,
       this.reloadList})
       : super(key: key);
+
   @override
   _GroupDetailState createState() => _GroupDetailState();
 }
 
 class _GroupDetailState extends State<GroupDetail> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   String _messageText = '';
   String _detailName = '';
   String _detailDeadline = '';
   String _detailColor = '';
   bool _loadingOverlay = false;
   bool _invitedMember = false;
+
+  Future _getMemberAPI;
 
   void _apiDeleteGroup() async {
     Navigator.pop(context);
@@ -71,42 +78,33 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  Widget _memberItem(juz, name, progress) {
-    return Container(
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
-      padding: EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        children: [
-          Container(width: 32.0, child: Text(juz)),
-          Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(name))),
-          Container(
-              padding: EdgeInsets.only(right: 8.0),
-              width: 110.0,
-              child: Stack(children: [
-                Container(
-                    padding: EdgeInsets.symmetric(vertical: 10.0),
-                    decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
-                    width: (int.parse(progress) / 100) * 110,
-                    child: Text('')),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(progress + '%'))],
-                )
-              ])),
-          Container(
-              width: 50.0,
-              child: RaisedButton(
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: EdgeInsets.all(0.0),
-                  color: progress == '100' ? Colors.redAccent : Colors.green,
-                  onPressed: () => {},
-                  child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
-        ],
-      ),
-    );
+  void _apiJoinRound(String mid, String juz) async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchJoinRound(widget.loginKey, mid, juz).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _loadingOverlay = false;
+          _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
   }
 
-  Widget _memberState(context) {
+  Widget _joiningMemberList(context) {
     return SingleChildScrollView(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -114,45 +112,111 @@ class _GroupDetailState extends State<GroupDetail> {
         ),
         child: Container(
           padding: sidePadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _memberItem('1', 'zuli', '20'),
-              _memberItem('2', 'zulu', '50'),
-              _memberItem('3', 'zule, subekhi, anton, toni', '80'),
-              _memberItem('4', 'zula', '100'),
-              _memberItem('5', 'zulo', '0'),
-              _memberItem('6', 'zuli', '50'),
-              _memberItem('7', 'zuli', '50'),
-              _memberItem('8', 'zulu', '50'),
-              _memberItem('9', 'zule', '50'),
-              _memberItem('10', 'zula', '100'),
-              _memberItem('11', 'zulo', '50'),
-              _memberItem('12', 'zuli', '50'),
-              _memberItem('13', 'zule, subekhi, anton, toni', '80'),
-              _memberItem('14', 'zula', '100'),
-              _memberItem('15', 'zulo', '0'),
-              _memberItem('16', 'zuli', '50'),
-              _memberItem('17', 'zuli', '50'),
-              _memberItem('18', 'zulu', '50'),
-              _memberItem('19', 'zule', '50'),
-              _memberItem('20', 'zula', '100'),
-            ],
+          child: FutureBuilder(
+            future: _getMemberAPI,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Column(
+                  children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
+                );
+              }
+
+              if (snapshot.hasData) {
+                var gid = '0';
+                for (var user in snapshot.data['users']) {
+                  if (user['isMe'] == true) {
+                    gid = (user['gid']).toString();
+                    break;
+                  }
+                }
+
+                List<Widget> members = new List<Widget>();
+                for (int i = 1; i < 31; i += 1) {
+                  var names = [];
+                  var isMe = false;
+                  var progress = '0';
+                  bool disableButton = false;
+
+                  for (var user in snapshot.data['users']) {
+                    if (user['juz'].toString() == i.toString()) {
+                      names.add(user['name']);
+                      progress = user['progress'];
+                      disableButton = user['progress'] != '100';
+                      if (user['isMe'] == true) isMe = true;
+                    }
+                  }
+
+                  members.add(Container(
+                    decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                    padding: EdgeInsets.symmetric(vertical: 6.0),
+                    child: Row(
+                      children: [
+                        Container(width: 32.0, child: Text(i.toString())),
+                        Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(names.join(', ')))),
+                        Container(
+                            padding: EdgeInsets.only(right: 8.0),
+                            width: 110.0,
+                            child: Stack(children: [
+                              Container(
+                                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
+                                  width: (int.parse(progress) / 100) * 110,
+                                  child: Text('')),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(progress + '%'))],
+                              )
+                            ])),
+                        Container(
+                            width: 50.0,
+                            child: RaisedButton(
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                padding: EdgeInsets.all(0.0),
+                                color: progress == '100' && isMe ? Colors.redAccent : (disableButton ? Colors.grey : Colors.green),
+                                onPressed: () {
+                                  if (disableButton) return;
+
+                                  showDialog(
+                                      context: context,
+                                      child: AlertDialog(
+                                        title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
+                                        content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: Text(CancelText),
+                                          ),
+                                          RaisedButton(
+                                            color: Colors.redAccent,
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              _apiJoinRound(gid, i.toString());
+                                            },
+                                            child: Text(ConfirmTakingJuzButton),
+                                          ),
+                                        ],
+                                      ));
+                                },
+                                child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
+                      ],
+                    ),
+                  ));
+                }
+
+                return Column(
+                  children: members,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              return Column(
+                children: [Container(padding: mainPadding, child: Text(LoadingMember)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
+              );
+            },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _invitedMemberItem(juz, name) {
-    return Container(
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
-      padding: EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        children: [
-          Container(width: 32.0, child: Text(juz)),
-          Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(name))),
-        ],
       ),
     );
   }
@@ -166,7 +230,7 @@ class _GroupDetailState extends State<GroupDetail> {
         child: Container(
           padding: sidePadding,
           child: FutureBuilder(
-            future: fetchRoundMember(widget.loginKey, widget.groupId),
+            future: _getMemberAPI,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return Column(
@@ -178,8 +242,19 @@ class _GroupDetailState extends State<GroupDetail> {
                 List<Widget> members = new List<Widget>();
                 var i = 1;
                 (snapshot.data['users']).values.forEach((user) {
-                  members.add(_invitedMemberItem((i).toString(), user['name']));
-                  i += 1;
+                  if (user['juz'] == '0') {
+                    members.add(Container(
+                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                      padding: EdgeInsets.symmetric(vertical: 6.0),
+                      child: Row(
+                        children: [
+                          Container(width: 32.0, child: Text(i.toString())),
+                          Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(user['name']))),
+                        ],
+                      ),
+                    ));
+                    i += 1;
+                  }
                 });
 
                 return Column(
@@ -208,6 +283,8 @@ class _GroupDetailState extends State<GroupDetail> {
       _detailDeadline = widget.deadline;
       _detailColor = widget.groupColor;
     });
+
+    _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
   }
 
   @override
@@ -215,6 +292,7 @@ class _GroupDetailState extends State<GroupDetail> {
     return Stack(
       children: [
         Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text(AppTitle),
             actions: <Widget>[
@@ -291,7 +369,6 @@ class _GroupDetailState extends State<GroupDetail> {
           ),
           body: Column(
             children: [
-              if (_messageText != '') Container(padding: verticalPadding, child: Text(_messageText)),
               GroupItem(
                 groupName: _detailName,
                 progress: widget.progress,
@@ -301,6 +378,9 @@ class _GroupDetailState extends State<GroupDetail> {
                 yourProgress: widget.yourProgress,
                 groupColor: _detailColor,
               ),
+              if (_messageText != '') SizedBox(height: 8.0),
+              if (_messageText != '') Container(child: Text(_messageText)),
+              if (_messageText != '') SizedBox(height: 8.0),
               if (_invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
               if (_invitedMember)
                 Container(
@@ -332,7 +412,7 @@ class _GroupDetailState extends State<GroupDetail> {
                     ],
                   ),
                 ),
-              if (!_invitedMember) Expanded(child: _memberState(context)),
+              if (!_invitedMember) Expanded(child: _joiningMemberList(context)),
               Container(
                 padding: mainPadding,
                 child: Column(

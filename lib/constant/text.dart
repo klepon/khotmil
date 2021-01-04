@@ -99,3 +99,7 @@ const String FormCreateGroupAddressError = 'Alamat group diperlukan';
 const String FormCreateGroupAddressInvalid = 'Alamat group tidak terkonfirmasi';
 const String FormCreateGroupEndDateError = 'Date line diperlukan';
 const String FormCreateGroupPreview = 'Preview';
+
+const String ConfirmTakingJuzTitle = 'Ambil Juz %s';
+const String ConfirmTakingJuzDesc = "Anda yakin akan bergabung dan mengambil juz %s?\n\nAnda tidak bisa membatalkan dan keluar hingga progress 100%";
+const String ConfirmTakingJuzButton = 'Ambil';

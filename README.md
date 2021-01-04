@@ -47,17 +47,13 @@ Restart connection and do all the step
 
  $ adb kill-server
 
-todo:
-
-refactor fetch ganti pake await.then.catchError
-
 admin:
  - group detail -> start next round
 
 member:
- - group detail -> juz list
- - group detail -> juz select/join
+ - group detail -> silence loading after select juz
  - group detail -> juz leave
+ - group detail -> set juz for progress
  - group detail -> set progress
  
  - group list -> join group

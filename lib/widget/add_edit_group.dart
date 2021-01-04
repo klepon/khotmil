@@ -24,7 +24,7 @@ class AddEditGroup extends StatefulWidget {
 }
 
 class _AddEditGroupState extends State<AddEditGroup> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _messageText = '';
@@ -276,7 +276,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(title: Text(AppTitle)),
         body: Stack(
           children: [
