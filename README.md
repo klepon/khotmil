@@ -49,6 +49,8 @@ Restart connection and do all the step
 
 admin:
  - group detail -> start next round
+ - group detail -> add more member
+
 
 member:
  - group list -> join group
