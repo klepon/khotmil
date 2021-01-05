@@ -150,7 +150,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
           _currentColor = Color(int.parse("0xff" + data['group']['color']));
 
           _endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(widget.deadline) * 1000).toString()).split(' ')[0];
-          _latlongOri = data['group']['latlong'];
+          _latlongOri = data['group']['latitude'] + ',' + data['group']['longitude'];
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
