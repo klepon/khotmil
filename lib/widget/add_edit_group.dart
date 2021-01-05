@@ -41,8 +41,9 @@ class _AddEditGroupState extends State<AddEditGroup> {
   String _latlongOri = '';
   Address _closedValidAddress;
 
-  var _apiReturnUsers = [];
-  var _usersSelectedForInvite = [];
+  List _apiReturnUsers = [];
+  List _usersSelectedForInvite = [];
+  bool _searchUserLoading = false;
 
   TextEditingController _nameFormController = TextEditingController();
   TextEditingController _addressFormController = TextEditingController();
@@ -102,7 +103,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
       _loadingOverlay = true;
     });
 
-    var uids = [];
+    List uids = [];
     for (var user in _usersSelectedForInvite) {
       uids.add(user[0].toString());
     }
@@ -166,20 +167,27 @@ class _AddEditGroupState extends State<AddEditGroup> {
   }
 
   void _apiSearchUser(value) async {
+    setState(() {
+      _searchUserLoading = true;
+    });
+
     await fetchSearchUser(widget.loginKey, value).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _apiReturnUsers = data['users'];
+          _searchUserLoading = false;
         });
       }
       if (data[DataStatus] == StatusError) {
         setState(() {
           _apiReturnUsers = [];
+          _searchUserLoading = false;
         });
       }
     }).catchError((onError) {
       setState(() {
         _apiReturnUsers = [];
+        _searchUserLoading = false;
       });
     });
   }
@@ -464,10 +472,11 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                   },
                                 ),
                                 SizedBox(height: 16.0),
+                                if ('' == widget.groupId && _searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
                                 if ('' == widget.groupId && _apiReturnUsers.length > 0)
                                   Container(
                                     padding: sidePaddingNarrow,
-                                    child: Row(children: [
+                                    child: Wrap(children: [
                                       for (var user in _apiReturnUsers)
                                         if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
                                           TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),

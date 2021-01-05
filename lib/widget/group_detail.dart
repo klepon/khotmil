@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/fetch/delete_my_member.dart';
 import 'package:khotmil/fetch/get_single_group.dart';
+import 'package:khotmil/fetch/invite_user.dart';
+import 'package:khotmil/fetch/search_user.dart';
 import 'package:khotmil/fetch/update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
@@ -58,6 +60,12 @@ class _GroupDetailState extends State<GroupDetail> {
   bool _loadingOverlay = false;
   bool _invitedMember = false;
   Map<String, dynamic> _activeJuz;
+
+  List _apiReturnUsers = [];
+  List _usersSelectedForInvite = [];
+  bool _searchUserLoading = false;
+
+  TextEditingController _searchUserFormController = TextEditingController();
 
   Future _getMemberAPI;
 
@@ -191,6 +199,88 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
+  void _apiInviteUser() async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    List uids = [];
+    for (var user in _usersSelectedForInvite) {
+      uids.add(user[0].toString());
+    }
+
+    await fetchInviteUser(widget.loginKey, widget.groupId, uids).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _apiGetDetail();
+
+          _apiReturnUsers = [];
+          _usersSelectedForInvite = [];
+          _searchUserFormController.text = '';
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
+
+  void _apiSearchUser(value) async {
+    setState(() {
+      _searchUserLoading = true;
+    });
+
+    await fetchSearchUser(widget.loginKey, value).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _apiReturnUsers = data['users'];
+          _searchUserLoading = false;
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _apiReturnUsers = [];
+          _searchUserLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _apiReturnUsers = [];
+        _searchUserLoading = false;
+      });
+    });
+  }
+
+  void _addUid(userData) {
+    _searchUserFormController.text = '';
+    _usersSelectedForInvite.add(userData);
+
+    setState(() {
+      _apiReturnUsers = [];
+      _usersSelectedForInvite = [
+        ...{..._usersSelectedForInvite}
+      ];
+    });
+  }
+
+  void _removeUid(userData) {
+    _usersSelectedForInvite.removeWhere((user) => user == userData);
+
+    setState(() {
+      _usersSelectedForInvite = [
+        ...{..._usersSelectedForInvite}
+      ];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -202,6 +292,12 @@ class _GroupDetailState extends State<GroupDetail> {
     });
 
     _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
+  }
+
+  @override
+  void dispose() {
+    _searchUserFormController.dispose();
+    super.dispose();
   }
 
   @override
@@ -432,6 +528,59 @@ class _GroupDetailState extends State<GroupDetail> {
                 ));
                 i += 1;
               }
+              // search user
+              members.add(Column(
+                children: [
+                  if (_apiReturnUsers.length > 0)
+                    Container(
+                      padding: sidePaddingNarrow,
+                      child: Wrap(children: [
+                        for (var user in _apiReturnUsers)
+                          if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
+                            TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                      ]),
+                    ),
+                  if (_searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                  TextFormField(
+                    controller: _searchUserFormController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      contentPadding: sidePaddingNarrow,
+                      hintText: FormCreateGroupUids,
+                    ),
+                    onChanged: (value) {
+                      if (value.length >= 3) {
+                        _apiSearchUser(value);
+                      } else if (_apiReturnUsers.length > 0) {
+                        setState(() {
+                          _apiReturnUsers = [];
+                        });
+                      }
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  if (_usersSelectedForInvite.length > 0)
+                    Container(
+                      padding: sidePaddingNarrow,
+                      child: Column(children: [
+                        for (var user in _usersSelectedForInvite)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('@' + user[1]),
+                              IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => _removeUid(user)),
+                            ],
+                          ),
+                        SizedBox(height: 16.0),
+                      ]),
+                    ),
+                  SizedBox(height: 16.0),
+                  RaisedButton(
+                    child: Text(InviterButton),
+                    onPressed: () => _apiInviteUser(),
+                  ),
+                ],
+              ));
             } else if (snapshot.hasError) {
               snapShootMessage = snapshot.error.toString();
             }
@@ -501,94 +650,95 @@ class _GroupDetailState extends State<GroupDetail> {
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
-                  Container(
-                    padding: mainPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 4.0),
-                          child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
-                        ),
-                        SizedBox(height: 4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                                        margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
-                                        decoration: BoxDecoration(color: Colors.lightBlue),
-                                        child: GestureDetector(
-                                          child: Center(
-                                            child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
-                                                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                                          ),
-                                          onTap: () {
-                                            List keys = myJuz.keys.toList();
-                                            keys.sort();
-
-                                            if (keys.length == 1) return;
-
-                                            showDialog(
-                                                context: context,
-                                                child: SimpleDialog(
-                                                  title: const Text(SelectEditedJuz),
-                                                  children: keys.map((juz) {
-                                                    if (myJuz[juz]['isMe']) {
-                                                      return SimpleDialogOption(
-                                                        onPressed: () {
-                                                          Navigator.pop(context);
-                                                          setState(() {
-                                                            _activeJuz = Map.from(myJuz[juz]);
-                                                          });
-                                                        },
-                                                        child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
-                                                      );
-                                                    }
-                                                  }).toList(),
-                                                ));
-                                          },
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [20, 40, 80, 100]
-                                      .map((progress) => GestureDetector(
+                  if (!_invitedMember)
+                    Container(
+                      padding: mainPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 4.0),
+                            child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
+                          ),
+                          SizedBox(height: 4.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                  child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                          margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
+                                          decoration: BoxDecoration(color: Colors.lightBlue),
+                                          child: GestureDetector(
+                                            child: Center(
+                                              child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
+                                                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                                            ),
                                             onTap: () {
-                                              String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
+                                              List keys = myJuz.keys.toList();
+                                              keys.sort();
 
-                                              activeJuz['progress'] = newProgress;
-                                              setState(() {
-                                                _activeJuz = activeJuz;
-                                              });
+                                              if (keys.length == 1) return;
+
+                                              showDialog(
+                                                  context: context,
+                                                  child: SimpleDialog(
+                                                    title: const Text(SelectEditedJuz),
+                                                    children: keys.map((juz) {
+                                                      if (myJuz[juz]['isMe']) {
+                                                        return SimpleDialogOption(
+                                                          onPressed: () {
+                                                            Navigator.pop(context);
+                                                            setState(() {
+                                                              _activeJuz = Map.from(myJuz[juz]);
+                                                            });
+                                                          },
+                                                          child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
+                                                        );
+                                                      }
+                                                    }).toList(),
+                                                  ));
                                             },
-                                            child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
-                                          ))
-                                      .toList(),
-                                )
-                              ],
-                            )),
-                            RaisedButton(
-                              padding: EdgeInsets.symmetric(vertical: 25.0),
-                              child: Text(SubmitText),
-                              onPressed: () {
-                                _apiUpdateProgress(activeJuz);
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 4.0),
-                      ],
-                    ),
-                  )
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [20, 40, 80, 100]
+                                        .map((progress) => GestureDetector(
+                                              onTap: () {
+                                                String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
+
+                                                activeJuz['progress'] = newProgress;
+                                                setState(() {
+                                                  _activeJuz = activeJuz;
+                                                });
+                                              },
+                                              child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
+                                            ))
+                                        .toList(),
+                                  )
+                                ],
+                              )),
+                              RaisedButton(
+                                padding: EdgeInsets.symmetric(vertical: 25.0),
+                                child: Text(SubmitText),
+                                onPressed: () {
+                                  _apiUpdateProgress(activeJuz);
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4.0),
+                        ],
+                      ),
+                    )
                 ],
               ),
               if (snapShootLoading || _loadingOverlay) loadingOverlay(context)

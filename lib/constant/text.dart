@@ -112,3 +112,5 @@ const String ConfirmLeaveJuzButton = 'Keluar';
 const String SelectEditedJuz = 'Pilih setoran juz';
 const String OptionJuz = 'Juz %s progres %s%';
 const String CurrentJuz = 'Juz %s';
+
+const String InviterButton = 'Undang';
