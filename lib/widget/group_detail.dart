@@ -57,7 +57,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
   bool _loadingOverlay = false;
   bool _invitedMember = false;
-  List _activeJuz = ['-', '0', '0'];
+  Map<String, dynamic> _activeJuz;
 
   Future _getMemberAPI;
 
@@ -164,13 +164,13 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  void _apiUpdateProgress(String juz, String progress, String id) async {
+  void _apiUpdateProgress(row) async {
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
     });
 
-    await fetchUpdateProgress(widget.loginKey, id, juz, progress).then((data) {
+    await fetchUpdateProgress(widget.loginKey, row['id'], row['juz'], row['progress']).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
 
@@ -288,9 +288,11 @@ class _GroupDetailState extends State<GroupDetail> {
             List<Widget> members = new List<Widget>();
             bool snapShootLoading = false;
             String snapShootMessage = '';
-            Map<int, dynamic> joinedUsers = Map();
-            List unjoinedUsers = [];
-            List activeJuz = [_activeJuz[0], _activeJuz[1], _activeJuz[2]];
+            Map<int, dynamic> namesInJuz = Map();
+            Map<int, dynamic> progressInJuz = Map();
+            Map<int, dynamic> myJuz = Map();
+            Map<String, dynamic> userWithoutJuz = Map();
+            Map<String, dynamic> activeJuz = _activeJuz;
 
             if (snapshot.connectionState != ConnectionState.done) {
               snapShootLoading = true;
@@ -299,32 +301,41 @@ class _GroupDetailState extends State<GroupDetail> {
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
                 if (user['juz'] == '0') {
-                  unjoinedUsers.add(user);
+                  userWithoutJuz[user['uid']] = user;
                 } else {
-                  joinedUsers[int.parse(user['juz'])] = user;
+                  // collect names in a juz
+                  if (namesInJuz[int.parse(user['juz'])] == null) namesInJuz[int.parse(user['juz'])] = [];
+                  namesInJuz[int.parse(user['juz'])].add(user['name']);
+
+                  // collect progress in a juz
+                  if (progressInJuz[int.parse(user['juz'])] == null) progressInJuz[int.parse(user['juz'])] = [];
+                  progressInJuz[int.parse(user['juz'])].add(int.parse(user['progress']));
+
+                  // collect current active user juz
+                  if (user['isMe']) {
+                    myJuz[int.parse(user['juz'])] = user;
+                  }
                 }
               }
             }
 
             if (snapshot.hasData && !_invitedMember) {
               for (int i = 1; i < 31; i += 1) {
-                List names = [];
-                String mid = '';
-                String progress = '0';
-                bool isMe = false;
-                bool disableButton = false;
+                // get display mixed progress in a juz
+                int totalJuzProgress = 0;
+                if (progressInJuz[i] != null) {
+                  totalJuzProgress =
+                      int.parse((((progressInJuz[i].fold(0, (previous, current) => previous + current)) / (progressInJuz[i].length * 100)) * 100).toStringAsFixed(0));
+                }
 
-                if (joinedUsers[i] != null) {
-                  names.add(joinedUsers[i]['name']);
-                  progress = joinedUsers[i]['progress'];
-                  disableButton = joinedUsers[i]['progress'] != '100';
-                  if (joinedUsers[i]['isMe'] == true) {
-                    isMe = true;
-                    mid = joinedUsers[i]['id'];
-                    if (activeJuz[0] == '-') {
-                      activeJuz[0] = i;
-                      activeJuz[2] = joinedUsers[i]['id'];
-                    }
+                // if my juz
+                if (myJuz[i] != null) {
+                  // assign activeJuz
+                  if (activeJuz == null) {
+                    activeJuz = Map.from(myJuz[i]);
+                    // make sure activeJuz is valid, usualy after update/delete
+                  } else if (myJuz[int.parse(activeJuz['juz'])] == null) {
+                    activeJuz = Map.from(myJuz[i]);
                   }
                 }
 
@@ -334,7 +345,7 @@ class _GroupDetailState extends State<GroupDetail> {
                   child: Row(
                     children: [
                       Container(width: 32.0, child: Text(i.toString())),
-                      Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text(names.join(', ')))),
+                      Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text((namesInJuz[i] != null ? namesInJuz[i].join(', ') : '')))),
                       Container(
                           padding: EdgeInsets.only(right: 8.0),
                           width: 110.0,
@@ -343,11 +354,11 @@ class _GroupDetailState extends State<GroupDetail> {
                                 padding: EdgeInsets.symmetric(vertical: 10.0),
                                 decoration:
                                     BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
-                                width: (int.parse(progress) / 100) * 110,
+                                width: (totalJuzProgress / 100) * 110,
                                 child: Text('')),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
-                              children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(progress + '%'))],
+                              children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(totalJuzProgress.toString() + '%'))],
                             )
                           ])),
                       Container(
@@ -355,9 +366,9 @@ class _GroupDetailState extends State<GroupDetail> {
                           child: RaisedButton(
                               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               padding: EdgeInsets.all(0.0),
-                              color: progress == '100' && isMe ? Colors.redAccent : (disableButton ? Colors.grey : Colors.green),
+                              color: myJuz[i] != null && myJuz[i]['progress'] == '100' ? Colors.redAccent : (myJuz[i] != null ? Colors.grey : Colors.green),
                               onPressed: () {
-                                if (progress == '100' && isMe)
+                                if (myJuz[i] != null && myJuz[i]['progress'] == '100')
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
@@ -372,14 +383,14 @@ class _GroupDetailState extends State<GroupDetail> {
                                             color: Colors.redAccent,
                                             onPressed: () {
                                               Navigator.pop(context);
-                                              _apiLeaveRound(mid);
+                                              _apiLeaveRound(myJuz[i]['id']);
                                             },
                                             child: Text(ConfirmLeaveJuzButton),
                                           ),
                                         ],
                                       ));
 
-                                if (progress != '100' && !isMe)
+                                if (myJuz[i] == null)
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
@@ -401,14 +412,14 @@ class _GroupDetailState extends State<GroupDetail> {
                                         ],
                                       ));
                               },
-                              child: Text(progress == '100' ? ButtonOut : ButtonJoin))),
+                              child: Text(myJuz[i] != null && myJuz[i]['progress'] == '100' ? ButtonOut : ButtonJoin))),
                     ],
                   ),
                 ));
               }
             } else if (snapshot.hasData && _invitedMember) {
               var i = 1;
-              for (var user in unjoinedUsers) {
+              for (var user in userWithoutJuz.values) {
                 members.add(Container(
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
                   padding: EdgeInsets.symmetric(vertical: 6.0),
@@ -515,10 +526,11 @@ class _GroupDetailState extends State<GroupDetail> {
                                         decoration: BoxDecoration(color: Colors.lightBlue),
                                         child: GestureDetector(
                                           child: Center(
-                                            child: Text(sprintf(CurrentJuz, [activeJuz[0]]), style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                                            child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
+                                                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
                                           ),
                                           onTap: () {
-                                            List keys = joinedUsers.keys.toList();
+                                            List keys = myJuz.keys.toList();
                                             keys.sort();
 
                                             if (keys.length == 1) return;
@@ -528,17 +540,15 @@ class _GroupDetailState extends State<GroupDetail> {
                                                 child: SimpleDialog(
                                                   title: const Text(SelectEditedJuz),
                                                   children: keys.map((juz) {
-                                                    if (joinedUsers[juz]['isMe']) {
+                                                    if (myJuz[juz]['isMe']) {
                                                       return SimpleDialogOption(
                                                         onPressed: () {
                                                           Navigator.pop(context);
                                                           setState(() {
-                                                            _activeJuz[0] = juz;
-                                                            _activeJuz[1] = joinedUsers[juz]['progress'];
-                                                            _activeJuz[2] = joinedUsers[juz]['id'];
+                                                            _activeJuz = Map.from(myJuz[juz]);
                                                           });
                                                         },
-                                                        child: Text(sprintf(OptionJuz, [juz, joinedUsers[juz]['progress']])),
+                                                        child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
                                                       );
                                                     }
                                                   }).toList(),
@@ -553,11 +563,14 @@ class _GroupDetailState extends State<GroupDetail> {
                                   children: [20, 40, 80, 100]
                                       .map((progress) => GestureDetector(
                                             onTap: () {
+                                              String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
+
+                                              activeJuz['progress'] = newProgress;
                                               setState(() {
-                                                _activeJuz[1] = _activeJuz[1] == '20' && progress == 20 ? '0' : progress.toString();
+                                                _activeJuz = activeJuz;
                                               });
                                             },
-                                            child: radio(int.parse(activeJuz[1]) >= progress, progress.toString() + '%'),
+                                            child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
                                           ))
                                       .toList(),
                                 )
@@ -565,14 +578,10 @@ class _GroupDetailState extends State<GroupDetail> {
                             )),
                             RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 25.0),
-                              onPressed: () {
-                                _apiUpdateProgress(
-                                  activeJuz[0].toString(),
-                                  activeJuz[1].toString(),
-                                  activeJuz[2].toString(),
-                                );
-                              },
                               child: Text(SubmitText),
+                              onPressed: () {
+                                _apiUpdateProgress(activeJuz);
+                              },
                             ),
                           ],
                         ),

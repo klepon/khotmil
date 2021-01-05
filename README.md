@@ -51,7 +51,6 @@ admin:
  - group detail -> start next round
 
 member:
- - group detail -> mix progress
- - group detail -> bug: on leave current active juz, progres did not change
- 
  - group list -> join group
+
+ - group detail -> pultiple progress in a row
