@@ -64,3 +64,14 @@ BaseOptions dioOptions = new BaseOptions(
   connectTimeout: 5000,
   receiveTimeout: 3000,
 );
+
+// double meters = 50;
+// double lat = -8.705877;
+// double long = 115.219421;
+// // number of km per degree = ~111km (111.32 in google maps, but range varies
+// // 1km in degree = 1 / 111.32km = 0.0089
+// // 1m in degree = 0.0089 / 1000 = 0.0000089
+// // pi / 180 = 0.018
+// double coef = meters * 0.0000089;
+// double newLat = lat + coef; // + move up to north, - move donw to south
+// double newLong = long + coef / Math.cos(lat * 0.018); // + move right to east, - move left to west

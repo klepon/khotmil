@@ -114,3 +114,5 @@ const String OptionJuz = 'Juz %s progres %s%';
 const String CurrentJuz = 'Juz %s';
 
 const String InviterButton = 'Undang';
+
+const String SearchGroupTitle = 'Cari Group';

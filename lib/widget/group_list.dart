@@ -21,6 +21,8 @@ class GroupList extends StatefulWidget {
 class _GroupListState extends State<GroupList> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+  TextEditingController _searchGroupFormController = TextEditingController();
+
   String _screenState = StateGroupList;
   String _messageText = '';
 
@@ -120,8 +122,55 @@ class _GroupListState extends State<GroupList> {
   Widget _joinGroupForm() {
     return Container(
       padding: mainPadding,
-      child: Text('join group form here'),
+      child: Column(
+        children: [
+          Text(SearchGroupTitle, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+          SizedBox(height: 16.0),
+          Row(
+            children: [
+              Expanded(
+                  child: TextFormField(
+                controller: _searchGroupFormController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: 'Cari dengan nama',
+                ),
+              )),
+              RaisedButton(
+                onPressed: () {},
+                child: Text('cari'),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Text('by default show group in radius 5km'),
+              Text('ada option change radius'),
+              Text('ada option search group name'),
+              Text('ada option search in area, radius ngikut setingan atas'),
+              Expanded(
+                  child: TextFormField(
+                controller: _searchGroupFormController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: 'Alamat saya, otomatis terisi',
+                ),
+              )),
+              RaisedButton(
+                onPressed: () {},
+                child: Text('cari disekitar saya'),
+              )
+            ],
+          ),
+        ],
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchGroupFormController.dispose();
+    super.dispose();
   }
 
   @override
