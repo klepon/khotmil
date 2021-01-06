@@ -115,8 +115,11 @@ const String CurrentJuz = 'Juz %s';
 
 const String InviterButton = 'Undang';
 
-const String SearchGroupTitle = 'Cari Group';
+const String SearchGroupTitle = 'Gabung Group';
 const String LocationServicesDisabled = 'Pencarian lokasi tidak diijinkan';
 const String LocationServicesDisabledPermanently = 'Pencarian lokasi tidak diijinkan secara permanen, tidak bisa meminta ijin, silahkan ubah lewat app seting';
 const String LocationServicesDenied = 'Pencarian lokasi ditolak (ijin terdaftar: %s)';
-const String LocatingDevice = 'Mohon menunggu, mencari posisi Anda...';
+const String LocatingDevice = 'Mohon menunggu...\nMencari posisi Anda dan group di sekitar';
+const String GroupInRadius = 'Group dalam radius %skm dari alamat %s';
+const String ExpandRadiusButton = 'Perluas radius';
+const String ChangeRadiusCenterButton = 'Cari di sekitar';

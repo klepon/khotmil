@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
@@ -60,6 +61,12 @@ class _GroupListState extends State<GroupList> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  Future _getGroup() async {
+    Position position = await _getPhoneLocation();
+    List<Address> address = await Geocoder.local.findAddressesFromCoordinates(Coordinates(position.latitude, position.longitude));
+    return {'radius': 1, 'address': address[0].addressLine};
   }
 
   Widget _loopGroups(groups, context) {
@@ -153,7 +160,7 @@ class _GroupListState extends State<GroupList> {
           Text(SearchGroupTitle, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
           SizedBox(height: 16.0),
           FutureBuilder(
-              future: _getPhoneLocation(),
+              future: _getGroup(),
               builder: (context, snapshot) {
                 bool snapLoading = false;
                 String snapMessage = '';
@@ -161,11 +168,8 @@ class _GroupListState extends State<GroupList> {
 
                 if (snapshot.connectionState != ConnectionState.done) {
                   snapLoading = true;
-                }
-
-                print(snapshot);
-
-                if (snapshot.hasData) {
+                } else if (snapshot.hasData) {
+                  //loop group name
                   groups.add(Row(
                     children: [
                       Text('nama group'),
@@ -177,57 +181,61 @@ class _GroupListState extends State<GroupList> {
 
                 return Column(
                   children: [
-                    if (snapMessage != '') Container(padding: EdgeInsets.only(bottom: 16.0), child: Text(snapMessage)),
+                    if (snapMessage != '') Container(padding: EdgeInsets.only(bottom: 16.0), child: Text(snapMessage, textAlign: TextAlign.center)),
                     if (snapLoading)
                       Column(
-                        children: [Center(child: CircularProgressIndicator(strokeWidth: 2.0)), SizedBox(height: 16.0), Text(LocatingDevice)],
+                        children: [
+                          Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                          SizedBox(height: 16.0),
+                          Text(LocatingDevice, textAlign: TextAlign.center),
+                        ],
                       ),
+                    if (groups.length > 0)
+                      Column(
+                        children: [
+                          Column(
+                            children: [
+                              Text(sprintf(GroupInRadius, [snapshot.data['radius'] ?? '-', snapshot.data['address'] ?? '...']), textAlign: TextAlign.center),
+                              SizedBox(height: 16.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text(ExpandRadiusButton),
+                                  ),
+                                  RaisedButton(
+                                    onPressed: () {},
+                                    child: Text(ChangeRadiusCenterButton),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: TextFormField(
+                          controller: _searchGroupFormController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            hintText: 'Cari dengan nama',
+                          ),
+                        )),
+                        RaisedButton(
+                          onPressed: () {},
+                          child: Text('cari'),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
                     if (groups.length > 0) Column(children: groups),
                   ],
                 );
               }),
-          SizedBox(height: 16.0),
-          Column(
-            children: [
-              Text('by default show group in radius 5km'),
-              Text('ada option change radius'),
-              Text('ada option search group name'),
-              Text('ada option search in area, radius ngikut setingan atas'),
-            ],
-          ),
-          SizedBox(height: 16.0),
-          Row(
-            children: [
-              Expanded(
-                  child: TextFormField(
-                controller: _searchGroupFormController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  hintText: 'Cari dengan nama',
-                ),
-              )),
-              RaisedButton(
-                onPressed: () {},
-                child: Text('cari'),
-              )
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: TextFormField(
-                controller: _searchGroupFormController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  hintText: 'Alamat saya, otomatis terisi',
-                ),
-              )),
-              RaisedButton(
-                onPressed: () {},
-                child: Text('cari disekitar saya'),
-              )
-            ],
-          ),
         ],
       ),
     );
