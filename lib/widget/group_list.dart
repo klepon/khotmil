@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
+import 'package:sprintf/sprintf.dart';
 
 import 'group_item.dart';
 
@@ -34,6 +36,30 @@ class _GroupListState extends State<GroupList> {
 
   void _reloadGroupList() {
     setState(() {});
+  }
+
+  Future<Position> _getPhoneLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error(LocationServicesDisabled);
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(LocationServicesDisabledPermanently);
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
+        return Future.error(sprintf(LocationServicesDenied, [permission]));
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   Widget _loopGroups(groups, context) {
@@ -126,6 +152,50 @@ class _GroupListState extends State<GroupList> {
         children: [
           Text(SearchGroupTitle, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
           SizedBox(height: 16.0),
+          FutureBuilder(
+              future: _getPhoneLocation(),
+              builder: (context, snapshot) {
+                bool snapLoading = false;
+                String snapMessage = '';
+                List<Widget> groups = [];
+
+                if (snapshot.connectionState != ConnectionState.done) {
+                  snapLoading = true;
+                }
+
+                print(snapshot);
+
+                if (snapshot.hasData) {
+                  groups.add(Row(
+                    children: [
+                      Text('nama group'),
+                    ],
+                  ));
+                } else if (snapshot.hasError) {
+                  snapMessage = snapshot.error.toString();
+                }
+
+                return Column(
+                  children: [
+                    if (snapMessage != '') Container(padding: EdgeInsets.only(bottom: 16.0), child: Text(snapMessage)),
+                    if (snapLoading)
+                      Column(
+                        children: [Center(child: CircularProgressIndicator(strokeWidth: 2.0)), SizedBox(height: 16.0), Text(LocatingDevice)],
+                      ),
+                    if (groups.length > 0) Column(children: groups),
+                  ],
+                );
+              }),
+          SizedBox(height: 16.0),
+          Column(
+            children: [
+              Text('by default show group in radius 5km'),
+              Text('ada option change radius'),
+              Text('ada option search group name'),
+              Text('ada option search in area, radius ngikut setingan atas'),
+            ],
+          ),
+          SizedBox(height: 16.0),
           Row(
             children: [
               Expanded(
@@ -144,10 +214,6 @@ class _GroupListState extends State<GroupList> {
           ),
           Row(
             children: [
-              Text('by default show group in radius 5km'),
-              Text('ada option change radius'),
-              Text('ada option search group name'),
-              Text('ada option search in area, radius ngikut setingan atas'),
               Expanded(
                   child: TextFormField(
                 controller: _searchGroupFormController,

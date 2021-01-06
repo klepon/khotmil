@@ -116,3 +116,7 @@ const String CurrentJuz = 'Juz %s';
 const String InviterButton = 'Undang';
 
 const String SearchGroupTitle = 'Cari Group';
+const String LocationServicesDisabled = 'Pencarian lokasi tidak diijinkan';
+const String LocationServicesDisabledPermanently = 'Pencarian lokasi tidak diijinkan secara permanen, tidak bisa meminta ijin, silahkan ubah lewat app seting';
+const String LocationServicesDenied = 'Pencarian lokasi ditolak (ijin terdaftar: %s)';
+const String LocatingDevice = 'Mohon menunggu, mencari posisi Anda...';
