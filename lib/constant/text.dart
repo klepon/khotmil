@@ -138,8 +138,8 @@ const String SearchByMyLocationContinueButton = 'Cari disekitar alamat ini';
 const String SearchGroupByPhoneLocation = 'phone_location';
 const String SearchGroupByCustomLocation = 'custom_location';
 const String SearchGroupByKeyword = 'keyword';
-const String SearchGroupByKeywordErrorEmpty = 'massukkan keyword';
-const String SearchGroupByKeywordErrorShort = 'keyword terlalu pendek';
+const String SearchGroupByKeywordErrorEmpty = 'Massukkan keyword';
+const String SearchGroupByKeywordErrorShort = 'Kata kunci terlalu pendek, minimal 4 huruf';
 
 const String SearchGroupError = 'Gagal mencari group';
 const String JoinGroupConfirmationTitle = 'Gabung Group';

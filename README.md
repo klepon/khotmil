@@ -52,8 +52,6 @@ admin:
 
 
 member:
- - group list -> join group
-
  - search group -> limit 30
  - search member -> limit 30
 
