@@ -47,12 +47,8 @@ Restart connection and do all the step
 
  $ adb kill-server
 
-admin:
- - group detail -> start next round
-
+## improvment
 
 member:
- - search group -> limit 30
- - search member -> limit 30
 
  - group detail -> multiple progress in a row

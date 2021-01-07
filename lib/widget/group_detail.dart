@@ -3,6 +3,7 @@ import 'package:khotmil/fetch/delete_my_member.dart';
 import 'package:khotmil/fetch/get_single_group.dart';
 import 'package:khotmil/fetch/invite_user.dart';
 import 'package:khotmil/fetch/search_user.dart';
+import 'package:khotmil/fetch/start_new_round.dart';
 import 'package:khotmil/fetch/update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
@@ -48,9 +49,11 @@ class GroupDetail extends StatefulWidget {
 
 class _GroupDetailState extends State<GroupDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _messageText = '';
   String _detailName = '';
+  String _detailRound = '';
   String _detailDeadline = '';
   String _detailColor = '';
   String _detailProgress = '';
@@ -66,8 +69,21 @@ class _GroupDetailState extends State<GroupDetail> {
   bool _searchUserLoading = false;
 
   TextEditingController _searchUserFormController = TextEditingController();
+  TextEditingController _newRoundDeadLineFormController = TextEditingController();
 
   Future _getMemberAPI;
+
+  Future<void> _renderSelectDate(BuildContext context) async {
+    DateTime date = DateTime.now();
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: date,
+      lastDate: DateTime(date.year, date.month + 3),
+      helpText: FormCreateGroupEndDate,
+    );
+    if (picked != null) _newRoundDeadLineFormController.text = (picked.toString()).split(' ')[0];
+  }
 
   void _apiGetDetail() async {
     widget.reloadList();
@@ -79,6 +95,8 @@ class _GroupDetailState extends State<GroupDetail> {
           _detailProgress = data['group']['progress'].toString();
           _detailMyJuz = data['group']['my_juz'].toString();
           _detailMyProgress = data['group']['my_progress'].toString();
+          _detailDeadline = data['group']['end_date'].toString();
+          _detailRound = data['group']['round'].toString();
           _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
         });
       } else if (data[DataStatus] == StatusError) {
@@ -250,6 +268,29 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
+  void _apiStartNewRound() async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchStartNewRound(widget.loginKey, widget.groupId, _newRoundDeadLineFormController.text).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        _apiGetDetail();
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
+  }
+
   void _addUid(userData) {
     _searchUserFormController.text = '';
     _usersSelectedForInvite.add(userData);
@@ -288,6 +329,7 @@ class _GroupDetailState extends State<GroupDetail> {
   @override
   void dispose() {
     _searchUserFormController.dispose();
+    _newRoundDeadLineFormController.dispose();
     super.dispose();
   }
 
@@ -582,12 +624,46 @@ class _GroupDetailState extends State<GroupDetail> {
                   GroupItem(
                     groupName: _detailName,
                     progress: _detailProgress != '' ? _detailProgress : widget.progress,
-                    round: widget.round,
+                    round: _detailRound != '' ? _detailRound : widget.round,
                     deadline: _detailDeadline,
                     yourJuz: _detailMyJuz != '' ? _detailMyJuz : widget.yourJuz,
                     yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
                     groupColor: _detailColor,
                   ),
+                  if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
+                      (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
+                    Form(
+                        key: _formKey,
+                        child: Container(
+                            padding: sidePadding,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _newRoundDeadLineFormController,
+                                    keyboardType: TextInputType.text,
+                                    readOnly: true,
+                                    onTap: () => _renderSelectDate(context),
+                                    decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return FormCreateGroupEndDateError;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: 8.0),
+                                RaisedButton(
+                                  child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      _apiStartNewRound();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ))),
                   SizedBox(height: 16.0),
                   if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
                   if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),

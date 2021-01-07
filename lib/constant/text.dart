@@ -93,12 +93,12 @@ const String FormCreateGroupName = 'Nama group';
 const String FormCreateGroupAddress = 'Alamat group';
 const String FormCreateGroupLatlong = 'Kordinat: ';
 const String FormCreateGroupColor = 'Warna group';
-const String FormCreateGroupEndDate = 'Date line putaran 1';
+const String FormCreateGroupEndDate = 'Deadline putaran ini';
 const String FormCreateGroupUids = 'Undang teman';
 const String FormCreateGroupNameError = 'Nama group diperlukan';
 const String FormCreateGroupAddressError = 'Alamat group diperlukan';
 const String FormCreateGroupAddressInvalid = 'Alamat group tidak terkonfirmasi';
-const String FormCreateGroupEndDateError = 'Date line diperlukan';
+const String FormCreateGroupEndDateError = 'Deadline diperlukan';
 const String FormCreateGroupPreview = 'Preview';
 
 const String ConfirmTakingJuzTitle = 'Ambil Juz %s';
@@ -145,3 +145,5 @@ const String SearchGroupError = 'Gagal mencari group';
 const String JoinGroupConfirmationTitle = 'Gabung Group';
 const String JoinGroupConfirmationDesc = 'Anda yakin akan bergabung dengan group %s pada putaran %s?';
 const String JoinGroupConfirmButton = 'Yakin';
+
+const String StartNewRound = 'Mulai putaran ';
