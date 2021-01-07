@@ -54,4 +54,7 @@ admin:
 member:
  - group list -> join group
 
+ - search group -> limit 30
+ - search member -> limit 30
+
  - group detail -> multiple progress in a row

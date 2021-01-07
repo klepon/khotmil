@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
+import 'package:khotmil/fetch/search_group.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:sprintf/sprintf.dart';
@@ -28,6 +29,10 @@ class _GroupListState extends State<GroupList> {
 
   String _screenState = StateGroupList;
   String _messageText = '';
+  int _radius = 1;
+  String _keyword = '';
+  Address _closedValidAddress;
+  String _searchBy = SearchGroupByPhoneLocation;
 
   void _toggleScreenState(state) {
     setState(() {
@@ -64,9 +69,35 @@ class _GroupListState extends State<GroupList> {
   }
 
   Future _getGroup() async {
-    Position position = await _getPhoneLocation();
-    List<Address> address = await Geocoder.local.findAddressesFromCoordinates(Coordinates(position.latitude, position.longitude));
-    return {'radius': 1, 'address': address[0].addressLine};
+    String addressLine = '';
+    String latlong = '';
+
+    try {
+      switch (_searchBy) {
+        case SearchGroupByCustomLocation:
+          addressLine = _closedValidAddress.addressLine;
+          latlong = _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString();
+          break;
+        case SearchGroupByKeyword:
+          break;
+        default:
+          Position position = await _getPhoneLocation();
+          latlong = position.latitude.toString() + ',' + position.longitude.toString();
+
+          List<Address> address = await Geocoder.local.findAddressesFromCoordinates(Coordinates(position.latitude, position.longitude));
+          addressLine = address[0].addressLine;
+      }
+
+      Map<String, dynamic> data = await fetchSearchGroup(widget.loginKey, _radius, latlong, _keyword);
+      if (data[DataStatus] == StatusSuccess) {
+        return {'latlong': latlong, 'address': addressLine, 'groups': data['groups']};
+      } else if (data[DataStatus] == StatusError) {
+        throw data[DataMessage];
+      }
+      throw SearchGroupError;
+    } catch (e) {
+      return Future.error(e.toString());
+    }
   }
 
   Widget _loopGroups(groups, context) {
@@ -168,13 +199,43 @@ class _GroupListState extends State<GroupList> {
 
                 if (snapshot.connectionState != ConnectionState.done) {
                   snapLoading = true;
+                  snapMessage = '';
                 } else if (snapshot.hasData) {
-                  //loop group name
-                  groups.add(Row(
-                    children: [
-                      Text('nama group'),
-                    ],
-                  ));
+                  for (var group in snapshot.data['groups']) {
+                    groups.add(FlatButton(
+                      padding: EdgeInsets.all(0.00),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              title: Text(JoinGroupConfirmationTitle),
+                              content: Text(sprintf(JoinGroupConfirmationDesc, [group['name'], group['round'].toString()])),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(CancelText),
+                                ),
+                                RaisedButton(
+                                  color: Colors.redAccent,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(JoinGroupConfirmButton),
+                                ),
+                              ],
+                            ));
+                      },
+                      child: GroupItem(
+                        groupName: group['name'],
+                        progress: group['progress'].toString(),
+                        round: group['round'].toString(),
+                        deadline: group['end_date'].toString(),
+                        yourJuz: group['my_juz'].toString(),
+                        yourProgress: group['my_progress'].toString(),
+                        groupColor: group['color'],
+                      ),
+                    ));
+                  }
                 } else if (snapshot.hasError) {
                   snapMessage = snapshot.error.toString();
                 }
@@ -195,7 +256,9 @@ class _GroupListState extends State<GroupList> {
                         children: [
                           Column(
                             children: [
-                              Text(sprintf(GroupInRadius, [snapshot.data['radius'] ?? '-', snapshot.data['address'] ?? '...']), textAlign: TextAlign.center),
+                              Text(sprintf(GroupInRadius, [_radius, snapshot.data['address'] ?? '...']), textAlign: TextAlign.center),
+                              SizedBox(height: 16.0),
+                              Column(children: groups),
                               SizedBox(height: 16.0),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -231,8 +294,6 @@ class _GroupListState extends State<GroupList> {
                         )
                       ],
                     ),
-                    SizedBox(height: 16.0),
-                    if (groups.length > 0) Column(children: groups),
                   ],
                 );
               }),
