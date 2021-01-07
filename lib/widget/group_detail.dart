@@ -70,6 +70,8 @@ class _GroupDetailState extends State<GroupDetail> {
   Future _getMemberAPI;
 
   void _apiGetDetail() async {
+    widget.reloadList();
+
     await fetchGetSingleGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
@@ -84,6 +86,8 @@ class _GroupDetailState extends State<GroupDetail> {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
+      } else {
+        setState(() {});
       }
     }).catchError((onError) {
       setState(() {
@@ -126,11 +130,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
     await fetchJoinRound(widget.loginKey, widget.groupId, juz).then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList();
-
-        setState(() {
-          _apiGetDetail();
-        });
+        _apiGetDetail();
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
@@ -153,11 +153,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
     await fetchDeleteMyMember(widget.loginKey, mid).then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList();
-
-        setState(() {
-          _apiGetDetail();
-        });
+        _apiGetDetail();
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
@@ -180,11 +176,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
     await fetchUpdateProgress(widget.loginKey, row['id'], row['juz'], row['progress']).then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList();
-
-        setState(() {
-          _apiGetDetail();
-        });
+        _apiGetDetail();
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
@@ -213,12 +205,11 @@ class _GroupDetailState extends State<GroupDetail> {
     await fetchInviteUser(widget.loginKey, widget.groupId, uids).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
-          _apiGetDetail();
-
           _apiReturnUsers = [];
           _usersSelectedForInvite = [];
           _searchUserFormController.text = '';
         });
+        _apiGetDetail();
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;

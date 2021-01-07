@@ -399,6 +399,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                             children: [
                                               Expanded(
                                                   child: RaisedButton(
+                                                child: Text(UseCoordinateButtonText),
                                                 onPressed: () {
                                                   setState(() {
                                                     _lastCheckedAddress = _closedValidAddress.addressLine;
@@ -406,11 +407,11 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                                     _latlongOri = '';
                                                   });
                                                 },
-                                                child: Text(UseCoordinateButtonText),
                                               )),
                                               SizedBox(width: 8.0),
                                               Expanded(
                                                   child: RaisedButton(
+                                                child: Text(UseAddressButtonText),
                                                 onPressed: () {
                                                   setState(() {
                                                     _addressFormController.text = _closedValidAddress.addressLine;
@@ -419,7 +420,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                                     _latlongOri = '';
                                                   });
                                                 },
-                                                child: Text(UseAddressButtonText),
                                               )),
                                             ],
                                           ),
