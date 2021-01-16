@@ -51,4 +51,7 @@ Restart connection and do all the step
 
 member:
 
+ - reset password, error email not exist bukan email exist
+ - reset password, name dari user bukan dari param
+
  - group detail -> multiple progress in a row
