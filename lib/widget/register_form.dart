@@ -15,9 +15,11 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  TextEditingController nameController = TextEditingController();
+  TextEditingController nickNameController = TextEditingController();
+  TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -31,15 +33,21 @@ class _RegisterFormState extends State<RegisterForm> {
             children: [
               Center(child: Text(RegisterWithEmailFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
               TextFormField(
-                controller: nameController,
+                controller: nickNameController,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(hintText: EnterName, errorStyle: errorTextStyle),
+                decoration: InputDecoration(hintText: EnterNickName, errorStyle: errorTextStyle),
                 validator: (value) {
                   if (value.isEmpty) {
                     return NameRequired;
                   }
                   return null;
                 },
+              ),
+              SizedBox(height: 8.0),
+              TextFormField(
+                controller: fullNameController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(hintText: EnterFullName, errorStyle: errorTextStyle),
               ),
               SizedBox(height: 8.0),
               TextFormField(
@@ -68,12 +76,18 @@ class _RegisterFormState extends State<RegisterForm> {
                   return null;
                 },
               ),
+              SizedBox(height: 8.0),
+              TextFormField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
+              ),
               SizedBox(height: 16.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
               RaisedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    widget.registerApi(nameController.text, emailController.text, passwordController.text);
+                    widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text);
                   }
                 },
                 child: Text(RegisterText),
@@ -98,9 +112,11 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    nickNameController.dispose();
+    fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    phoneController.dispose();
     super.dispose();
   }
 }

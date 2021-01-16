@@ -53,9 +53,6 @@ Restart connection and do all the step
 
 - add api notification for update or news release on register with key
 
-- user, add nick name
-- user, add sure name
-- user, add phone/wa
 - user, add photo
 - user loged in add drawer
 

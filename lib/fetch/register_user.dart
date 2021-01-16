@@ -2,14 +2,16 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchRegisterUser(String name, String email, String password) async {
+Future fetchRegisterUser(String name, String fullname, String email, String password, String phone) async {
   try {
     Response response = await Dio(dioOptions).post(
       'klepon/v1/register-user',
       data: {
         'name': name,
+        'fullname': fullname,
         'email': email,
         'password': password,
+        'phone': phone,
       },
     );
 

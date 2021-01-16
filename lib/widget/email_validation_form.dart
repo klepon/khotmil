@@ -59,7 +59,9 @@ class _ValidationFormState extends State<ValidationForm> {
                     return null;
                   },
                 ),
-              if (widget.requiredUserPass) SizedBox(height: 16.0),
+              SizedBox(height: 16.0),
+              if (widget.futureMessage != '') Text(widget.futureMessage),
+              if (widget.futureMessage != '') SizedBox(height: 8.0),
               TextFormField(
                 controller: codeController,
                 maxLength: 6,
@@ -73,8 +75,6 @@ class _ValidationFormState extends State<ValidationForm> {
                 },
               ),
               SizedBox(height: 16.0),
-              if (widget.futureMessage != '') Text(widget.futureMessage),
-              if (widget.futureMessage != '') SizedBox(height: 8.0),
               RaisedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {

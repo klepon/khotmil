@@ -96,7 +96,7 @@ class _AuthState extends State<Auth> {
     });
   }
 
-  _registerApi(String name, String email, String password) async {
+  _registerApi(String name, String fullname, String email, String password, String phone) async {
     setState(() {
       _loadingOverlay = true;
       _futureMessage = '';
@@ -105,7 +105,7 @@ class _AuthState extends State<Auth> {
       _password = password;
     });
 
-    await fetchRegisterUser(name, email, password).then((data) {
+    await fetchRegisterUser(name, fullname, email, password, phone).then((data) {
       setState(() {
         _loadingOverlay = false;
         _futureMessage = data[DataMessage];
