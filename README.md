@@ -51,7 +51,7 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- donate button get text from API
+- add api notification for update or news release on register with key
 
 - user, add nick name
 - user, add sure name
