@@ -83,10 +83,14 @@ class _RegisterFormState extends State<RegisterForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(AlreadyHasAccount),
-                  TextButton(onPressed: () => widget.changeForm(FormLogin), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
+                  TextButton(
+                      onPressed: () => widget.changeForm(FormLogin),
+                      child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
                 ],
               ),
-              TextButton(onPressed: () => widget.changeForm(FormEmailValidation), child: Text(EmailValidationText, style: TextStyle(fontWeight: FontWeight.bold))),
+              TextButton(
+                  onPressed: () => widget.changeForm(FormEmailValidation),
+                  child: Text(EmailValidationText, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
             ],
           ),
         ));

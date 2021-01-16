@@ -83,8 +83,10 @@ class _RecoveryPasswordFormState extends State<RecoveryPasswordForm> {
                 children: [
                   TextButton(
                       onPressed: () => widget.changeForm(FormRecoveryPasswordValidation),
-                      child: Text(RecoveryPasswordEmailValidationText, style: TextStyle(fontWeight: FontWeight.bold))),
-                  TextButton(onPressed: () => widget.changeForm(FormLogin), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
+                      child: Text(RecoveryPasswordEmailValidationText, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
+                  TextButton(
+                      onPressed: () => widget.changeForm(FormLogin),
+                      child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
                 ],
               ),
             ],

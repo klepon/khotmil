@@ -5,7 +5,8 @@ import 'package:khotmil/widget/donation.dart';
 
 class LoginRegister extends StatefulWidget {
   final Widget currentForm;
-  LoginRegister({Key key, this.currentForm}) : super(key: key);
+  final bool showLogo;
+  LoginRegister({Key key, this.showLogo, this.currentForm}) : super(key: key);
 
   @override
   _LoginRegisterState createState() => _LoginRegisterState();
@@ -25,11 +26,12 @@ class _LoginRegisterState extends State<LoginRegister> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SizedBox(height: 16.0),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width * 80 / 100,
-                child: Image(image: AssetImage(HeaderImage)),
-              ),
+              if (widget.showLogo)
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width * 80 / 100,
+                  child: Image(image: AssetImage(HeaderImage)),
+                ),
               widget.currentForm,
               Column(
                 children: [

@@ -85,7 +85,9 @@ class _RecoveryEmailValidationFormState extends State<RecoveryEmailValidationFor
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton(onPressed: () => widget.changeForm(FormLogin), child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold))),
+                  TextButton(
+                      onPressed: () => widget.changeForm(FormLogin),
+                      child: Text(LoginText, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
                 ],
               ),
             ],

@@ -236,6 +236,25 @@ class _AuthState extends State<Auth> {
     }
   }
 
+  _useLogo() {
+    switch (_currentForm) {
+      case FormEmailValidation:
+        return false;
+
+      case FormRegisterEmail:
+        return false;
+
+      case FormRecoveryPasswordValidation:
+        return false;
+
+      case FormRecoveryPassword:
+        return false;
+
+      default:
+        return true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -246,7 +265,12 @@ class _AuthState extends State<Auth> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _loginKey == '' ? LoginRegister(currentForm: _getForm()) : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, loginKey: _loginKey, logout: _logout),
+        _loginKey == ''
+            ? LoginRegister(
+                currentForm: _getForm(),
+                showLogo: _useLogo(),
+              )
+            : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, loginKey: _loginKey, logout: _logout),
         if (_loadingOverlay) loadingOverlay(context)
       ],
     );

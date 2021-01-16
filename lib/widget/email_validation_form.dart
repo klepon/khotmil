@@ -88,7 +88,9 @@ class _ValidationFormState extends State<ValidationForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(NoAccountYet),
-                  TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold))),
+                  TextButton(
+                      onPressed: () => widget.changeForm(FormRegisterEmail),
+                      child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
                 ],
               ),
             ],
