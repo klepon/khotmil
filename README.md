@@ -49,6 +49,29 @@ Restart connection and do all the step
 
 ## improvment
 
-member:
+## reskin and relogic
 
- - group detail -> multiple progress in a row
+- donate button get text from API
+
+- user, add nick name
+- user, add sure name
+- user, add phone/wa
+- user, add photo
+- user loged in add drawer
+
+- create group add photo
+- create group add round
+
+- group reskin list
+
+- join group update view
+- join group add confirmation modal
+- join group reskin join process
+
+- group detail reskin join
+- group detail reskin update progress
+- group update restart round
+- group reskin update group
+- group detail add admin
+
+- group detail -> multiple progress in a row

@@ -28,11 +28,24 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Center(child: Text(LoginFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
+                decoration: InputDecoration(
+                  hintText: EnterEmail,
+                  hintStyle: TextStyle(color: Color(int.parse('0xff747070'))),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                  errorStyle: errorTextStyle,
+                  filled: true,
+                  fillColor: Color(int.parse('0xffC4C4C4')),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100.0),
+                      borderSide: BorderSide(
+                        width: 0,
+                        style: BorderStyle.none,
+                      )),
+                ),
+                style: TextStyle(color: Color(int.parse('0xff747070'))),
                 validator: (value) {
                   if (value.isEmpty || !EmailValidator.validate(value)) {
                     return EmailRequired;
@@ -47,7 +60,21 @@ class _LoginFormState extends State<LoginForm> {
                 enableSuggestions: false,
                 autocorrect: false,
                 obscureText: true,
-                decoration: InputDecoration(hintText: EnterPassword, errorStyle: errorTextStyle),
+                decoration: InputDecoration(
+                  hintText: EnterPassword,
+                  hintStyle: TextStyle(color: Color(int.parse('0xff747070'))),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                  errorStyle: errorTextStyle,
+                  filled: true,
+                  fillColor: Color(int.parse('0xffC4C4C4')),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(100.0),
+                      borderSide: BorderSide(
+                        width: 0,
+                        style: BorderStyle.none,
+                      )),
+                ),
+                style: TextStyle(color: Color(int.parse('0xff747070'))),
                 validator: (value) {
                   if (value.isEmpty) {
                     return PasswordRequired;
@@ -55,24 +82,36 @@ class _LoginFormState extends State<LoginForm> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 24.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
-              RaisedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {
-                      widget.loginApi(emailController.text, passwordController.text);
-                    }
-                  },
-                  child: Text(LoginText)),
+              MaterialButton(
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    widget.loginApi(emailController.text, passwordController.text);
+                  }
+                },
+                child: Text(
+                  LoginText,
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+                minWidth: double.infinity,
+                height: 50.0,
+                color: Color(int.parse('0xff0E5BF0')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+              ),
               SizedBox(height: 16.0),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Text(NoAccountYet),
-                    TextButton(onPressed: () => widget.changeForm(FormRegisterEmail), child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold)))
+                    TextButton(
+                        onPressed: () => widget.changeForm(FormRegisterEmail),
+                        child: Text(RegisterWithEmailNow, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline)))
                   ]),
-                  TextButton(onPressed: () => widget.changeForm(FormRecoveryPassword), child: Text(RecoveryPassword, style: TextStyle(fontWeight: FontWeight.bold))),
+                  TextButton(
+                      onPressed: () => widget.changeForm(FormRecoveryPassword),
+                      child: Text(RecoveryPassword, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, decoration: TextDecoration.underline))),
                 ],
               ),
             ],

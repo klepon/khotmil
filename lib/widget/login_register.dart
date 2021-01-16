@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
+import 'package:khotmil/widget/donation.dart';
 
 class LoginRegister extends StatefulWidget {
   final Widget currentForm;
@@ -32,9 +33,21 @@ class _LoginRegisterState extends State<LoginRegister> {
               widget.currentForm,
               Column(
                 children: [
-                  Container(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.width * 20 / 100, child: Image(image: AssetImage(FooterLogo))),
                   SizedBox(height: 16.0),
-                  Text(CopyRight),
+                  Text(
+                    CopyRight,
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  SizedBox(height: 16.0),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return Donation();
+                      }));
+                    },
+                    child: Text(DonateText),
+                    color: Color(int.parse('0xffFDAC0E')),
+                  ),
                   SizedBox(height: 16.0),
                 ],
               ),
