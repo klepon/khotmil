@@ -1,2 +1,2 @@
-const String HeaderImage = 'images/khotmil.png';
-const String FooterLogo = 'images/logo.png';
+const String HeaderImage = 'images/logo.png';
+const String AnonImage = 'images/anon.png';

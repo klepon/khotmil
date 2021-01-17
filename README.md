@@ -70,5 +70,6 @@ Restart connection and do all the step
 - group update restart round
 - group reskin update group
 - group detail add admin
+- group detail, click user name show profile info
 
 - group detail -> multiple progress in a row

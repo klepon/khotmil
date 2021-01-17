@@ -1,3 +1,5 @@
+// import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
@@ -21,6 +23,14 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // File _image;
+  // Future _getImage() async {
+  //   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+  //   setState(() {
+  //     _image = image;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

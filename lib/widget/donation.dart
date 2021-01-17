@@ -1,4 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
+import 'package:khotmil/constant/assets.dart';
+// import 'package:flutter_html/flutter_html.dart';
+// import 'package:flutter_html/html_parser.dart';
+// import 'package:flutter_html/style.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/donation_info.dart';
@@ -12,22 +20,19 @@ class _DonationState extends State<Donation> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _loadingOverlay = false;
-  String _title = '';
-  String _body = '';
+  String _message = '';
 
   _getDonateINfoApi() async {
     setState(() {
       _loadingOverlay = true;
-      _title = '';
-      _body = '';
+      _message = '';
     });
 
     await fetchDonationInfo().then((data) async {
-      if (data['title'] != null || data['body'] != null) {
+      if (data['message'] != null && data['message'] != '') {
         setState(() {
           _loadingOverlay = false;
-          _title = data['title'];
-          _body = data['body'];
+          _message = data['message'];
         });
         return;
       } else {
@@ -35,7 +40,7 @@ class _DonationState extends State<Donation> {
 
         setState(() {
           _loadingOverlay = false;
-          _body = 'error';
+          _message = 'error';
         });
       }
     });
@@ -51,6 +56,11 @@ class _DonationState extends State<Donation> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
+      // Container(
+      //   width: MediaQuery.of(context).size.width,
+      //   height: MediaQuery.of(context).size.width * 80 / 100,
+      //   child: Image(image: AssetImage(HeaderImage)),
+      // ),
       Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
@@ -58,14 +68,26 @@ class _DonationState extends State<Donation> {
         ),
         body: Container(
           padding: mainPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (_title != '') SizedBox(height: 16.0),
-              if (_title != '') Text(_title, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-              if (_title != '') SizedBox(height: 16.0),
-              if (_body != '') Text(_body),
-            ],
+          height: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(HeaderImage),
+              fit: BoxFit.none,
+              alignment: Alignment.bottomRight,
+              colorFilter: ColorFilter.mode(Color(int.parse('0xff092128')).withOpacity(0.7), BlendMode.dstATop),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (_message != '')
+                  Html(
+                    data: _message,
+                    style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(16.0))},
+                  ),
+              ],
+            ),
           ),
         ),
         // This trailing comma makes auto-formatting nicer for build methods.

@@ -35,6 +35,7 @@ dependencies:
   dio: ^3.0.10
   sprintf: "^4.0.0"
   geolocator: ^6.1.13
+  flutter_html: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -51,7 +52,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - images/khotmil.png
+    - images/anon.png
     - images/logo.png
 
   # To add assets to your application, add an assets section, like this:
