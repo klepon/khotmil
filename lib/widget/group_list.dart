@@ -10,10 +10,11 @@ import 'group_item.dart';
 
 class GroupList extends StatefulWidget {
   final String name;
+  final String photo;
   final String loginKey;
   final Function logout;
   final Function toggleLoading;
-  GroupList({Key key, this.name, this.loginKey, this.logout, this.toggleLoading}) : super(key: key);
+  GroupList({Key key, this.name, this.photo, this.loginKey, this.logout, this.toggleLoading}) : super(key: key);
 
   @override
   _GroupListState createState() => _GroupListState();
@@ -136,6 +137,11 @@ class _GroupListState extends State<GroupList> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width * 80 / 100,
+            child: Image.network(widget.photo),
+          ),
           if (_messageText != '') Container(padding: mainPadding, child: Center(child: Text(_messageText))),
           Container(
               padding: mainPadding,

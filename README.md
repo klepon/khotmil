@@ -53,7 +53,6 @@ Restart connection and do all the step
 
 - add api notification for update or news release on register with key
 
-- user, add photo
 - user loged in add drawer
 
 - create group add photo

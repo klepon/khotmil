@@ -36,6 +36,9 @@ dependencies:
   sprintf: "^4.0.0"
   geolocator: ^6.1.13
   flutter_html: ^1.2.0
+  image_picker: ^0.6.7+21
+  image: ^2.1.19
+
 
 dev_dependencies:
   flutter_test:

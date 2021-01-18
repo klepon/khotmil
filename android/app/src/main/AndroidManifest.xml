@@ -11,6 +11,7 @@
     <!-- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> -->
     <!-- <uses-permission android:name="android.permission.SEND_SMS" />  -->
     <application
+        android:requestLegacyExternalStorage="true"
         android:name="io.flutter.app.FlutterApplication"
         android:label="khotmil"
         android:icon="@mipmap/ic_launcher">

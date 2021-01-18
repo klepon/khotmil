@@ -1,6 +1,9 @@
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
@@ -24,13 +27,19 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // File _image;
-  // Future _getImage() async {
-  //   var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-  //   setState(() {
-  //     _image = image;
-  //   });
-  // }
+  File _image;
+  final picker = ImagePicker();
+  String testm = '';
+
+  Future _getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +102,24 @@ class _RegisterFormState extends State<RegisterForm> {
                 decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
               ),
               SizedBox(height: 16.0),
+              FlatButton(
+                  onPressed: () {
+                    _getImage();
+                  },
+                  child: Stack(
+                    alignment: const Alignment(0.0, 0.8),
+                    children: [
+                      CircleAvatar(backgroundImage: AssetImage(_image != null ? _image.path : AnonImage), radius: 79),
+                      if (_image == null) Text(UploadPhoto),
+                    ],
+                  )),
+              SizedBox(height: 16.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
+              if (testm != '') Text(testm),
               RaisedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text);
+                    widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text, _image);
                   }
                 },
                 child: Text(RegisterText),

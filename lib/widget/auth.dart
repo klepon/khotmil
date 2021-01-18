@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
@@ -27,6 +29,7 @@ class _AuthState extends State<Auth> {
   String _name = '';
   String _email = '';
   String _password = '';
+  String _photo = '';
 
   bool _loadingOverlay = false;
 
@@ -46,6 +49,7 @@ class _AuthState extends State<Auth> {
       _loadingOverlay = false;
       _loginKey = prefs.getString(LoginKeyPref) ?? '';
       _name = prefs.getString(DisplayNamePref) ?? '';
+      _photo = prefs.getString(UserPhotoPref) ?? '';
     });
   }
 
@@ -85,6 +89,7 @@ class _AuthState extends State<Auth> {
         await SharedPreferences.getInstance().then((prefs) async {
           prefs.setString(LoginKeyPref, data['key']);
           prefs.setString(DisplayNamePref, data['display_name']);
+          prefs.setString(UserPhotoPref, data['photo']);
           return true;
         }).then((rs) {
           setState(() {
@@ -93,10 +98,15 @@ class _AuthState extends State<Auth> {
           _getLoginKey();
         });
       }
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = e.toString();
+      });
     });
   }
 
-  _registerApi(String name, String fullname, String email, String password, String phone) async {
+  _registerApi(String name, String fullname, String email, String password, String phone, File photo) async {
     setState(() {
       _loadingOverlay = true;
       _futureMessage = '';
@@ -105,13 +115,18 @@ class _AuthState extends State<Auth> {
       _password = password;
     });
 
-    await fetchRegisterUser(name, fullname, email, password, phone).then((data) {
+    await fetchRegisterUser(name, fullname, email, password, phone, photo).then((data) {
       setState(() {
         _loadingOverlay = false;
         _futureMessage = data[DataMessage];
         if (data[DataStatus] == StatusSuccess) {
           _currentForm = FormEmailValidation;
         }
+      });
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = e.toString();
       });
     });
   }
@@ -139,6 +154,7 @@ class _AuthState extends State<Auth> {
         await SharedPreferences.getInstance().then((prefs) async {
           prefs.setString(LoginKeyPref, data['key']);
           prefs.setString(DisplayNamePref, data['display_name']);
+          prefs.setString(UserPhotoPref, data['photo']);
           return true;
         }).then((rs) {
           setState(() {
@@ -147,6 +163,11 @@ class _AuthState extends State<Auth> {
           _getLoginKey();
         });
       }
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = e.toString();
+      });
     });
   }
 
@@ -164,6 +185,11 @@ class _AuthState extends State<Auth> {
         if (data[DataStatus] == StatusSuccess) {
           _currentForm = FormRecoveryPasswordValidation;
         }
+      });
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = e.toString();
       });
     });
   }
@@ -191,6 +217,7 @@ class _AuthState extends State<Auth> {
         await SharedPreferences.getInstance().then((prefs) async {
           prefs.setString(LoginKeyPref, data['key']);
           prefs.setString(DisplayNamePref, data['display_name']);
+          prefs.setString(UserPhotoPref, data['photo']);
           return true;
         }).then((rs) {
           setState(() {
@@ -199,6 +226,11 @@ class _AuthState extends State<Auth> {
           _getLoginKey();
         });
       }
+    }).catchError((e) {
+      setState(() {
+        _loadingOverlay = false;
+        _futureMessage = e.toString();
+      });
     });
   }
 
@@ -270,7 +302,7 @@ class _AuthState extends State<Auth> {
                 currentForm: _getForm(),
                 showLogo: _useLogo(),
               )
-            : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, loginKey: _loginKey, logout: _logout),
+            : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, photo: _photo, loginKey: _loginKey, logout: _logout),
         if (_loadingOverlay) loadingOverlay(context)
       ],
     );
