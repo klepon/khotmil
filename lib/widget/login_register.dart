@@ -42,11 +42,9 @@ class _LoginRegisterState extends State<LoginRegister> {
                   ),
                   SizedBox(height: 16.0),
                   RaisedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return Donation();
-                      }));
-                    },
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return Donation();
+                    })),
                     child: Text(DonateText),
                     color: Color(int.parse('0xffFDAC0E')),
                   ),

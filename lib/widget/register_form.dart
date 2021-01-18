@@ -103,9 +103,7 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
               SizedBox(height: 16.0),
               FlatButton(
-                  onPressed: () {
-                    _getImage();
-                  },
+                  onPressed: () => _getImage(),
                   child: Stack(
                     alignment: const Alignment(0.0, 0.8),
                     children: [
