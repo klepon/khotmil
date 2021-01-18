@@ -114,13 +114,20 @@ class _RegisterFormState extends State<RegisterForm> {
               SizedBox(height: 16.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
               if (testm != '') Text(testm),
-              RaisedButton(
+              MaterialButton(
+                child: Text(
+                  RegisterText,
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text, _image);
                   }
                 },
-                child: Text(RegisterText),
+                minWidth: double.infinity,
+                height: 50.0,
+                color: Color(int.parse('0xff0E5BF0')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
               ),
               SizedBox(height: 16.0),
               Row(

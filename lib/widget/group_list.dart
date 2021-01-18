@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
+import 'package:khotmil/widget/donation.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/search_group.dart';
 
@@ -21,11 +23,9 @@ class GroupList extends StatefulWidget {
 }
 
 class _GroupListState extends State<GroupList> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController _searchGroupFormController = TextEditingController();
-
-  String _messageText = '';
 
   void _reloadGroupList() {
     setState(() {});
@@ -70,46 +70,70 @@ class _GroupListState extends State<GroupList> {
     );
   }
 
-  Widget _errorResponse(_errorMessage, [showRefresh = true]) {
-    return Column(
-      children: [
-        Container(padding: mainPadding, child: Text(_errorMessage)),
-        SizedBox(
-          height: 16.0,
-        ),
-        if (showRefresh)
-          RaisedButton(
-              onPressed: () {
-                setState(() {});
-              },
-              child: Text(ButtonRefresh)),
-      ],
-    );
-  }
-
   Widget _myGroupList(context) {
     return FutureBuilder(
       future: fetchMyGroupList(widget.loginKey),
       builder: (context, snapshot) {
+        String _responseMessage = '';
+        String _dataMessage = '';
+        bool _isLoading = true;
+        bool _showRefreshButton = false;
+        bool _hasData = false;
+
         if (snapshot.connectionState != ConnectionState.done) {
-          return Column(
-            children: [Container(padding: mainPadding, child: Text(LoadingGroups)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-          );
-        }
-
-        if (snapshot.hasData) {
+          _responseMessage = LoadingGroups;
+        } else if (snapshot.hasData) {
           if (snapshot.data['message'] != null) {
-            return _errorResponse(snapshot.data['message'], false);
+            _dataMessage = snapshot.data['message'];
+          } else {
+            _hasData = true;
           }
-
-          return _loopGroups(snapshot.data['groups'], context);
+          _isLoading = false;
         } else if (snapshot.hasError) {
-          return _errorResponse("${snapshot.error}");
+          _responseMessage = snapshot.error.toString();
+          _showRefreshButton = true;
+          _isLoading = false;
         }
 
-        return Column(
-          children: [Container(padding: mainPadding, child: Text(LoadingGroups)), SizedBox(height: 16.0), Center(child: CircularProgressIndicator())],
-        );
+        if (_isLoading || _dataMessage != '' || _responseMessage != '') {
+          return Container(
+              padding: mainPadding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (_responseMessage != '') Text(_responseMessage),
+                  if (_isLoading) SizedBox(height: 16.0),
+                  if (_isLoading) Center(child: CircularProgressIndicator()),
+                  if (_dataMessage != '')
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Text(WelcomeMessage),
+                      Text(widget.name),
+                    ]),
+                  if (_dataMessage != '') SizedBox(height: 20.0),
+                  if (_dataMessage != '') Text(_dataMessage, textAlign: TextAlign.center),
+                ],
+              ));
+        }
+
+        return SingleChildScrollView(
+            child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+          child: Column(
+            children: [
+              if (_hasData)
+                Container(
+                    padding: mainPadding,
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(children: [Text(WelcomeMessage), Text(widget.name)]),
+                      SizedBox(height: 8.0),
+                      Text(YourGroup, style: bold),
+                    ])),
+              if (_hasData) _loopGroups(snapshot.data['groups'], context),
+              if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
+            ],
+          ),
+        ));
       },
     );
   }
@@ -123,67 +147,88 @@ class _GroupListState extends State<GroupList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Text(AppTitle),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.lock),
-            tooltip: LogoutText,
-            onPressed: () => widget.logout(),
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.width * 80 / 100,
-            child: Image.network(widget.photo),
-          ),
-          if (_messageText != '') Container(padding: mainPadding, child: Center(child: Text(_messageText))),
-          Container(
-              padding: mainPadding,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [Text(WelcomeMessage), Text(widget.name)]),
-                SizedBox(height: 8.0),
-                Text(YourGroup, style: bold),
-              ])),
-          Expanded(
-            child: SingleChildScrollView(child: ConstrainedBox(constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width), child: _myGroupList(context))),
-          ),
-          Container(
-            padding: mainPadding,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                RaisedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return AddEditGroup(
-                          loginKey: widget.loginKey,
-                          title: CreateGroup,
-                          groupId: '',
-                          reloadList: _reloadGroupList,
-                          deadline: '',
-                          reloadDetail: () => {},
-                        );
-                      }));
-                    },
-                    child: Text(CreateGroup),
-                    color: Colors.redAccent),
-                RaisedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                      }));
-                    },
-                    child: Text(JoinGroup))
-              ],
+      key: _scaffoldKey,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              FlatButton(
+                  padding: mainPadding,
+                  onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                  child: Row(children: [
+                    CircleAvatar(backgroundImage: widget.photo != '' ? NetworkImage(widget.photo) : AssetImage(AnonImage)),
+                    SizedBox(width: 8.0),
+                    Text(widget.name, style: TextStyle(fontSize: 20.0)),
+                  ])),
+              FlatButton(
+                  padding: mainPadding,
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return Donation();
+                      })),
+                  child: Text(DonateText)),
+            ])),
+            Expanded(
+              child: _myGroupList(context),
             ),
-          )
-        ],
+            Container(
+              padding: mainPadding,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return AddEditGroup(
+                            loginKey: widget.loginKey,
+                            title: CreateGroup,
+                            groupId: '',
+                            reloadList: _reloadGroupList,
+                            deadline: '',
+                            reloadDetail: () => {},
+                          );
+                        }));
+                      },
+                      child: Text(CreateGroup),
+                      color: Colors.redAccent),
+                  RaisedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                        }));
+                      },
+                      child: Text(JoinGroup))
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+            child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            FlatButton(
+                padding: mainPadding,
+                onPressed: () => Navigator.of(context).pop(),
+                child: Row(children: [
+                  CircleAvatar(backgroundImage: NetworkImage(widget.photo)),
+                  SizedBox(width: 8.0),
+                  Text(widget.name, style: TextStyle(fontSize: 20.0)),
+                ])),
+            ListTile(title: Text(EditAccount), onTap: () {}),
+            ListTile(title: Text(ChangePassword), onTap: () {}),
+            ListTile(title: Text(DoaKhatamanQuran), onTap: () {}),
+            ListTile(title: Text(AboutAplication), onTap: () {}),
+            ListTile(title: Text(ShareAplikastion), onTap: () {}),
+            ListTile(
+              title: Text(LogoutText),
+              onTap: () => widget.logout(),
+            ),
+          ],
+        )),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );

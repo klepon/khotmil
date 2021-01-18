@@ -12,7 +12,7 @@ const String EnterNewPassword = 'Password baru';
 const String PasswordRequired = 'Password diperlukan';
 const String UploadPhoto = 'Upload photo';
 const String LoginText = 'Log In';
-const String LogoutText = 'Logout';
+const String LogoutText = 'Keluar Aplikasi';
 const String RegisterText = 'Daftar';
 const String CancelText = 'Batal';
 const String DonateText = 'Donasi';
@@ -150,3 +150,10 @@ const String JoinGroupConfirmationDesc = 'Anda yakin akan bergabung dengan group
 const String JoinGroupConfirmButton = 'Yakin';
 
 const String StartNewRound = 'Mulai putaran ';
+const String OkText = 'OK';
+
+const String EditAccount = 'Edit Akun';
+const String ChangePassword = 'Ubah Kode Kunci';
+const String DoaKhatamanQuran = 'Doa Khataman Quran';
+const String AboutAplication = 'Tentang Aplikasi';
+const String ShareAplikastion = 'Bagikan Aplikasi';

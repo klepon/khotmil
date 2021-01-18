@@ -16,7 +16,9 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: SafeArea(
+          child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: MediaQuery.of(context).size.width,
@@ -54,7 +56,7 @@ class _LoginRegisterState extends State<LoginRegister> {
             ],
           ),
         ),
-      ),
+      )),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

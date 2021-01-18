@@ -51,10 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- add api notification for update or news release on register with key
-
-- user loged in add drawer
-
 - create group add photo
 - create group add round
 
@@ -71,4 +67,7 @@ Restart connection and do all the step
 - group detail add admin
 - group detail, click user name show profile info
 
-- group detail -> multiple progress in a row
+- user menu in add drawer
+
+- add api notification for update or news release on register with key
+

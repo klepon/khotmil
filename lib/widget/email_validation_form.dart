@@ -75,13 +75,17 @@ class _ValidationFormState extends State<ValidationForm> {
                 },
               ),
               SizedBox(height: 16.0),
-              RaisedButton(
+              MaterialButton(
+                child: Text(EmailValidationText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     widget.validationApi(emailController.text, passwordController.text, codeController.text);
                   }
                 },
-                child: Text(EmailValidationText),
+                minWidth: double.infinity,
+                height: 50.0,
+                color: Color(int.parse('0xff0E5BF0')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
               ),
               SizedBox(height: 16.0),
               Row(

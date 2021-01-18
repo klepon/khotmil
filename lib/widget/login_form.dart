@@ -85,15 +85,12 @@ class _LoginFormState extends State<LoginForm> {
               SizedBox(height: 24.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
               MaterialButton(
+                child: Text(LoginText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     widget.loginApi(emailController.text, passwordController.text);
                   }
                 },
-                child: Text(
-                  LoginText,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
                 minWidth: double.infinity,
                 height: 50.0,
                 color: Color(int.parse('0xff0E5BF0')),
