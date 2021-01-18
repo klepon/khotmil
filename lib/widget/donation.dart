@@ -86,6 +86,16 @@ class _DonationState extends State<Donation> {
                     data: _message,
                     style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(16.0))},
                   ),
+                SizedBox(
+                  height: 54.0,
+                ),
+                MaterialButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(OkText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                  height: 38.0,
+                  color: Color(int.parse('0xffF30F0F')),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+                )
               ],
             ),
           ),
