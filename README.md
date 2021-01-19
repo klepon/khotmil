@@ -52,10 +52,11 @@ Restart connection and do all the step
 ## reskin and relogic
 
 - user menu in add drawer
--- doa
 -- edit akun
 -- change password
 -- share
+
+- fix image resize using flutter core
 
 - create group add photo
 - create group add round

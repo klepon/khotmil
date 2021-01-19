@@ -4,6 +4,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
+import 'package:khotmil/widget/full_screen_image_page.dart';
 import 'package:khotmil/widget/single_api_page.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/search_group.dart';
@@ -218,7 +219,7 @@ class _GroupListState extends State<GroupList> {
                 ])),
             ListTile(title: Text(EditAccount), onTap: () {}),
             ListTile(title: Text(ChangePassword), onTap: () {}),
-            ListTile(title: Text(DoaKhatamanQuran), onTap: () {}),
+            ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
             ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
             ListTile(title: Text(ShareAplikastion), onTap: () {}),
             ListTile(
