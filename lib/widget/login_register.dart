@@ -15,18 +15,17 @@ class LoginRegister extends StatefulWidget {
 class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 30.0),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: MediaQuery.of(context).size.width,
-            minHeight: MediaQuery.of(context).size.height,
-          ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 30.0),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+          minHeight: MediaQuery.of(context).size.height - AppBar().preferredSize.height,
+        ),
+        child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+            children: [
               SizedBox(height: 16.0),
               if (widget.showLogo)
                 Container(
@@ -35,9 +34,9 @@ class _LoginRegisterState extends State<LoginRegister> {
                   child: Image(image: AssetImage(HeaderImage)),
                 ),
               widget.currentForm,
+              // Expanded(child: widget.currentForm),
               Column(
                 children: [
-                  SizedBox(height: 16.0),
                   Text(
                     CopyRight,
                     style: TextStyle(fontStyle: FontStyle.italic),
@@ -49,15 +48,13 @@ class _LoginRegisterState extends State<LoginRegister> {
                       return SingleApiPage(apiUrl: ApiDonation);
                     })),
                     color: Color(int.parse('0xffFDAC0E')),
-                  ),
-                  SizedBox(height: 16.0),
+                  )
                 ],
               ),
             ],
           ),
         ),
-      )),
-      // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

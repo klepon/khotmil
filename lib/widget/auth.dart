@@ -300,10 +300,7 @@ class _AuthState extends State<Auth> {
           child: Stack(
         children: [
           _loginKey == ''
-              ? LoginRegister(
-                  currentForm: _getForm(),
-                  showLogo: _useLogo(),
-                )
+              ? LoginRegister(currentForm: _getForm(), showLogo: _useLogo())
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -350,9 +347,11 @@ class _AuthState extends State<Auth> {
             ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
             ListTile(title: Text(ShareAplikastion), onTap: () {}),
             ListTile(
-              title: Text(LogoutText),
-              onTap: () => _logout(),
-            ),
+                title: Text(LogoutText),
+                onTap: () {
+                  _logout();
+                  Navigator.of(context).pop();
+                }),
           ],
         )),
       ),
