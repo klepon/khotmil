@@ -6,29 +6,33 @@ import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchRegisterUser(String name, String fullname, String email, String password, String phone, File file) async {
+Future fetchUpdateUserData(String key, String name, String fullname, String email, String phone, File file) async {
   try {
     FormData formData;
     if (file != null) {
       File resizedFile = File(file.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(file.readAsBytesSync()), width: ProfilePhotoWidth)));
       formData = FormData.fromMap({
+        'user_key': key,
         'name': name,
         'fullname': fullname,
         'email': email,
         'phone': phone,
+        'password': '',
         'file': await MultipartFile.fromFile(resizedFile.path, filename: resizedFile.path.split('/').last),
       });
     } else {
       formData = FormData.fromMap({
+        'user_key': key,
         'name': name,
         'fullname': fullname,
         'email': email,
         'phone': phone,
+        'password': '',
       });
     }
 
     Response response = await Dio(dioOptions).post(
-      'klepon/v1/register-user',
+      'klepon/v1/update-user-data',
       data: formData,
     );
 
@@ -36,10 +40,10 @@ Future fetchRegisterUser(String name, String fullname, String email, String pass
       if (response.data[DataStatus] == StatusSuccess || response.data[DataStatus] == StatusError) {
         return response.data;
       } else {
-        throw Exception(FailRegisterUser);
+        throw Exception(FailLoadingUser);
       }
     } else {
-      throw Exception(FailRegisterUser);
+      throw Exception(FailLoadingUser);
     }
   } catch (e) {
     throw Exception(e.toString());

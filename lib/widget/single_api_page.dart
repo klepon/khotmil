@@ -17,7 +17,7 @@ class SingleApiPage extends StatefulWidget {
 }
 
 class _SingleApiPageState extends State<SingleApiPage> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _loadingOverlay = false;
   String _message = '';
@@ -54,7 +54,7 @@ class _SingleApiPageState extends State<SingleApiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(title: Text(AppTitle)),
         body: Stack(children: [
           Container(

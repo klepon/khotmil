@@ -9,6 +9,7 @@ import 'package:khotmil/fetch/recovery_pasword.dart';
 import 'package:khotmil/fetch/register_user.dart';
 import 'package:khotmil/fetch/validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
+import 'package:khotmil/widget/edit_account.dart';
 import 'package:khotmil/widget/full_screen_image_page.dart';
 import 'package:khotmil/widget/group_list.dart';
 import 'package:khotmil/widget/login_form.dart';
@@ -341,7 +342,9 @@ class _AuthState extends State<Auth> {
                   SizedBox(width: 8.0),
                   Text(_name, style: TextStyle(fontSize: 20.0)),
                 ])),
-            ListTile(title: Text(EditAccount), onTap: () {}),
+            ListTile(
+                title: Text(EditAccount),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
             ListTile(title: Text(ChangePassword), onTap: () {}),
             ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
             ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),

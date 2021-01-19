@@ -29,7 +29,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   File _image;
   final picker = ImagePicker();
-  String testm = '';
 
   Future _getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -113,7 +112,6 @@ class _RegisterFormState extends State<RegisterForm> {
                   )),
               SizedBox(height: 16.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
-              if (testm != '') Text(testm),
               MaterialButton(
                 child: Text(
                   RegisterText,
