@@ -1,31 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
-import 'package:khotmil/widget/add_edit_group.dart';
-import 'package:khotmil/widget/full_screen_image_page.dart';
-import 'package:khotmil/widget/single_api_page.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/search_group.dart';
 
+import 'add_edit_group.dart';
 import 'group_item.dart';
 
 class GroupList extends StatefulWidget {
   final String name;
-  final String photo;
   final String loginKey;
-  final Function logout;
-  final Function toggleLoading;
-  GroupList({Key key, this.name, this.photo, this.loginKey, this.logout, this.toggleLoading}) : super(key: key);
+  GroupList({Key key, this.name, this.loginKey}) : super(key: key);
 
   @override
   _GroupListState createState() => _GroupListState();
 }
 
 class _GroupListState extends State<GroupList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   TextEditingController _searchGroupFormController = TextEditingController();
 
   void _reloadGroupList() {
@@ -147,88 +139,43 @@ class _GroupListState extends State<GroupList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              FlatButton(
-                  padding: mainPadding,
-                  onPressed: () => _scaffoldKey.currentState.openDrawer(),
-                  child: Row(children: [
-                    CircleAvatar(backgroundImage: widget.photo != '' ? NetworkImage(widget.photo) : AssetImage(AnonImage)),
-                    SizedBox(width: 8.0),
-                    Text(widget.name, style: TextStyle(fontSize: 20.0)),
-                  ])),
-              FlatButton(
-                  padding: mainPadding,
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
-                  child: Text(DonateText)),
-            ])),
-            Expanded(
-              child: _myGroupList(context),
-            ),
-            Container(
-              padding: mainPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  RaisedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return AddEditGroup(
-                            loginKey: widget.loginKey,
-                            title: CreateGroup,
-                            groupId: '',
-                            reloadList: _reloadGroupList,
-                            deadline: '',
-                            reloadDetail: () => {},
-                          );
-                        }));
-                      },
-                      child: Text(CreateGroup),
-                      color: Colors.redAccent),
-                  RaisedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                        }));
-                      },
-                      child: Text(JoinGroup))
-                ],
-              ),
-            )
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _myGroupList(context),
         ),
-      ),
-      drawer: Drawer(
-        child: SafeArea(
-            child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            FlatButton(
-                padding: mainPadding,
-                onPressed: () => Navigator.of(context).pop(),
-                child: Row(children: [
-                  CircleAvatar(backgroundImage: widget.photo != '' ? NetworkImage(widget.photo) : AssetImage(AnonImage)),
-                  SizedBox(width: 8.0),
-                  Text(widget.name, style: TextStyle(fontSize: 20.0)),
-                ])),
-            ListTile(title: Text(EditAccount), onTap: () {}),
-            ListTile(title: Text(ChangePassword), onTap: () {}),
-            ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
-            ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
-            ListTile(title: Text(ShareAplikastion), onTap: () {}),
-            ListTile(
-              title: Text(LogoutText),
-              onTap: () => widget.logout(),
-            ),
-          ],
-        )),
-      ),
+        Container(
+          padding: mainPadding,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return AddEditGroup(
+                        loginKey: widget.loginKey,
+                        title: CreateGroup,
+                        groupId: '',
+                        reloadList: _reloadGroupList,
+                        deadline: '',
+                        reloadDetail: () => {},
+                      );
+                    }));
+                  },
+                  child: Text(CreateGroup),
+                  color: Colors.redAccent),
+              RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                    }));
+                  },
+                  child: Text(JoinGroup))
+            ],
+          ),
+        )
+      ],
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/login_user.dart';
@@ -8,6 +9,7 @@ import 'package:khotmil/fetch/recovery_pasword.dart';
 import 'package:khotmil/fetch/register_user.dart';
 import 'package:khotmil/fetch/validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
+import 'package:khotmil/widget/full_screen_image_page.dart';
 import 'package:khotmil/widget/group_list.dart';
 import 'package:khotmil/widget/login_form.dart';
 import 'package:khotmil/widget/login_register.dart';
@@ -15,6 +17,7 @@ import 'package:khotmil/widget/recovery_password_form.dart';
 import 'package:khotmil/widget/recovery_password_validation_form.dart';
 import 'package:khotmil/widget/register_form.dart';
 import 'package:khotmil/widget/email_validation_form.dart';
+import 'package:khotmil/widget/single_api_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth extends StatefulWidget {
@@ -33,11 +36,7 @@ class _AuthState extends State<Auth> {
 
   bool _loadingOverlay = false;
 
-  _toggleLoadingOverlay() {
-    setState(() {
-      _loadingOverlay = !_loadingOverlay;
-    });
-  }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   _getLoginKey() async {
     setState(() {
@@ -295,16 +294,69 @@ class _AuthState extends State<Auth> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _loginKey == ''
-            ? LoginRegister(
-                currentForm: _getForm(),
-                showLogo: _useLogo(),
-              )
-            : GroupList(toggleLoading: _toggleLoadingOverlay, name: _name, photo: _photo, loginKey: _loginKey, logout: _logout),
-        if (_loadingOverlay) loadingOverlay(context)
-      ],
+    return Scaffold(
+      key: _scaffoldKey,
+      body: SafeArea(
+          child: Stack(
+        children: [
+          _loginKey == ''
+              ? LoginRegister(
+                  currentForm: _getForm(),
+                  showLogo: _useLogo(),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      FlatButton(
+                          padding: mainPadding,
+                          onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                          child: Row(children: [
+                            CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
+                            SizedBox(width: 8.0),
+                            Text(_name, style: TextStyle(fontSize: 20.0)),
+                          ])),
+                      FlatButton(
+                          padding: mainPadding,
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
+                          child: Text(DonateText)),
+                    ])),
+                    Expanded(
+                      child: GroupList(name: _name, loginKey: _loginKey),
+                    ),
+                  ],
+                  // This trailing comma makes auto-formatting nicer for build methods.
+                ),
+          if (_loadingOverlay) loadingOverlay(context)
+        ],
+      )),
+      drawer: Drawer(
+        child: SafeArea(
+            child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            FlatButton(
+                padding: mainPadding,
+                onPressed: () => Navigator.of(context).pop(),
+                child: Row(children: [
+                  CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
+                  SizedBox(width: 8.0),
+                  Text(_name, style: TextStyle(fontSize: 20.0)),
+                ])),
+            ListTile(title: Text(EditAccount), onTap: () {}),
+            ListTile(title: Text(ChangePassword), onTap: () {}),
+            ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
+            ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
+            ListTile(title: Text(ShareAplikastion), onTap: () {}),
+            ListTile(
+              title: Text(LogoutText),
+              onTap: () => _logout(),
+            ),
+          ],
+        )),
+      ),
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
