@@ -11,24 +11,27 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/donation_info.dart';
 
-class Donation extends StatefulWidget {
+class SingleApiPage extends StatefulWidget {
+  final String apiUrl;
+  SingleApiPage({Key key, this.apiUrl}) : super(key: key);
+
   @override
-  _DonationState createState() => _DonationState();
+  _SingleApiPageState createState() => _SingleApiPageState();
 }
 
-class _DonationState extends State<Donation> {
+class _SingleApiPageState extends State<SingleApiPage> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _loadingOverlay = false;
   String _message = '';
 
-  _getDonateINfoApi() async {
+  _getApiPage() async {
     setState(() {
       _loadingOverlay = true;
       _message = '';
     });
 
-    await fetchDonationInfo().then((data) async {
+    await fetchApiPage(widget.apiUrl).then((data) async {
       if (data['message'] != null && data['message'] != '') {
         setState(() {
           _loadingOverlay = false;
@@ -36,8 +39,6 @@ class _DonationState extends State<Donation> {
         });
         return;
       } else {
-        print(data);
-
         setState(() {
           _loadingOverlay = false;
           _message = 'error';
@@ -50,24 +51,18 @@ class _DonationState extends State<Donation> {
   void initState() {
     super.initState();
 
-    _getDonateINfoApi();
+    _getApiPage();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      // Container(
-      //   width: MediaQuery.of(context).size.width,
-      //   height: MediaQuery.of(context).size.width * 80 / 100,
-      //   child: Image(image: AssetImage(HeaderImage)),
-      // ),
+    return SafeArea(
+        child: Stack(children: [
       Scaffold(
         key: scaffoldKey,
-        appBar: AppBar(
-          title: Text(AppTitle),
-        ),
         body: Container(
           padding: mainPadding,
+          width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -89,13 +84,14 @@ class _DonationState extends State<Donation> {
                 SizedBox(
                   height: 54.0,
                 ),
-                MaterialButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(OkText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                  height: 38.0,
-                  color: Color(int.parse('0xffF30F0F')),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
-                )
+                if (_message != '')
+                  MaterialButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(OkText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    height: 38.0,
+                    color: Color(int.parse('0xffF30F0F')),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+                  )
               ],
             ),
           ),
@@ -103,6 +99,6 @@ class _DonationState extends State<Donation> {
         // This trailing comma makes auto-formatting nicer for build methods.
       ),
       if (_loadingOverlay) loadingOverlay(context)
-    ]);
+    ]));
   }
 }

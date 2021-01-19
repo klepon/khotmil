@@ -2,12 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchDonationInfo() async {
+Future fetchApiPage(apiUrl) async {
   try {
-    Response response = await Dio(dioOptions).post(
-      'klepon/v1/get-donation-info',
-      data: {},
-    );
+    Response response = await Dio(dioOptions).post(apiUrl, data: {});
 
     if (response.statusCode == 200) {
       if (response.data[DataStatus] == StatusSuccess || response.data[DataStatus] == StatusError) {

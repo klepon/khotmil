@@ -4,7 +4,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
 import 'package:khotmil/widget/add_edit_group.dart';
-import 'package:khotmil/widget/donation.dart';
+import 'package:khotmil/widget/single_api_page.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/search_group.dart';
 
@@ -164,9 +164,7 @@ class _GroupListState extends State<GroupList> {
                   ])),
               FlatButton(
                   padding: mainPadding,
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return Donation();
-                      })),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
                   child: Text(DonateText)),
             ])),
             Expanded(
@@ -214,14 +212,14 @@ class _GroupListState extends State<GroupList> {
                 padding: mainPadding,
                 onPressed: () => Navigator.of(context).pop(),
                 child: Row(children: [
-                  CircleAvatar(backgroundImage: NetworkImage(widget.photo)),
+                  CircleAvatar(backgroundImage: widget.photo != '' ? NetworkImage(widget.photo) : AssetImage(AnonImage)),
                   SizedBox(width: 8.0),
                   Text(widget.name, style: TextStyle(fontSize: 20.0)),
                 ])),
             ListTile(title: Text(EditAccount), onTap: () {}),
             ListTile(title: Text(ChangePassword), onTap: () {}),
             ListTile(title: Text(DoaKhatamanQuran), onTap: () {}),
-            ListTile(title: Text(AboutAplication), onTap: () {}),
+            ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
             ListTile(title: Text(ShareAplikastion), onTap: () {}),
             ListTile(
               title: Text(LogoutText),

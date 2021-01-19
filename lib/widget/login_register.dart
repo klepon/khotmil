@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/widget/donation.dart';
+import 'package:khotmil/widget/single_api_page.dart';
 
 class LoginRegister extends StatefulWidget {
   final Widget currentForm;
@@ -44,10 +44,10 @@ class _LoginRegisterState extends State<LoginRegister> {
                   ),
                   SizedBox(height: 16.0),
                   RaisedButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return Donation();
-                    })),
                     child: Text(DonateText),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return SingleApiPage(apiUrl: ApiDonation);
+                    })),
                     color: Color(int.parse('0xffFDAC0E')),
                   ),
                   SizedBox(height: 16.0),

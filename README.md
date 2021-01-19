@@ -51,6 +51,12 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
+- user menu in add drawer
+-- doa
+-- edit akun
+-- change password
+-- share
+
 - create group add photo
 - create group add round
 
@@ -67,7 +73,6 @@ Restart connection and do all the step
 - group detail add admin
 - group detail, click user name show profile info
 
-- user menu in add drawer
 
 - add api notification for update or news release on register with key
 

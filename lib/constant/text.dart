@@ -1,4 +1,6 @@
 const String ApiDomain = 'https://test.arahjalan.com/wp-json/';
+const String ApiDonation = 'klepon/v1/get-donation-info';
+const String ApiAboutApp = 'klepon/v1/get-about-app';
 const String AppTitle = 'Khotmil';
 const String EnterNickName = 'Nama Panggilan';
 const String EnterFullName = 'Nama Lengkap';
