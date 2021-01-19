@@ -9,6 +9,7 @@ import 'package:khotmil/fetch/recovery_pasword.dart';
 import 'package:khotmil/fetch/register_user.dart';
 import 'package:khotmil/fetch/validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
+import 'package:khotmil/widget/change_password.dart';
 import 'package:khotmil/widget/edit_account.dart';
 import 'package:khotmil/widget/full_screen_image_page.dart';
 import 'package:khotmil/widget/group_list.dart';
@@ -44,7 +45,6 @@ class _AuthState extends State<Auth> {
       _loadingOverlay = true;
     });
     final prefs = await SharedPreferences.getInstance();
-    // prefs.setString(LoginKeyPref, '');
     setState(() {
       _loadingOverlay = false;
       _loginKey = prefs.getString(LoginKeyPref) ?? '';
@@ -56,6 +56,8 @@ class _AuthState extends State<Auth> {
   _logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(LoginKeyPref, '');
+    Navigator.pop(context);
+
     setState(() {
       _loginKey = '';
       _currentForm = FormLogin;
@@ -340,21 +342,18 @@ class _AuthState extends State<Auth> {
                 child: Row(children: [
                   CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
                   SizedBox(width: 8.0),
-                  Text(_name, style: TextStyle(fontSize: 20.0)),
+                  Text(_name, style: TextStyle(fontSize: 20.0))
                 ])),
             ListTile(
                 title: Text(EditAccount),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
-            ListTile(title: Text(ChangePassword), onTap: () {}),
+            ListTile(
+                title: Text(ChangePassword),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(loginKey: _loginKey, logout: _logout)))),
             ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
             ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
             ListTile(title: Text(ShareAplikastion), onTap: () {}),
-            ListTile(
-                title: Text(LogoutText),
-                onTap: () {
-                  _logout();
-                  Navigator.of(context).pop();
-                }),
+            ListTile(title: Text(LogoutText), onTap: () => _logout()),
           ],
         )),
       ),

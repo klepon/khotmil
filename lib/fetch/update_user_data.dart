@@ -17,7 +17,6 @@ Future fetchUpdateUserData(String key, String name, String fullname, String emai
         'fullname': fullname,
         'email': email,
         'phone': phone,
-        'password': '',
         'file': await MultipartFile.fromFile(resizedFile.path, filename: resizedFile.path.split('/').last),
       });
     } else {
@@ -27,7 +26,6 @@ Future fetchUpdateUserData(String key, String name, String fullname, String emai
         'fullname': fullname,
         'email': email,
         'phone': phone,
-        'password': '',
       });
     }
 

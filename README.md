@@ -52,8 +52,7 @@ Restart connection and do all the step
 ## reskin and relogic
 
 - user menu in add drawer
--- edit akun
--- change password
+-- edit akun - show admin list
 -- share
 
 - fix image resize using flutter core
