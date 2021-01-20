@@ -55,7 +55,6 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailName = '';
   String _detailRound = '';
   String _detailDeadline = '';
-  String _detailColor = '';
   String _detailProgress = '';
   String _detailMyJuz = '';
   String _detailMyProgress = '';
@@ -320,7 +319,6 @@ class _GroupDetailState extends State<GroupDetail> {
     setState(() {
       _detailName = widget.groupName;
       _detailDeadline = widget.deadline;
-      _detailColor = widget.groupColor;
     });
 
     _getMemberAPI = fetchRoundMember(widget.loginKey, widget.groupId);
@@ -376,7 +374,6 @@ class _GroupDetailState extends State<GroupDetail> {
                       setState(() {
                         _detailName = name;
                         _detailDeadline = deadline;
-                        _detailColor = color;
                       });
                     },
                   );
@@ -628,7 +625,6 @@ class _GroupDetailState extends State<GroupDetail> {
                     deadline: _detailDeadline,
                     yourJuz: _detailMyJuz != '' ? _detailMyJuz : widget.yourJuz,
                     yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
-                    groupColor: _detailColor,
                   ),
                   if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
                       (_detailProgress != '' ? _detailProgress : widget.progress) == '100')

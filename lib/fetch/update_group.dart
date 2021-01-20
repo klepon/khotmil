@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchUpdateGroup(String key, String name, String address, String latlong, String color, String date, String id) async {
+Future fetchUpdateGroup(String key, String name, String address, String latlong, String round, String date, String id) async {
   try {
     Response response = await Dio(dioOptions).post(
       'klepon/v1/update-group',
@@ -11,7 +11,7 @@ Future fetchUpdateGroup(String key, String name, String address, String latlong,
         'name': name,
         'address': address,
         'latlong': latlong,
-        'color': color,
+        'round': round,
         'round_end_date': date,
         'id': id,
       },

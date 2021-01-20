@@ -199,7 +199,6 @@ class _SearchGroupState extends State<SearchGroup> {
                     deadline: group['end_date'].toString(),
                     yourJuz: group['my_juz'].toString(),
                     yourProgress: group['my_progress'].toString(),
-                    groupColor: group['color'],
                   ),
                 ));
               }

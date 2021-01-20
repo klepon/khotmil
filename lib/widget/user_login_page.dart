@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
+import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/widget/page_single_api.dart';
 
@@ -16,7 +17,7 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 30.0),
+      padding: sidePaddingWide,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: MediaQuery.of(context).size.width,

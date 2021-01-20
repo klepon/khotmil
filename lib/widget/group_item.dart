@@ -9,31 +9,20 @@ class GroupItem extends StatelessWidget {
   final String deadline;
   final String yourJuz;
   final String yourProgress;
-  final String groupColor;
 
-  GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress, this.groupColor}) : super(key: key);
-
-  _getColor(color) {
-    try {
-      return Color(int.parse('0xff' + color));
-    } catch (e) {
-      return Color(int.parse('0xfff6d55c'));
-    }
-  }
+  GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.yourJuz, this.yourProgress}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(color: Colors.white),
       margin: EdgeInsets.only(bottom: 16.0),
       child: Column(
         children: [
           Container(
             padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(color: _getColor(groupColor)),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Expanded(
-                  child: Text(groupName,
-                      style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: _getColor(groupColor).computeLuminance() > 0.5 ? Colors.black : Colors.white))),
+              Expanded(child: Text(groupName, style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black))),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: Colors.white, boxShadow: [

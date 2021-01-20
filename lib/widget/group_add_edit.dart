@@ -1,14 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/create_group.dart';
 import 'package:khotmil/fetch/get_group.dart';
 import 'package:khotmil/fetch/search_user.dart';
 import 'package:khotmil/fetch/update_group.dart';
-
-import 'group_item.dart';
 
 class AddEditGroup extends StatefulWidget {
   final String loginKey;
@@ -28,11 +28,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _messageText = '';
-  bool _renderPreview = false;
   bool _loadingOverlay = false;
-
-  Color _currentColor = Color(0xfff6d55c);
-  bool _showColorPicker = false;
 
   bool _searchAddressLoading = false;
   bool _searchAddressSuccess = false;
@@ -47,10 +43,22 @@ class _AddEditGroupState extends State<AddEditGroup> {
 
   TextEditingController _nameFormController = TextEditingController();
   TextEditingController _addressFormController = TextEditingController();
-  TextEditingController _colorFormController = TextEditingController();
+  TextEditingController _roundFormController = TextEditingController();
   TextEditingController _endDateFormController = TextEditingController();
   TextEditingController _searchUserFormController = TextEditingController();
   FocusNode _focusAddressNode = FocusNode();
+
+  File _image;
+  final picker = ImagePicker();
+
+  Future _getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
   Future<void> _renderSelectDate(BuildContext context) async {
     DateTime date = DateTime.now();
@@ -75,13 +83,13 @@ class _AddEditGroupState extends State<AddEditGroup> {
             _nameFormController.text,
             _addressFormController.text,
             _latlongOri == '' ? _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString() : _latlongOri,
-            _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
+            _roundFormController.text,
             _endDateFormController.text,
             widget.groupId)
         .then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
-        widget.reloadDetail(_nameFormController.text, _getTimeStamp(), _currentColor.value.toRadixString(16).substring(2).toUpperCase());
+        widget.reloadDetail(_nameFormController.text, _getTimeStamp());
         Navigator.pop(context);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -103,20 +111,21 @@ class _AddEditGroupState extends State<AddEditGroup> {
       _loadingOverlay = true;
     });
 
-    List uids = [];
+    List _uids = [];
     for (var user in _usersSelectedForInvite) {
-      uids.add(user[0].toString());
+      _uids.add(user[0].toString());
     }
 
-    await fetchCreateGroup(
-            widget.loginKey,
-            _nameFormController.text,
-            _addressFormController.text,
-            _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString(),
-            _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
-            _endDateFormController.text,
-            uids)
-        .then((data) {
+    fetchCreateGroup(
+      widget.loginKey,
+      _nameFormController.text,
+      _addressFormController.text,
+      _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString(),
+      _roundFormController.text,
+      _endDateFormController.text,
+      _uids,
+      _image,
+    ).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
         Navigator.pop(context);
@@ -146,9 +155,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
           _loadingOverlay = false;
           _nameFormController.text = data['group']['name'];
           _addressFormController.text = data['group']['address'];
-          _colorFormController.text = "#" + data['group']['color'];
-          _currentColor = Color(int.parse("0xff" + data['group']['color']));
-
           _endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(widget.deadline) * 1000).toString()).split(' ')[0];
           _latlongOri = data['group']['latitude'] + ',' + data['group']['longitude'];
         });
@@ -189,14 +195,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
         _apiReturnUsers = [];
         _searchUserLoading = false;
       });
-    });
-  }
-
-  void _changeColor(Color color) {
-    setState(() {
-      _currentColor = color;
-      _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
-      _showColorPicker = false;
     });
   }
 
@@ -256,7 +254,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
   @override
   void initState() {
     super.initState();
-    _colorFormController.text = '#' + _currentColor.value.toRadixString(16).substring(2).toUpperCase();
 
     // handle search address coordinate
     _focusAddressNode.addListener(() {
@@ -274,7 +271,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
   void dispose() {
     _nameFormController.dispose();
     _addressFormController.dispose();
-    _colorFormController.dispose();
+    _roundFormController.dispose();
     _endDateFormController.dispose();
     _searchUserFormController.dispose();
     _focusAddressNode.dispose();
@@ -298,7 +295,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                         child: Container(
-                            padding: sidePadding,
+                            padding: sidePaddingWide,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -309,16 +306,6 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                 SizedBox(height: 16.0),
                                 if (_messageText != '') Text(_messageText),
                                 if (_messageText != '') SizedBox(height: 16.0),
-                                if (_renderPreview || '' != widget.groupId)
-                                  GroupItem(
-                                    groupName: _nameFormController.text != '' ? _nameFormController.text : FormCreateGroupName,
-                                    progress: '95',
-                                    round: '1',
-                                    deadline: _getTimeStamp(),
-                                    yourJuz: '25',
-                                    yourProgress: '50',
-                                    groupColor: _currentColor.value.toRadixString(16).substring(2).toUpperCase(),
-                                  ),
                                 TextFormField(
                                   controller: _nameFormController,
                                   keyboardType: TextInputType.text,
@@ -337,7 +324,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                         child: TextFormField(
                                       controller: _addressFormController,
                                       keyboardType: TextInputType.multiline,
-                                      decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupAddress, errorStyle: errorTextStyle),
+                                      decoration: InputDecoration(hintText: FormCreateGroupAddress, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
                                       validator: (value) {
                                         if (value.isEmpty) {
                                           return FormCreateGroupAddressError;
@@ -428,42 +415,26 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                           SizedBox(height: 16.0),
                                         ],
                                       )),
-                                Container(
-                                  decoration: BoxDecoration(color: _currentColor),
-                                  child: TextFormField(
-                                    controller: _colorFormController,
-                                    keyboardType: TextInputType.text,
-                                    readOnly: true,
-                                    onTap: () {
+                                TextFormField(
+                                  controller: _roundFormController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(hintText: FormCreateGroupRound, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
+                                  validator: (value) {
+                                    if (value.isEmpty) {
                                       setState(() {
-                                        _showColorPicker = !_showColorPicker;
+                                        _roundFormController.text = '1';
                                       });
-                                    },
-                                    style: TextStyle(color: _currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white),
-                                    decoration: InputDecoration(
-                                      contentPadding: sidePaddingNarrow,
-                                      hintText: FormCreateGroupColor,
-                                    ),
-                                  ),
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                if (!_showColorPicker) SizedBox(height: 16.0),
-                                if (_showColorPicker)
-                                  Container(
-                                    height: MediaQuery.of(context).size.width * 0.8,
-                                    width: MediaQuery.of(context).size.width * 0.8,
-                                    child: MaterialPicker(
-                                      pickerColor: _currentColor,
-                                      onColorChanged: _changeColor,
-                                      enableLabel: true,
-                                    ),
-                                  ),
-                                if (_showColorPicker) SizedBox(height: 16.0),
+                                SizedBox(height: 16.0),
                                 TextFormField(
                                   controller: _endDateFormController,
                                   keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(hintText: FormCreateGroupEndDate, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
                                   readOnly: true,
                                   onTap: () => _renderSelectDate(context),
-                                  decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
                                   validator: (value) {
                                     if (value.isEmpty) {
                                       return FormCreateGroupEndDateError;
@@ -515,7 +486,22 @@ class _AddEditGroupState extends State<AddEditGroup> {
                                         ),
                                       SizedBox(height: 16.0),
                                     ]),
-                                  )
+                                  ),
+                                SizedBox(height: 16.0),
+                                Center(
+                                  child: FlatButton(
+                                      onPressed: () => _getImage(),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 79,
+                                        child: CircleAvatar(
+                                          backgroundImage: AssetImage(_image != null ? _image.path : ''),
+                                          backgroundColor: Colors.white,
+                                          radius: 72,
+                                          child: Text(_image == null ? UploadGroupPhoto : '', textAlign: TextAlign.center),
+                                        ),
+                                      )),
+                                ),
                               ],
                             )),
                       ),
@@ -526,26 +512,30 @@ class _AddEditGroupState extends State<AddEditGroup> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        RaisedButton(
-                            onPressed: () async {
-                              await _getLatLong();
+                        MaterialButton(
+                          child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                          onPressed: () async {
+                            await _getLatLong();
 
-                              if (_formKey.currentState.validate()) {
-                                if (widget.groupId == '') {
-                                  _apiCreateGroup();
-                                } else {
-                                  _apiUpdateGroup();
-                                }
+                            if (_formKey.currentState.validate()) {
+                              if (widget.groupId == '') {
+                                _apiCreateGroup();
+                              } else {
+                                _apiUpdateGroup();
                               }
-                            },
-                            child: Text(SubmitText)),
-                        RaisedButton(
-                            onPressed: () => setState(() {
-                                  _renderPreview = true;
-                                }),
-                            child: Text(FormCreateGroupPreview),
-                            color: Color(0xfff6d55c)),
-                        RaisedButton(onPressed: () => Navigator.pop(context), child: Text(CancelText), color: Colors.blueGrey),
+                            }
+                          },
+                          height: 50.0,
+                          color: Color(int.parse('0xffF30F0F')),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                        ),
+                        MaterialButton(
+                          child: Text(CancelText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                          onPressed: () => Navigator.of(context).pop(),
+                          height: 50.0,
+                          color: Color(int.parse('0xff747070')),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                        ),
                       ],
                     ),
                   ),

@@ -30,7 +30,6 @@ dependencies:
   path:
   shared_preferences:
   email_validator: ^1.0.5
-  flutter_colorpicker: ^0.3.4
   geocoder: ^0.2.1
   dio: ^3.0.10
   sprintf: "^4.0.0"
