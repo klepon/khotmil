@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
 
 final EdgeInsets mainPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
@@ -64,6 +65,15 @@ BaseOptions dioOptions = new BaseOptions(
   baseUrl: ApiDomain,
   connectTimeout: 5000,
   receiveTimeout: 3000,
+);
+
+Decoration pageBg = BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage(HeaderImage),
+    fit: BoxFit.none,
+    alignment: Alignment.bottomRight,
+    colorFilter: ColorFilter.mode(Color(int.parse('0xff092128')).withOpacity(0.7), BlendMode.dstATop),
+  ),
 );
 
 // double meters = 50;

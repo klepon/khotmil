@@ -114,7 +114,7 @@ class _GroupListState extends State<GroupList> {
             children: [
               if (_hasData)
                 Container(
-                    padding: mainPadding,
+                    decoration: pageBg,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Row(children: [Text(WelcomeMessage), Text(widget.name)]),
                       SizedBox(height: 8.0),
@@ -137,51 +137,53 @@ class _GroupListState extends State<GroupList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _myGroupList(context),
-        ),
-        Container(
-          padding: mainPadding,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              MaterialButton(
-                child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AddEditGroup(
-                      loginKey: widget.loginKey,
-                      title: CreateGroup,
-                      groupId: '',
-                      reloadList: _reloadGroupList,
-                      deadline: '',
-                      reloadDetail: () => {},
-                    );
-                  }));
-                },
-                height: 50.0,
-                color: Color(int.parse('0xffF30F0F')),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+    return Container(
+        decoration: pageBg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _myGroupList(context),
+            ),
+            Container(
+              padding: mainPadding,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  MaterialButton(
+                    child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return AddEditGroup(
+                          loginKey: widget.loginKey,
+                          title: CreateGroup,
+                          groupId: '',
+                          reloadList: _reloadGroupList,
+                          deadline: '',
+                          reloadDetail: () => {},
+                        );
+                      }));
+                    },
+                    height: 50.0,
+                    color: Color(int.parse('0xffF30F0F')),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                  ),
+                  MaterialButton(
+                    child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                      }));
+                    },
+                    height: 50.0,
+                    color: Color(int.parse('0xff2DA310')),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                  ),
+                ],
               ),
-              MaterialButton(
-                child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                  }));
-                },
-                height: 50.0,
-                color: Color(int.parse('0xff2DA310')),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-              ),
-            ],
-          ),
-        )
-      ],
-      // This trailing comma makes auto-formatting nicer for build methods.
-    );
+            )
+          ],
+          // This trailing comma makes auto-formatting nicer for build methods.
+        ));
   }
 }

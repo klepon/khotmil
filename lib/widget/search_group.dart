@@ -206,210 +206,213 @@ class _SearchGroupState extends State<SearchGroup> {
               snapMessage = snapshot.error.toString();
             }
 
-            return Column(
-              children: [
-                // edit search title
-                if (_editSearch)
-                  Container(
-                    padding: mainPadding,
-                    child: Text(EditSearch, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                  ),
-                // edit search form
-                if (_editSearch)
-                  Expanded(
-                      child: SingleChildScrollView(
-                          child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                              child: Container(
-                                  padding: mainPadding,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // expand radius
-                                      Text(ExpandRadiusTitle, style: bold),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [1, 'spacer', 5, 'spacer', 10]
-                                            .map((km) => km == 'spacer'
-                                                ? SizedBox(width: 4.0)
-                                                : TextButton(
-                                                    child: Text(sprintf(XKilometer, [km]), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white12)),
-                                                    onPressed: () {
+            return Container(
+              decoration: pageBg,
+              child: Column(
+                children: [
+                  // edit search title
+                  if (_editSearch)
+                    Container(
+                      padding: mainPadding,
+                      child: Text(EditSearch, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    ),
+                  // edit search form
+                  if (_editSearch)
+                    Expanded(
+                        child: SingleChildScrollView(
+                            child: ConstrainedBox(
+                                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                child: Container(
+                                    padding: mainPadding,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // expand radius
+                                        Text(ExpandRadiusTitle, style: bold),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [1, 'spacer', 5, 'spacer', 10]
+                                              .map((km) => km == 'spacer'
+                                                  ? SizedBox(width: 4.0)
+                                                  : TextButton(
+                                                      child: Text(sprintf(XKilometer, [km]), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                                      style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white12)),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _keyword = '';
+                                                          _radius = km;
+                                                          _searchBy = _searchBy == SearchGroupByKeyword ? SearchGroupByPhoneLocation : _searchBy;
+                                                          _editSearch = false;
+                                                        });
+                                                      },
+                                                    ))
+                                              .toList(),
+                                        ),
+                                        SizedBox(height: 32.0),
+                                        // custom location
+                                        Text(FindAroundTitle, style: bold),
+                                        Form(
+                                            key: _formKeyAddress,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                    child: TextFormField(
+                                                  controller: _searchAddressFormController,
+                                                  keyboardType: TextInputType.text,
+                                                  decoration: InputDecoration(hintText: FindAroundLabel, errorStyle: errorTextStyle),
+                                                  validator: (value) {
+                                                    if (value.isEmpty) {
+                                                      return FindAroundErrorEmpty;
+                                                    }
+
+                                                    if (value.length < 10) {
+                                                      return FindAroundErrorShort;
+                                                    }
+
+                                                    return null;
+                                                  },
+                                                )),
+                                                if (_searchAddressLoading) CircularProgressIndicator(),
+                                                RaisedButton(
+                                                  onPressed: () {
+                                                    if (_formKeyAddress.currentState.validate()) {
+                                                      _getLatLong(context);
+                                                    }
+                                                  },
+                                                  child: Text(FindButton),
+                                                )
+                                              ],
+                                            )),
+                                        if (_searchAddressErrorMessage != '')
+                                          Container(
+                                              width: MediaQuery.of(context).size.width,
+                                              padding: verticalPadding,
+                                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                Text(_searchAddressErrorMessage, style: bold),
+                                                SizedBox(height: 16.0),
+                                                Text(ClosedAddressFoundDesc),
+                                                SizedBox(height: 16.0),
+                                              ])),
+                                        SizedBox(height: 32.0),
+                                        // search by keyword
+                                        Text(SearchByKeywordTitle, style: bold),
+                                        Form(
+                                            key: _formKeyKeyword,
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                    child: TextFormField(
+                                                  controller: _searchGroupByKeywordFormController,
+                                                  keyboardType: TextInputType.text,
+                                                  decoration: InputDecoration(hintText: FindAroundLabel, errorStyle: errorTextStyle),
+                                                  validator: (value) {
+                                                    if (value.isEmpty) {
+                                                      return SearchGroupByKeywordErrorEmpty;
+                                                    }
+
+                                                    if (value.length < 3) {
+                                                      return SearchGroupByKeywordErrorShort;
+                                                    }
+
+                                                    return null;
+                                                  },
+                                                )),
+                                                RaisedButton(
+                                                  onPressed: () {
+                                                    if (_formKeyKeyword.currentState.validate()) {
                                                       setState(() {
-                                                        _keyword = '';
-                                                        _radius = km;
-                                                        _searchBy = _searchBy == SearchGroupByKeyword ? SearchGroupByPhoneLocation : _searchBy;
+                                                        _searchBy = SearchGroupByKeyword;
+                                                        _keyword = _searchGroupByKeywordFormController.text;
                                                         _editSearch = false;
                                                       });
-                                                    },
-                                                  ))
-                                            .toList(),
-                                      ),
-                                      SizedBox(height: 32.0),
-                                      // custom location
-                                      Text(FindAroundTitle, style: bold),
-                                      Form(
-                                          key: _formKeyAddress,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                  child: TextFormField(
-                                                controller: _searchAddressFormController,
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(hintText: FindAroundLabel, errorStyle: errorTextStyle),
-                                                validator: (value) {
-                                                  if (value.isEmpty) {
-                                                    return FindAroundErrorEmpty;
-                                                  }
-
-                                                  if (value.length < 10) {
-                                                    return FindAroundErrorShort;
-                                                  }
-
-                                                  return null;
-                                                },
-                                              )),
-                                              if (_searchAddressLoading) CircularProgressIndicator(),
-                                              RaisedButton(
-                                                onPressed: () {
-                                                  if (_formKeyAddress.currentState.validate()) {
-                                                    _getLatLong(context);
-                                                  }
-                                                },
-                                                child: Text(FindButton),
-                                              )
-                                            ],
-                                          )),
-                                      if (_searchAddressErrorMessage != '')
-                                        Container(
-                                            width: MediaQuery.of(context).size.width,
-                                            padding: verticalPadding,
-                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                              Text(_searchAddressErrorMessage, style: bold),
-                                              SizedBox(height: 16.0),
-                                              Text(ClosedAddressFoundDesc),
-                                              SizedBox(height: 16.0),
-                                            ])),
-                                      SizedBox(height: 32.0),
-                                      // search by keyword
-                                      Text(SearchByKeywordTitle, style: bold),
-                                      Form(
-                                          key: _formKeyKeyword,
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                  child: TextFormField(
-                                                controller: _searchGroupByKeywordFormController,
-                                                keyboardType: TextInputType.text,
-                                                decoration: InputDecoration(hintText: FindAroundLabel, errorStyle: errorTextStyle),
-                                                validator: (value) {
-                                                  if (value.isEmpty) {
-                                                    return SearchGroupByKeywordErrorEmpty;
-                                                  }
-
-                                                  if (value.length < 3) {
-                                                    return SearchGroupByKeywordErrorShort;
-                                                  }
-
-                                                  return null;
-                                                },
-                                              )),
-                                              RaisedButton(
-                                                onPressed: () {
-                                                  if (_formKeyKeyword.currentState.validate()) {
-                                                    setState(() {
-                                                      _searchBy = SearchGroupByKeyword;
-                                                      _keyword = _searchGroupByKeywordFormController.text;
-                                                      _editSearch = false;
-                                                    });
-                                                  }
-                                                },
-                                                child: Text(FindButton),
-                                              )
-                                            ],
-                                          )),
-                                      // search by phone location
-                                      if (_keyword != '' || _closedValidAddress != null)
-                                        RaisedButton(
-                                            child: Text(SearchByMyLocationTitle),
-                                            onPressed: () {
-                                              setState(() {
-                                                _searchBy = SearchGroupByPhoneLocation;
-                                                _editSearch = false;
-                                              });
-                                            })
-                                    ],
-                                  ))))),
-                // cancel edit search button
-                if (_editSearch)
-                  RaisedButton(
-                      child: Text(CancelText),
-                      color: Colors.blueGrey,
-                      onPressed: () {
-                        setState(() {
-                          _editSearch = false;
-                        });
-                      }),
-                // search group title, message
-                if (!_editSearch)
-                  Container(
-                    padding: mainPadding,
-                    child: Column(
-                      children: [
-                        Text(SearchGroupTitle, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 16.0),
-                        if (snapMessage != '') Container(padding: EdgeInsets.only(bottom: 16.0), child: Text(snapMessage, textAlign: TextAlign.center)),
-                        if (snapMessage != '')
-                          RaisedButton(
-                              child: Text(EditSearch),
-                              onPressed: () {
-                                setState(() {
-                                  _editSearch = true;
-                                });
-                              }),
-                        if (snapLoading)
-                          Column(
-                            children: [
-                              Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                              SizedBox(height: 16.0),
-                              Text(LocatingDevice, textAlign: TextAlign.center),
-                            ],
-                          ),
-                        if (groups.length > 0)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(_searchBy == SearchGroupByKeyword
-                                    ? sprintf(SearchByKeywordLead, [_keyword])
-                                    : sprintf(SearchByRadiusLead, [_radius, snapshot.data['address'] ?? '...'])),
-                              ),
-                              IconButton(
-                                  icon: Icon(Icons.edit),
-                                  tooltip: 'Edit',
-                                  onPressed: () {
-                                    setState(() {
-                                      _editSearch = true;
-                                    });
-                                  }),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                if (!_editSearch) SizedBox(height: 16.0),
-                if (!_editSearch)
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                        child: Column(children: groups),
+                                                    }
+                                                  },
+                                                  child: Text(FindButton),
+                                                )
+                                              ],
+                                            )),
+                                        // search by phone location
+                                        if (_keyword != '' || _closedValidAddress != null)
+                                          RaisedButton(
+                                              child: Text(SearchByMyLocationTitle),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _searchBy = SearchGroupByPhoneLocation;
+                                                  _editSearch = false;
+                                                });
+                                              })
+                                      ],
+                                    ))))),
+                  // cancel edit search button
+                  if (_editSearch)
+                    RaisedButton(
+                        child: Text(CancelText),
+                        color: Colors.blueGrey,
+                        onPressed: () {
+                          setState(() {
+                            _editSearch = false;
+                          });
+                        }),
+                  // search group title, message
+                  if (!_editSearch)
+                    Container(
+                      padding: mainPadding,
+                      child: Column(
+                        children: [
+                          Text(SearchGroupTitle, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 16.0),
+                          if (snapMessage != '') Container(padding: EdgeInsets.only(bottom: 16.0), child: Text(snapMessage, textAlign: TextAlign.center)),
+                          if (snapMessage != '')
+                            RaisedButton(
+                                child: Text(EditSearch),
+                                onPressed: () {
+                                  setState(() {
+                                    _editSearch = true;
+                                  });
+                                }),
+                          if (snapLoading)
+                            Column(
+                              children: [
+                                Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                                SizedBox(height: 16.0),
+                                Text(LocatingDevice, textAlign: TextAlign.center),
+                              ],
+                            ),
+                          if (groups.length > 0)
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(_searchBy == SearchGroupByKeyword
+                                      ? sprintf(SearchByKeywordLead, [_keyword])
+                                      : sprintf(SearchByRadiusLead, [_radius, snapshot.data['address'] ?? '...'])),
+                                ),
+                                IconButton(
+                                    icon: Icon(Icons.edit),
+                                    tooltip: 'Edit',
+                                    onPressed: () {
+                                      setState(() {
+                                        _editSearch = true;
+                                      });
+                                    }),
+                              ],
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-              ],
+                  if (!_editSearch) SizedBox(height: 16.0),
+                  if (!_editSearch)
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                          child: Column(children: groups),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             );
           }),
     );

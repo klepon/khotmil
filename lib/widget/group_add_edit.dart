@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_create.dart';
@@ -287,14 +286,7 @@ class _AddEditGroupState extends State<AddEditGroup> {
         body: Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(HeaderImage),
-                  fit: BoxFit.none,
-                  alignment: Alignment.bottomRight,
-                  colorFilter: ColorFilter.mode(Color(int.parse('0xff092128')).withOpacity(0.7), BlendMode.dstATop),
-                ),
-              ),
+              decoration: pageBg,
               child: Form(
                 key: _formKey,
                 child: Column(
