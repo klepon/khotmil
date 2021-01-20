@@ -51,10 +51,8 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- create group add photo
-- create group add round
-
 - group reskin list
+- group edit
 
 - join group update view
 - join group add confirmation modal

@@ -114,12 +114,11 @@ class _GroupListState extends State<GroupList> {
             children: [
               if (_hasData)
                 Container(
-                    decoration: pageBg,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Row(children: [Text(WelcomeMessage), Text(widget.name)]),
-                      SizedBox(height: 8.0),
-                      Text(YourGroup, style: bold),
-                    ])),
+                  Row(children: [Text(WelcomeMessage), Text(widget.name)]),
+                  SizedBox(height: 8.0),
+                  Text(YourGroup, style: bold),
+                ])),
               if (_hasData) _loopGroups(snapshot.data['groups'], context),
               if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
             ],
