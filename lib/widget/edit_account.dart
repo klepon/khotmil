@@ -187,7 +187,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                       decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
                     ),
                     SizedBox(height: 8.0),
-                    Text('list admin group disini'),
+                    // Text('list admin group disini'),
                     SizedBox(height: 16.0),
                     if (_futureMessage != '') Text(_futureMessage),
                     SizedBox(height: 16.0),
