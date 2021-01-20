@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/widget/auth.dart';
+import 'package:khotmil/entry.dart';
 
 void main() {
   runApp(MyApp());

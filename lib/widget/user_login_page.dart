@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/widget/single_api_page.dart';
+import 'package:khotmil/widget/page_single_api.dart';
 
 class LoginRegister extends StatefulWidget {
   final Widget currentForm;

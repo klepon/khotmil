@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/my_group_list.dart';
+import 'package:khotmil/widget/group_add_edit.dart';
 import 'package:khotmil/widget/group_detail.dart';
+import 'package:khotmil/widget/group_item.dart';
 import 'package:khotmil/widget/search_group.dart';
-
-import 'add_edit_group.dart';
-import 'group_item.dart';
 
 class GroupList extends StatefulWidget {
   final String name;
@@ -150,28 +149,35 @@ class _GroupListState extends State<GroupList> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              RaisedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return AddEditGroup(
-                        loginKey: widget.loginKey,
-                        title: CreateGroup,
-                        groupId: '',
-                        reloadList: _reloadGroupList,
-                        deadline: '',
-                        reloadDetail: () => {},
-                      );
-                    }));
-                  },
-                  child: Text(CreateGroup),
-                  color: Colors.redAccent),
-              RaisedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                    }));
-                  },
-                  child: Text(JoinGroup))
+              MaterialButton(
+                child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return AddEditGroup(
+                      loginKey: widget.loginKey,
+                      title: CreateGroup,
+                      groupId: '',
+                      reloadList: _reloadGroupList,
+                      deadline: '',
+                      reloadDetail: () => {},
+                    );
+                  }));
+                },
+                height: 50.0,
+                color: Color(int.parse('0xffF30F0F')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              ),
+              MaterialButton(
+                child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                  }));
+                },
+                height: 50.0,
+                color: Color(int.parse('0xff2DA310')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              ),
             ],
           ),
         )

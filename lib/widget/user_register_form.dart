@@ -114,10 +114,7 @@ class _RegisterFormState extends State<RegisterForm> {
               SizedBox(height: 16.0),
               if (widget.futureMessage != '') Text(widget.futureMessage),
               MaterialButton(
-                child: Text(
-                  RegisterText,
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
+                child: Text(RegisterText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text, _image);

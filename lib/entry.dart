@@ -9,17 +9,17 @@ import 'package:khotmil/fetch/recovery_pasword.dart';
 import 'package:khotmil/fetch/register_user.dart';
 import 'package:khotmil/fetch/validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
-import 'package:khotmil/widget/change_password.dart';
-import 'package:khotmil/widget/edit_account.dart';
-import 'package:khotmil/widget/full_screen_image_page.dart';
+import 'package:khotmil/widget/user_change_password.dart';
+import 'package:khotmil/widget/user_edit_account.dart';
+import 'package:khotmil/widget/page_full_screen_image.dart';
 import 'package:khotmil/widget/group_list.dart';
-import 'package:khotmil/widget/login_form.dart';
-import 'package:khotmil/widget/login_register.dart';
-import 'package:khotmil/widget/recovery_password_form.dart';
-import 'package:khotmil/widget/recovery_password_validation_form.dart';
-import 'package:khotmil/widget/register_form.dart';
-import 'package:khotmil/widget/email_validation_form.dart';
-import 'package:khotmil/widget/single_api_page.dart';
+import 'package:khotmil/widget/user_login_form.dart';
+import 'package:khotmil/widget/user_login_page.dart';
+import 'package:khotmil/widget/user_recovery_password_form.dart';
+import 'package:khotmil/widget/user_recovery_password_validation_form.dart';
+import 'package:khotmil/widget/user_register_form.dart';
+import 'package:khotmil/widget/user_email_validation_form.dart';
+import 'package:khotmil/widget/page_single_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth extends StatefulWidget {

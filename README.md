@@ -51,12 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- user menu in add drawer
--- edit akun - show admin list
--- share
-
-- fix image resize using flutter core
-
 - create group add photo
 - create group add round
 
@@ -76,3 +70,9 @@ Restart connection and do all the step
 
 - add api notification for update or news release on register with key
 
+
+- user menu in add drawer
+-- edit akun - show admin list
+-- share
+
+- fix image resize using flutter core

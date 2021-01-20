@@ -11,7 +11,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_group.dart';
 import 'package:khotmil/fetch/join_round.dart';
 import 'package:khotmil/fetch/round_member.dart';
-import 'package:khotmil/widget/add_edit_group.dart';
+import 'package:khotmil/widget/group_add_edit.dart';
 
 import 'group_item.dart';
 
