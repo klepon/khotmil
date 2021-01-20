@@ -6,7 +6,7 @@ import 'package:flutter_html/style.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/donation_info.dart';
+import 'package:khotmil/fetch/page_donation_info.dart';
 
 class SingleApiPage extends StatefulWidget {
   final String apiUrl;

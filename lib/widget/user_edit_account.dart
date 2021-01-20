@@ -7,8 +7,8 @@ import 'package:image/image.dart' as img;
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/get_user_data.dart';
-import 'package:khotmil/fetch/update_user_data.dart';
+import 'package:khotmil/fetch/user_get_data.dart';
+import 'package:khotmil/fetch/user_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditAccountPage extends StatefulWidget {

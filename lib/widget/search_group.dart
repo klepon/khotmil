@@ -3,7 +3,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/search_group.dart';
+import 'package:khotmil/fetch/group_search_group.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'group_detail.dart';

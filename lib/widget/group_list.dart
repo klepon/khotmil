@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/my_group_list.dart';
+import 'package:khotmil/fetch/group_list.dart';
 import 'package:khotmil/widget/group_add_edit.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_item.dart';

@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/create_group.dart';
-import 'package:khotmil/fetch/get_group.dart';
-import 'package:khotmil/fetch/search_user.dart';
-import 'package:khotmil/fetch/update_group.dart';
+import 'package:khotmil/fetch/group_create.dart';
+import 'package:khotmil/fetch/group_get_groups.dart';
+import 'package:khotmil/fetch/group_search_user.dart';
+import 'package:khotmil/fetch/group_update.dart';
 
 class AddEditGroup extends StatefulWidget {
   final String loginKey;
@@ -285,261 +286,271 @@ class _AddEditGroupState extends State<AddEditGroup> {
         appBar: AppBar(title: Text(AppTitle)),
         body: Stack(
           children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                        child: Container(
-                            padding: sidePaddingWide,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 16.0),
-                                Center(
-                                  child: Text(widget.title, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-                                ),
-                                SizedBox(height: 16.0),
-                                if (_messageText != '') Text(_messageText),
-                                if (_messageText != '') SizedBox(height: 16.0),
-                                TextFormField(
-                                  controller: _nameFormController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return FormCreateGroupNameError;
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: 16.0),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: TextFormField(
-                                      controller: _addressFormController,
-                                      keyboardType: TextInputType.multiline,
-                                      decoration: InputDecoration(hintText: FormCreateGroupAddress, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return FormCreateGroupAddressError;
-                                        }
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(HeaderImage),
+                  fit: BoxFit.none,
+                  alignment: Alignment.bottomRight,
+                  colorFilter: ColorFilter.mode(Color(int.parse('0xff092128')).withOpacity(0.7), BlendMode.dstATop),
+                ),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                          child: Container(
+                              padding: sidePaddingWide,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16.0),
+                                  Center(
+                                    child: Text(widget.title, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  if (_messageText != '') Text(_messageText),
+                                  if (_messageText != '') SizedBox(height: 16.0),
+                                  TextFormField(
+                                    controller: _nameFormController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return FormCreateGroupNameError;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: TextFormField(
+                                        controller: _addressFormController,
+                                        keyboardType: TextInputType.multiline,
+                                        decoration: InputDecoration(hintText: FormCreateGroupAddress, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return FormCreateGroupAddressError;
+                                          }
 
-                                        if (value.isNotEmpty && _closedValidAddress == null) {
-                                          return FormCreateGroupAddressInvalid;
-                                        }
+                                          if (value.isNotEmpty && _closedValidAddress == null) {
+                                            return FormCreateGroupAddressInvalid;
+                                          }
 
-                                        return null;
-                                      },
-                                      maxLines: null,
-                                      focusNode: _focusAddressNode,
-                                    )),
-                                    IconButton(
-                                        icon: Icon(Icons.search),
-                                        onPressed: () {
-                                          _getLatLong();
-                                        })
-                                  ],
-                                ),
-                                SizedBox(height: 16.0),
-                                if (_searchAddressLoading)
-                                  Container(
-                                      padding: verticalPadding,
-                                      child: Column(children: [
-                                        Text(AddressValidateTitle, style: bold),
-                                        SizedBox(height: 16.0),
-                                        Center(child: CircularProgressIndicator()),
-                                        SizedBox(height: 16.0),
-                                      ])),
-                                if (_searchAddressErrorMessage != '')
-                                  Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: verticalPadding,
-                                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                        Text(_searchAddressErrorMessage, style: bold),
-                                        SizedBox(height: 16.0),
-                                        Text(ClosedAddressFoundDesc),
-                                        SizedBox(height: 16.0),
-                                      ])),
-                                if (_searchAddressSuccess)
-                                  Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: verticalPadding,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(ClosedAddressFoundTitle, style: bold),
+                                          return null;
+                                        },
+                                        maxLines: null,
+                                        focusNode: _focusAddressNode,
+                                      )),
+                                      IconButton(
+                                          icon: Icon(Icons.search),
+                                          onPressed: () {
+                                            _getLatLong();
+                                          })
+                                    ],
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  if (_searchAddressLoading)
+                                    Container(
+                                        padding: verticalPadding,
+                                        child: Column(children: [
+                                          Text(AddressValidateTitle, style: bold),
                                           SizedBox(height: 16.0),
-                                          Text(_closedValidAddress.addressLine),
-                                          SizedBox(height: 8.0),
-                                          Text(FormCreateGroupLatlong +
-                                              _closedValidAddress.coordinates.latitude.toString() +
-                                              ',' +
-                                              _closedValidAddress.coordinates.longitude.toString()),
-                                          SizedBox(height: 8.0),
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                  child: RaisedButton(
-                                                child: Text(UseCoordinateButtonText),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _lastCheckedAddress = _closedValidAddress.addressLine;
-                                                    _searchAddressSuccess = false;
-                                                    _latlongOri = '';
-                                                  });
-                                                },
-                                              )),
-                                              SizedBox(width: 8.0),
-                                              Expanded(
-                                                  child: RaisedButton(
-                                                child: Text(UseAddressButtonText),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _addressFormController.text = _closedValidAddress.addressLine;
-                                                    _lastCheckedAddress = _closedValidAddress.addressLine;
-                                                    _searchAddressSuccess = false;
-                                                    _latlongOri = '';
-                                                  });
-                                                },
-                                              )),
-                                            ],
-                                          ),
+                                          Center(child: CircularProgressIndicator()),
+                                          SizedBox(height: 16.0),
+                                        ])),
+                                  if (_searchAddressErrorMessage != '')
+                                    Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        padding: verticalPadding,
+                                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                          Text(_searchAddressErrorMessage, style: bold),
                                           SizedBox(height: 16.0),
                                           Text(ClosedAddressFoundDesc),
                                           SizedBox(height: 16.0),
-                                        ],
-                                      )),
-                                TextFormField(
-                                  controller: _roundFormController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(hintText: FormCreateGroupRound, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      setState(() {
-                                        _roundFormController.text = '1';
-                                      });
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: 16.0),
-                                TextFormField(
-                                  controller: _endDateFormController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(hintText: FormCreateGroupEndDate, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
-                                  readOnly: true,
-                                  onTap: () => _renderSelectDate(context),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return FormCreateGroupEndDateError;
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: 16.0),
-                                if ('' == widget.groupId && _searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                                if ('' == widget.groupId && _apiReturnUsers.length > 0)
-                                  Container(
-                                    padding: sidePaddingNarrow,
-                                    child: Wrap(children: [
-                                      for (var user in _apiReturnUsers)
-                                        if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
-                                          TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
-                                    ]),
-                                  ),
-                                if ('' == widget.groupId)
+                                        ])),
+                                  if (_searchAddressSuccess)
+                                    Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        padding: verticalPadding,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(ClosedAddressFoundTitle, style: bold),
+                                            SizedBox(height: 16.0),
+                                            Text(_closedValidAddress.addressLine),
+                                            SizedBox(height: 8.0),
+                                            Text(FormCreateGroupLatlong +
+                                                _closedValidAddress.coordinates.latitude.toString() +
+                                                ',' +
+                                                _closedValidAddress.coordinates.longitude.toString()),
+                                            SizedBox(height: 8.0),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                    child: RaisedButton(
+                                                  child: Text(UseCoordinateButtonText),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _lastCheckedAddress = _closedValidAddress.addressLine;
+                                                      _searchAddressSuccess = false;
+                                                      _latlongOri = '';
+                                                    });
+                                                  },
+                                                )),
+                                                SizedBox(width: 8.0),
+                                                Expanded(
+                                                    child: RaisedButton(
+                                                  child: Text(UseAddressButtonText),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _addressFormController.text = _closedValidAddress.addressLine;
+                                                      _lastCheckedAddress = _closedValidAddress.addressLine;
+                                                      _searchAddressSuccess = false;
+                                                      _latlongOri = '';
+                                                    });
+                                                  },
+                                                )),
+                                              ],
+                                            ),
+                                            SizedBox(height: 16.0),
+                                            Text(ClosedAddressFoundDesc),
+                                            SizedBox(height: 16.0),
+                                          ],
+                                        )),
                                   TextFormField(
-                                    controller: _searchUserFormController,
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(
-                                      contentPadding: sidePaddingNarrow,
-                                      hintText: FormCreateGroupUids,
-                                    ),
-                                    onChanged: (value) {
-                                      if (value.length >= 3) {
-                                        _apiSearchUser(value);
-                                      } else if (_apiReturnUsers.length > 0) {
+                                    controller: _roundFormController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(hintText: FormCreateGroupRound, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
                                         setState(() {
-                                          _apiReturnUsers = [];
+                                          _roundFormController.text = '1';
                                         });
                                       }
+                                      return null;
                                     },
                                   ),
-                                if ('' == widget.groupId) SizedBox(height: 16.0),
-                                if ('' == widget.groupId && _usersSelectedForInvite.length > 0)
-                                  Container(
-                                    padding: sidePaddingNarrow,
-                                    child: Column(children: [
-                                      for (var user in _usersSelectedForInvite)
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text('@' + user[1]),
-                                            IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => _removeUid(user)),
-                                          ],
-                                        ),
-                                      SizedBox(height: 16.0),
-                                    ]),
+                                  SizedBox(height: 16.0),
+                                  TextFormField(
+                                    controller: _endDateFormController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(hintText: FormCreateGroupEndDate, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
+                                    readOnly: true,
+                                    onTap: () => _renderSelectDate(context),
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return FormCreateGroupEndDateError;
+                                      }
+                                      return null;
+                                    },
                                   ),
-                                SizedBox(height: 16.0),
-                                Center(
-                                  child: FlatButton(
-                                      onPressed: () => _getImage(),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 79,
+                                  SizedBox(height: 16.0),
+                                  if ('' == widget.groupId && _searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                                  if ('' == widget.groupId && _apiReturnUsers.length > 0)
+                                    Container(
+                                      padding: sidePaddingNarrow,
+                                      child: Wrap(children: [
+                                        for (var user in _apiReturnUsers)
+                                          if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
+                                            TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                                      ]),
+                                    ),
+                                  if ('' == widget.groupId)
+                                    TextFormField(
+                                      controller: _searchUserFormController,
+                                      keyboardType: TextInputType.text,
+                                      decoration: InputDecoration(
+                                        contentPadding: sidePaddingNarrow,
+                                        hintText: FormCreateGroupUids,
+                                      ),
+                                      onChanged: (value) {
+                                        if (value.length >= 3) {
+                                          _apiSearchUser(value);
+                                        } else if (_apiReturnUsers.length > 0) {
+                                          setState(() {
+                                            _apiReturnUsers = [];
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  if ('' == widget.groupId) SizedBox(height: 16.0),
+                                  if ('' == widget.groupId && _usersSelectedForInvite.length > 0)
+                                    Container(
+                                      padding: sidePaddingNarrow,
+                                      child: Column(children: [
+                                        for (var user in _usersSelectedForInvite)
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('@' + user[1]),
+                                              IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => _removeUid(user)),
+                                            ],
+                                          ),
+                                        SizedBox(height: 16.0),
+                                      ]),
+                                    ),
+                                  SizedBox(height: 16.0),
+                                  Center(
+                                    child: FlatButton(
+                                        onPressed: () => _getImage(),
                                         child: CircleAvatar(
-                                          backgroundImage: AssetImage(_image != null ? _image.path : ''),
                                           backgroundColor: Colors.white,
-                                          radius: 72,
-                                          child: Text(_image == null ? UploadGroupPhoto : '', textAlign: TextAlign.center),
-                                        ),
-                                      )),
-                                ),
-                              ],
-                            )),
+                                          radius: 79,
+                                          child: CircleAvatar(
+                                            backgroundImage: AssetImage(_image != null ? _image.path : ''),
+                                            backgroundColor: Colors.white,
+                                            radius: 72,
+                                            child: Text(_image == null ? UploadGroupPhoto : '', textAlign: TextAlign.center),
+                                          ),
+                                        )),
+                                  ),
+                                ],
+                              )),
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: mainPadding,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        MaterialButton(
-                          child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                          onPressed: () async {
-                            await _getLatLong();
+                    Container(
+                      padding: mainPadding,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          MaterialButton(
+                            child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                            onPressed: () async {
+                              await _getLatLong();
 
-                            if (_formKey.currentState.validate()) {
-                              if (widget.groupId == '') {
-                                _apiCreateGroup();
-                              } else {
-                                _apiUpdateGroup();
+                              if (_formKey.currentState.validate()) {
+                                if (widget.groupId == '') {
+                                  _apiCreateGroup();
+                                } else {
+                                  _apiUpdateGroup();
+                                }
                               }
-                            }
-                          },
-                          height: 50.0,
-                          color: Color(int.parse('0xffF30F0F')),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                        ),
-                        MaterialButton(
-                          child: Text(CancelText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                          onPressed: () => Navigator.of(context).pop(),
-                          height: 50.0,
-                          color: Color(int.parse('0xff747070')),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                        ),
-                      ],
+                            },
+                            height: 50.0,
+                            color: Color(int.parse('0xffF30F0F')),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                          ),
+                          MaterialButton(
+                            child: Text(CancelText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                            onPressed: () => Navigator.of(context).pop(),
+                            height: 50.0,
+                            color: Color(int.parse('0xff747070')),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (_loadingOverlay) loadingOverlay(context)

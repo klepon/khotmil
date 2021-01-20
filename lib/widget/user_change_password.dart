@@ -2,7 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/update_password.dart';
+import 'package:khotmil/fetch/user_update_password.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   final String loginKey;

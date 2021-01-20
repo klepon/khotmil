@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/login_user.dart';
-import 'package:khotmil/fetch/recovery_pasword.dart';
-import 'package:khotmil/fetch/register_user.dart';
-import 'package:khotmil/fetch/validate_email.dart';
+import 'package:khotmil/fetch/user_login.dart';
+import 'package:khotmil/fetch/user_recovery_pasword.dart';
+import 'package:khotmil/fetch/user_register.dart';
+import 'package:khotmil/fetch/user_validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
 import 'package:khotmil/widget/user_change_password.dart';
 import 'package:khotmil/widget/user_edit_account.dart';
@@ -352,7 +352,7 @@ class _AuthState extends State<Auth> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(loginKey: _loginKey, logout: _logout)))),
             ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
             ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
-            ListTile(title: Text(ShareAplikastion), onTap: () {}),
+            // ListTile(title: Text(ShareAplikastion), onTap: () {}),
             ListTile(title: Text(LogoutText), onTap: () => _logout()),
           ],
         )),
