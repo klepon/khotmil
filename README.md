@@ -52,8 +52,8 @@ Restart connection and do all the step
 ## reskin and relogic
 
 - group reskin list
+- group delete item in invited list
 - group edit
-- group invited list
 
 - join group update view
 - join group add confirmation modal

@@ -17,6 +17,7 @@ final BoxDecoration mainShadow = BoxDecoration(color: Colors.white, boxShadow: [
   ),
 ]);
 final TextStyle bold = TextStyle(fontWeight: FontWeight.bold);
+final TextStyle boldLink = TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline);
 TextStyle errorTextStyle = TextStyle(color: Colors.white);
 
 Text textSmall(text) {

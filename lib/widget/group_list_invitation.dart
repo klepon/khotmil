@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_list.dart';
-import 'package:khotmil/widget/group_add_edit.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_item.dart';
-import 'package:khotmil/widget/group_list_invitation.dart';
-import 'package:khotmil/widget/search_group.dart';
 import 'package:sprintf/sprintf.dart';
 
-class GroupList extends StatefulWidget {
+class GroupListInvitation extends StatefulWidget {
   final String name;
   final String loginKey;
-  GroupList({Key key, this.name, this.loginKey}) : super(key: key);
+  GroupListInvitation({Key key, this.name, this.loginKey}) : super(key: key);
 
   @override
-  _GroupListState createState() => _GroupListState();
+  _GroupListInvitationState createState() => _GroupListInvitationState();
 }
 
-class _GroupListState extends State<GroupList> {
+class _GroupListInvitationState extends State<GroupListInvitation> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _loadingOverlay = false;
+
   void _reloadGroupList() {
     setState(() {});
   }
@@ -63,7 +63,7 @@ class _GroupListState extends State<GroupList> {
 
   Widget _myGroupList(context) {
     return FutureBuilder(
-      future: fetchMyGroupList(widget.loginKey, 0),
+      future: fetchMyGroupList(widget.loginKey, 1),
       builder: (context, snapshot) {
         String _responseMessage = '';
         String _dataMessage = '';
@@ -114,13 +114,8 @@ class _GroupListState extends State<GroupList> {
                     padding: mainPadding,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(sprintf(WelcomeMessage, [widget.name])),
-                      Text(SelectGroupToSeeProgress),
-                      SizedBox(height: 8.0),
-                      FlatButton(
-                          child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
-                              }))),
+                      Text(ThisGroupInviteYou),
+                      SizedBox(height: 8.0)
                     ])),
               if (_hasData) _loopGroups(snapshot.data['groups'], context),
               if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
@@ -133,53 +128,15 @@ class _GroupListState extends State<GroupList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: pageBg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(title: Text(AppTitle)),
+        body: SafeArea(
+            child: Stack(
           children: [
-            Expanded(
-              child: _myGroupList(context),
-            ),
-            Container(
-              padding: mainPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MaterialButton(
-                    child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return AddEditGroup(
-                          loginKey: widget.loginKey,
-                          title: CreateGroup,
-                          groupId: '',
-                          reloadList: _reloadGroupList,
-                          deadline: '',
-                          reloadDetail: () => {},
-                        );
-                      }));
-                    },
-                    height: 50.0,
-                    color: Color(int.parse('0xffF30F0F')),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                  MaterialButton(
-                    child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                      }));
-                    },
-                    height: 50.0,
-                    color: Color(int.parse('0xff2DA310')),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                ],
-              ),
-            )
+            Container(decoration: pageBg, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: _myGroupList(context))])),
+            if (_loadingOverlay) loadingOverlay(context)
           ],
-          // This trailing comma makes auto-formatting nicer for build methods.
-        ));
+        )));
   }
 }
