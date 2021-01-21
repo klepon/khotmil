@@ -2,12 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchMyGroupList(String key) async {
+Future fetchMyGroupList(String key, int invited) async {
   try {
     Response response = await Dio(dioOptions).post(
       'klepon/v1/group-list',
       data: {
         'user_key': key,
+        'invited': invited,
       },
     );
 

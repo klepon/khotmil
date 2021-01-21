@@ -53,6 +53,7 @@ Restart connection and do all the step
 
 - group reskin list
 - group edit
+- group invited list
 
 - join group update view
 - join group add confirmation modal

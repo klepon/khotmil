@@ -6,6 +6,7 @@ import 'package:khotmil/widget/group_add_edit.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_item.dart';
 import 'package:khotmil/widget/search_group.dart';
+import 'package:sprintf/sprintf.dart';
 
 class GroupList extends StatefulWidget {
   final String name;
@@ -18,6 +19,7 @@ class GroupList extends StatefulWidget {
 
 class _GroupListState extends State<GroupList> {
   TextEditingController _searchGroupFormController = TextEditingController();
+  int _invitation = 0;
 
   void _reloadGroupList() {
     setState(() {});
@@ -63,7 +65,7 @@ class _GroupListState extends State<GroupList> {
 
   Widget _myGroupList(context) {
     return FutureBuilder(
-      future: fetchMyGroupList(widget.loginKey),
+      future: fetchMyGroupList(widget.loginKey, _invitation),
       builder: (context, snapshot) {
         String _responseMessage = '';
         String _dataMessage = '';
@@ -114,11 +116,32 @@ class _GroupListState extends State<GroupList> {
             children: [
               if (_hasData)
                 Container(
+                    padding: mainPadding,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(children: [Text(WelcomeMessage), Text(widget.name)]),
-                  SizedBox(height: 8.0),
-                  Text(YourGroup, style: bold),
-                ])),
+                      Row(children: [Text(WelcomeMessage), Text(widget.name)]),
+                      SizedBox(height: 8.0),
+                      Row(
+                        children: [
+                          FlatButton(
+                            child: Text(YourGroup, style: bold),
+                            onPressed: () {
+                              setState(() {
+                                _invitation = 0;
+                              });
+                            },
+                          ),
+                          SizedBox(width: 24.0),
+                          FlatButton(
+                            child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: bold),
+                            onPressed: () {
+                              setState(() {
+                                _invitation = 1;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ])),
               if (_hasData) _loopGroups(snapshot.data['groups'], context),
               if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
             ],

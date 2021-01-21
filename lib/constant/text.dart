@@ -30,6 +30,7 @@ const String RegisterWithPhoneNow = 'Telpon';
 const String CopyRight = 'Aplikai khotmil ver 1.0';
 const String WelcomeMessage = 'Assalamua\'laikum, ';
 const String YourGroup = 'Group Anda';
+const String GroupInvitation = '%d undangan';
 const String CreateGroup = 'Buat Group';
 const String EditGroup = 'Edit Group';
 const String JoinGroup = 'Gabung Group';
