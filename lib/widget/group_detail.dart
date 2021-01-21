@@ -21,26 +21,13 @@ class GroupDetail extends StatefulWidget {
   final String progress;
   final String round;
   final String deadline;
-  final String yourJuz;
   final String yourProgress;
-  final String groupColor;
+  final String photo;
   final String loginKey;
   final bool owner;
   final Function reloadList;
 
-  GroupDetail(
-      {Key key,
-      this.groupId,
-      this.groupName,
-      this.progress,
-      this.round,
-      this.deadline,
-      this.yourJuz,
-      this.yourProgress,
-      this.groupColor,
-      this.loginKey,
-      this.owner,
-      this.reloadList})
+  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourProgress, this.photo, this.loginKey, this.owner, this.reloadList})
       : super(key: key);
 
   @override
@@ -56,7 +43,7 @@ class _GroupDetailState extends State<GroupDetail> {
   String _detailRound = '';
   String _detailDeadline = '';
   String _detailProgress = '';
-  String _detailMyJuz = '';
+  String _detailPhoto = '';
   String _detailMyProgress = '';
 
   bool _loadingOverlay = false;
@@ -92,7 +79,7 @@ class _GroupDetailState extends State<GroupDetail> {
         setState(() {
           _loadingOverlay = false;
           _detailProgress = data['group']['progress'].toString();
-          _detailMyJuz = data['group']['my_juz'].toString();
+          _detailPhoto = data['group']['photo'];
           _detailMyProgress = data['group']['my_progress'].toString();
           _detailDeadline = data['group']['end_date'].toString();
           _detailRound = data['group']['round'].toString();
@@ -623,7 +610,7 @@ class _GroupDetailState extends State<GroupDetail> {
                     progress: _detailProgress != '' ? _detailProgress : widget.progress,
                     round: _detailRound != '' ? _detailRound : widget.round,
                     deadline: _detailDeadline,
-                    yourJuz: _detailMyJuz != '' ? _detailMyJuz : widget.yourJuz,
+                    photo: _detailPhoto != '' ? _detailPhoto : widget.photo,
                     yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
                   ),
                   if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||

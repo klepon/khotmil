@@ -55,6 +55,8 @@ Restart connection and do all the step
 - group delete item in invited list
 - group edit
 
+- invite user in group detail -> exclude invited user
+
 - join group update view
 - join group add confirmation modal
 - join group reskin join process

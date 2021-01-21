@@ -181,9 +181,8 @@ class _SearchGroupState extends State<SearchGroup> {
                           progress: group['progress'].toString(),
                           round: group['round'].toString(),
                           deadline: group['end_date'].toString(),
-                          yourJuz: group['my_juz'].toString(),
                           yourProgress: group['my_progress'].toString(),
-                          groupColor: group['color'],
+                          photo: group['photo'],
                           owner: group['owner'],
                           loginKey: widget.loginKey,
                           reloadList: () {
@@ -197,7 +196,7 @@ class _SearchGroupState extends State<SearchGroup> {
                     progress: group['progress'].toString(),
                     round: group['round'].toString(),
                     deadline: group['end_date'].toString(),
-                    yourJuz: group['my_juz'].toString(),
+                    photo: group['photo'],
                     yourProgress: group['my_progress'].toString(),
                   ),
                 ));
