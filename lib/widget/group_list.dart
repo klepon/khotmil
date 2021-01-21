@@ -88,6 +88,7 @@ class _GroupListState extends State<GroupList> {
 
         if (_isLoading || _dataMessage != '' || _responseMessage != '') {
           return Container(
+              width: double.infinity,
               padding: mainPadding,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -115,12 +116,13 @@ class _GroupListState extends State<GroupList> {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(sprintf(WelcomeMessage, [widget.name])),
                       Text(SelectGroupToSeeProgress),
-                      SizedBox(height: 8.0),
-                      FlatButton(
-                          child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
-                              }))),
+                      if (snapshot.data['invitation'] > 0)
+                        FlatButton(
+                            child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
+                                }))),
+                      if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
                     ])),
               if (_hasData) _loopGroups(snapshot.data['groups'], context),
               if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),

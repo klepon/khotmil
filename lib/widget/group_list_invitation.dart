@@ -74,8 +74,8 @@ class _GroupListInvitationState extends State<GroupListInvitation> {
         if (snapshot.connectionState != ConnectionState.done) {
           _responseMessage = LoadingGroups;
         } else if (snapshot.hasData) {
-          if (snapshot.data['message'] != null) {
-            _dataMessage = snapshot.data['message'];
+          if (snapshot.data['message_no_invitation'] != null) {
+            _dataMessage = snapshot.data['message_no_invitation'];
           } else {
             _hasData = true;
           }
@@ -88,6 +88,7 @@ class _GroupListInvitationState extends State<GroupListInvitation> {
 
         if (_isLoading || _dataMessage != '' || _responseMessage != '') {
           return Container(
+              width: double.infinity,
               padding: mainPadding,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
