@@ -379,7 +379,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
-                if (user['juz'] == '0') {
+                if (user['juz'] == '0' && !user['isMe']) {
                   userWithoutJuz[user['uid']] = user;
                 } else {
                   // collect names in a juz

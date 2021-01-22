@@ -118,7 +118,11 @@ class _GroupListState extends State<GroupList> {
                       FlatButton(
                           child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
+                                return GroupListInvitation(
+                                  name: widget.name,
+                                  loginKey: widget.loginKey,
+                                  reloadGroupList: _reloadGroupList,
+                                );
                               }))),
                     if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
                   ])),

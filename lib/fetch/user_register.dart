@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:image/image.dart' as img;
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
@@ -10,10 +12,12 @@ Future fetchRegisterUser(String name, String fullname, String email, String pass
       'name': name,
       'fullname': fullname,
       'email': email,
+      'password': password,
       'phone': phone,
     };
 
     if (file != null) {
+      File(file.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(File(file.path).readAsBytesSync()), width: ProfilePhotoWidth)));
       data['file'] = await MultipartFile.fromFile(file.path, filename: file.path.split('/').last);
     }
 

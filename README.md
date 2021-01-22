@@ -51,7 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- group delete item in invited list
 - group edit
 
 - invite user in group detail -> exclude invited user

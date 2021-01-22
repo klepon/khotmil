@@ -8,8 +8,6 @@ import 'package:khotmil/constant/text.dart';
 
 Future fetchCreateGroup(String key, String name, String address, String latlong, String round, String date, List uids, File file) async {
   try {
-    File resized = File(file.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(File(file.path).readAsBytesSync()), width: ProfilePhotoWidth)));
-
     Map<String, dynamic> data = {
       'user_key': key,
       'name': name,
@@ -21,6 +19,7 @@ Future fetchCreateGroup(String key, String name, String address, String latlong,
     };
 
     if (file != null) {
+      File resized = File(file.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(File(file.path).readAsBytesSync()), width: ProfilePhotoWidth)));
       data['file'] = await MultipartFile.fromFile(resized.path, filename: resized.path.split('/').last);
     }
 

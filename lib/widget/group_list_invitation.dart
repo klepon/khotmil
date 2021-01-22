@@ -9,7 +9,8 @@ import 'package:sprintf/sprintf.dart';
 class GroupListInvitation extends StatefulWidget {
   final String name;
   final String loginKey;
-  GroupListInvitation({Key key, this.name, this.loginKey}) : super(key: key);
+  final Function reloadGroupList;
+  GroupListInvitation({Key key, this.name, this.loginKey, this.reloadGroupList}) : super(key: key);
 
   @override
   _GroupListInvitationState createState() => _GroupListInvitationState();
@@ -21,6 +22,7 @@ class _GroupListInvitationState extends State<GroupListInvitation> {
 
   void _reloadGroupList() {
     setState(() {});
+    widget.reloadGroupList();
   }
 
   Widget _loopGroups(groups, context) {

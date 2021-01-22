@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:image/image.dart' as img;
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
@@ -15,6 +17,7 @@ Future fetchUpdateUserData(String key, String name, String fullname, String emai
     };
 
     if (file != null) {
+      File(file.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(File(file.path).readAsBytesSync()), width: ProfilePhotoWidth)));
       data['file'] = await MultipartFile.fromFile(file.path, filename: file.path.split('/').last);
     }
 

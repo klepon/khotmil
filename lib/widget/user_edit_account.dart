@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as img;
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
@@ -41,7 +40,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
     if (pickedFile != null) {
       setState(() {
         _photo = '';
-        _image = File(pickedFile.path)..writeAsBytesSync(img.encodeJpg(img.copyResize(img.decodeImage(File(pickedFile.path).readAsBytesSync()), width: ProfilePhotoWidth)));
+        _image = File(pickedFile.path);
       });
     }
   }
