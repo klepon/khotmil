@@ -309,19 +309,26 @@ class _AuthState extends State<Auth> {
                   children: [
                     Container(
                         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      FlatButton(
-                          padding: mainPadding,
-                          onPressed: () => _scaffoldKey.currentState.openDrawer(),
-                          child: Row(children: [
-                            CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
-                            SizedBox(width: 8.0),
-                            Text(_name, style: TextStyle(fontSize: 20.0)),
-                          ])),
+                      Expanded(
+                        child: FlatButton(
+                            padding: mainPadding,
+                            onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                            child: Row(children: [
+                              CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
+                              SizedBox(width: 8.0),
+                              Text(_name, style: TextStyle(fontSize: 20.0)),
+                            ])),
+                      ),
                       FlatButton(
                           padding: mainPadding,
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
                           child: Text(DonateText)),
                     ])),
+                    Container(
+                      height: 1.0,
+                      width: double.infinity,
+                      color: Colors.black45,
+                    ),
                     Expanded(
                       child: GroupList(name: _name, loginKey: _loginKey),
                     ),
@@ -333,27 +340,45 @@ class _AuthState extends State<Auth> {
       )),
       drawer: Drawer(
         child: SafeArea(
-            child: ListView(
-          padding: EdgeInsets.zero,
+            child: Column(
           children: [
             FlatButton(
-                padding: mainPadding,
+                minWidth: double.infinity,
+                padding: EdgeInsets.zero,
                 onPressed: () => Navigator.of(context).pop(),
-                child: Row(children: [
-                  CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
-                  SizedBox(width: 8.0),
-                  Text(_name, style: TextStyle(fontSize: 20.0))
-                ])),
-            ListTile(
-                title: Text(EditAccount),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
-            ListTile(
-                title: Text(ChangePassword),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(loginKey: _loginKey, logout: _logout)))),
-            ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
-            ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
-            // ListTile(title: Text(ShareAplikastion), onTap: () {}),
-            ListTile(title: Text(LogoutText), onTap: () => _logout()),
+                child: Container(
+                  padding: mainPadding,
+                  color: Colors.black12,
+                  child: Row(children: [
+                    CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
+                    SizedBox(width: 8.0),
+                    Text(_name, style: TextStyle(fontSize: 20.0))
+                  ]),
+                )),
+            Container(width: double.infinity, height: 1.0, color: Colors.black26),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  ListTile(
+                      title: Text(EditAccount),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  ListTile(
+                      title: Text(ChangePassword),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(loginKey: _loginKey, logout: _logout)))),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  // ListTile(title: Text(ShareAplikastion), onTap: () {}),
+                  // Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  ListTile(title: Text(LogoutText), onTap: () => _logout()),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                ],
+              ),
+            )
           ],
         )),
       ),

@@ -103,31 +103,35 @@ class _GroupListState extends State<GroupList> {
               ));
         }
 
-        return SingleChildScrollView(
-            child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-          child: Column(
-            children: [
-              if (_hasData)
-                Container(
-                    width: double.infinity,
-                    padding: mainPadding,
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(sprintf(WelcomeMessage, [widget.name])),
-                      Text(SelectGroupToSeeProgress),
-                      if (snapshot.data['invitation'] > 0)
-                        FlatButton(
-                            child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
-                                }))),
-                      if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
-                    ])),
-              if (_hasData) _loopGroups(snapshot.data['groups'], context),
-              if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
-            ],
-          ),
-        ));
+        return Column(
+          children: [
+            if (_hasData)
+              Container(
+                  width: double.infinity,
+                  padding: mainPadding,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(sprintf(WelcomeMessage, [widget.name])),
+                    Text(SelectGroupToSeeProgress),
+                    if (snapshot.data['invitation'] > 0)
+                      FlatButton(
+                          child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return GroupListInvitation(name: widget.name, loginKey: widget.loginKey);
+                              }))),
+                    if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
+                  ])),
+            if (_hasData)
+              Expanded(
+                child: SingleChildScrollView(
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                        child: Column(children: [
+                          _loopGroups(snapshot.data['groups'], context),
+                        ]))),
+              ),
+            if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
+          ],
+        );
       },
     );
   }
