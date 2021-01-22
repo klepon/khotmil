@@ -13,7 +13,7 @@ import 'package:khotmil/fetch/member_join_round.dart';
 import 'package:khotmil/fetch/group_round_member.dart';
 import 'package:khotmil/widget/group_add_edit.dart';
 
-import 'group_item.dart';
+import 'group_list_item.dart';
 
 class GroupDetail extends StatefulWidget {
   final String groupId;

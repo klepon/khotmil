@@ -4,7 +4,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_list.dart';
 import 'package:khotmil/widget/group_add_edit.dart';
 import 'package:khotmil/widget/group_detail.dart';
-import 'package:khotmil/widget/group_item.dart';
+import 'package:khotmil/widget/group_list_item.dart';
 import 'package:khotmil/widget/group_list_invitation.dart';
 import 'package:khotmil/widget/search_group.dart';
 import 'package:sprintf/sprintf.dart';

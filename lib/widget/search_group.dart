@@ -7,7 +7,7 @@ import 'package:khotmil/fetch/group_search_group.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'group_detail.dart';
-import 'group_item.dart';
+import 'group_list_item.dart';
 
 class SearchGroup extends StatefulWidget {
   final String loginKey;
