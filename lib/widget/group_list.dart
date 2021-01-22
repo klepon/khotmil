@@ -40,6 +40,7 @@ class _GroupListState extends State<GroupList> {
                 yourProgress: group['my_progress'].toString(),
                 photo: group['photo'],
                 owner: group['owner'],
+                isInvitation: false,
                 loginKey: widget.loginKey,
                 reloadList: _reloadGroupList);
           }));
@@ -51,6 +52,7 @@ class _GroupListState extends State<GroupList> {
           deadline: group['end_date'].toString(),
           photo: group['photo'],
           yourProgress: group['my_progress'].toString(),
+          asHeader: false,
         ),
       ));
     }

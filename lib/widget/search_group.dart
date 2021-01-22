@@ -184,6 +184,7 @@ class _SearchGroupState extends State<SearchGroup> {
                           yourProgress: group['my_progress'].toString(),
                           photo: group['photo'],
                           owner: group['owner'],
+                          isInvitation: false,
                           loginKey: widget.loginKey,
                           reloadList: () {
                             widget.reloadList();
@@ -198,6 +199,7 @@ class _SearchGroupState extends State<SearchGroup> {
                     deadline: group['end_date'].toString(),
                     photo: group['photo'],
                     yourProgress: group['my_progress'].toString(),
+                    asHeader: false,
                   ),
                 ));
               }

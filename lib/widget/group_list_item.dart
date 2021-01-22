@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
 
 class GroupItem extends StatelessWidget {
@@ -8,25 +9,30 @@ class GroupItem extends StatelessWidget {
   final String deadline;
   final String photo;
   final String yourProgress;
+  final bool asHeader;
+  final Function editGroup;
+  final Function deleteInvitation;
 
-  GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress}) : super(key: key);
+  GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.deleteInvitation})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: asHeader ? EdgeInsets.zero : EdgeInsets.all(8.0),
       child: Stack(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 130.0, width: 65.0),
+              if (!asHeader) SizedBox(height: 130.0, width: 65.0),
+              if (asHeader) SizedBox(height: 130.0, width: 0.0),
               Expanded(
                   child: Container(
-                      padding: EdgeInsets.fromLTRB(70.0, 8.0, 16.0, 8.0),
+                      padding: asHeader ? EdgeInsets.fromLTRB(142.0, 16.0, 24.0, 8.0) : EdgeInsets.fromLTRB(70.0, 8.0, 16.0, 8.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.only(topRight: Radius.circular(50.0), bottomRight: Radius.circular(50.0)),
+                        borderRadius: asHeader ? BorderRadius.zero : BorderRadius.only(topRight: Radius.circular(50.0), bottomRight: Radius.circular(50.0)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,6 +59,7 @@ class GroupItem extends StatelessWidget {
             ],
           ),
           Container(
+            margin: asHeader ? EdgeInsets.only(left: 6.0) : EdgeInsets.zero,
             padding: EdgeInsets.all(5.0),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -61,6 +68,36 @@ class GroupItem extends StatelessWidget {
             ),
             child: CircleAvatar(backgroundImage: photo != '' ? NetworkImage(photo) : null, backgroundColor: Colors.white, radius: 60),
           ),
+          if (editGroup != null)
+            Container(
+              padding: EdgeInsets.only(top: 4.0),
+              alignment: Alignment.topRight,
+              child: Column(
+                children: [
+                  IconButton(
+                    icon: ImageIcon(AssetImage(IconEdit), color: Color(0xFF000000), size: 32.0),
+                    tooltip: EditGroup,
+                    onPressed: () => editGroup(),
+                  ),
+                ],
+              ),
+            ),
+          if (deleteInvitation != null)
+            Container(
+              padding: EdgeInsets.only(top: 8.0),
+              alignment: Alignment.topRight,
+              child: Column(
+                children: [
+                  IconButton(
+                    tooltip: EditGroup,
+                    icon: Icon(Icons.delete_forever),
+                    color: Colors.black,
+                    iconSize: 32.0,
+                    onPressed: () => deleteInvitation(),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

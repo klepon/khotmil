@@ -292,6 +292,31 @@ class _AddEditGroupState extends State<AddEditGroup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.delete_forever),
+                      tooltip: DeleteGroup,
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              title: Text(DeleteGroupWarningTitle),
+                              content: Text(DeleteGroupWarning),
+                              actions: [
+                                FlatButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(CancelText),
+                                ),
+                                RaisedButton(
+                                  color: Colors.redAccent,
+                                  onPressed: () {
+                                    // _apiDeleteGroup();
+                                  },
+                                  child: Text(DeleteGroupConfirm),
+                                ),
+                              ],
+                            ));
+                      },
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: ConstrainedBox(

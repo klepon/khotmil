@@ -51,7 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- group reskin list
 - group delete item in invited list
 - group edit
 

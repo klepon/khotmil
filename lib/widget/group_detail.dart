@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:khotmil/fetch/member_leave_group.dart';
 import 'package:khotmil/fetch/member_self_delete.dart';
 import 'package:khotmil/fetch/group_get_single_group.dart';
 import 'package:khotmil/fetch/group_invite_user.dart';
@@ -8,7 +9,6 @@ import 'package:khotmil/fetch/member_update_progress.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
-import 'package:khotmil/fetch/group_delete.dart';
 import 'package:khotmil/fetch/member_join_round.dart';
 import 'package:khotmil/fetch/group_round_member.dart';
 import 'package:khotmil/widget/group_add_edit.dart';
@@ -25,9 +25,22 @@ class GroupDetail extends StatefulWidget {
   final String photo;
   final String loginKey;
   final bool owner;
+  final bool isInvitation;
   final Function reloadList;
 
-  GroupDetail({Key key, this.groupId, this.groupName, this.progress, this.round, this.deadline, this.yourProgress, this.photo, this.loginKey, this.owner, this.reloadList})
+  GroupDetail(
+      {Key key,
+      this.groupId,
+      this.groupName,
+      this.progress,
+      this.round,
+      this.deadline,
+      this.yourProgress,
+      this.photo,
+      this.loginKey,
+      this.owner,
+      this.isInvitation,
+      this.reloadList})
       : super(key: key);
 
   @override
@@ -101,14 +114,39 @@ class _GroupDetailState extends State<GroupDetail> {
     });
   }
 
-  void _apiDeleteGroup() async {
+  // void _apiDeleteGroup() async {
+  //   Navigator.pop(context);
+  //   setState(() {
+  //     _loadingOverlay = true;
+  //     _messageText = '';
+  //   });
+
+  //   await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
+  //     if (data[DataStatus] == StatusSuccess) {
+  //       Navigator.pop(context);
+  //       widget.reloadList();
+  //     } else if (data[DataStatus] == StatusError) {
+  //       setState(() {
+  //         _loadingOverlay = false;
+  //         _messageText = data[DataMessage];
+  //       });
+  //     }
+  //   }).catchError((onError) {
+  //     setState(() {
+  //       _loadingOverlay = false;
+  //       _messageText = onError.toString();
+  //     });
+  //   });
+  // }
+
+  void _apiRejectInvitaion() async {
     Navigator.pop(context);
     setState(() {
       _loadingOverlay = true;
       _messageText = '';
     });
 
-    await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
+    await fetchLeaveGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         Navigator.pop(context);
         widget.reloadList();
@@ -322,79 +360,7 @@ class _GroupDetailState extends State<GroupDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(AppTitle),
-        actions: <Widget>[
-          if (widget.owner && _invitedMember)
-            IconButton(
-              icon: const Icon(Icons.menu_book),
-              tooltip: JuzMember,
-              onPressed: () {
-                setState(() {
-                  _invitedMember = false;
-                });
-              },
-            ),
-          if (widget.owner && !_invitedMember)
-            IconButton(
-              icon: const Icon(Icons.group_add),
-              tooltip: GroupMember,
-              onPressed: () {
-                setState(() {
-                  _invitedMember = true;
-                });
-              },
-            ),
-          if (widget.owner)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: EditGroup,
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AddEditGroup(
-                    loginKey: widget.loginKey,
-                    title: EditGroup,
-                    reloadList: () => widget.reloadList(),
-                    groupId: widget.groupId,
-                    deadline: widget.deadline,
-                    reloadDetail: (name, deadline, color) {
-                      setState(() {
-                        _detailName = name;
-                        _detailDeadline = deadline;
-                      });
-                    },
-                  );
-                }));
-              },
-            ),
-          if (widget.owner)
-            IconButton(
-              icon: const Icon(Icons.delete_forever),
-              tooltip: DeleteGroup,
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    child: AlertDialog(
-                      title: Text(DeleteGroupWarningTitle),
-                      content: Text(DeleteGroupWarning),
-                      actions: [
-                        FlatButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(CancelText),
-                        ),
-                        RaisedButton(
-                          color: Colors.redAccent,
-                          onPressed: () {
-                            _apiDeleteGroup();
-                          },
-                          child: Text(DeleteGroupConfirm),
-                        ),
-                      ],
-                    ));
-              },
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(AppTitle)),
       body: FutureBuilder(
           future: _getMemberAPI,
           builder: (context, snapshot) {
@@ -604,6 +570,7 @@ class _GroupDetailState extends State<GroupDetail> {
 
             return Stack(children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GroupItem(
                     groupName: _detailName,
@@ -612,42 +579,59 @@ class _GroupDetailState extends State<GroupDetail> {
                     deadline: _detailDeadline,
                     photo: _detailPhoto != '' ? _detailPhoto : widget.photo,
                     yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
+                    asHeader: true,
+                    deleteInvitation: widget.isInvitation
+                        ? () {
+                            showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                  title: Text(DeleteInvitationWarningTitle),
+                                  content: Text(DeleteInvitationWarning),
+                                  actions: [
+                                    FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText)),
+                                    RaisedButton(
+                                        color: Colors.redAccent,
+                                        onPressed: () {
+                                          _apiRejectInvitaion();
+                                        },
+                                        child: Text(DeleteInvitationConfirm)),
+                                  ],
+                                ));
+                          }
+                        : null,
+                    editGroup: widget.owner
+                        ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return AddEditGroup(
+                                loginKey: widget.loginKey,
+                                title: EditGroup,
+                                reloadList: () => widget.reloadList(),
+                                groupId: widget.groupId,
+                                deadline: widget.deadline,
+                                reloadDetail: (name, deadline, color) {
+                                  setState(() {
+                                    _detailName = name;
+                                    _detailDeadline = deadline;
+                                  });
+                                },
+                              );
+                            }))
+                        : null,
                   ),
-                  if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
-                      (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
-                    Form(
-                        key: _formKey,
-                        child: Container(
-                            padding: sidePadding,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _newRoundDeadLineFormController,
-                                    keyboardType: TextInputType.text,
-                                    readOnly: true,
-                                    onTap: () => _renderSelectDate(context),
-                                    decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return FormCreateGroupEndDateError;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 8.0),
-                                RaisedButton(
-                                  child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      _apiStartNewRound();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ))),
-                  SizedBox(height: 16.0),
+                  if (userWithoutJuz.length > 0)
+                    Container(
+                        child: (widget.owner && _invitedMember)
+                            ? FlatButton(
+                                onPressed: () => setState(() => _invitedMember = false),
+                                child: Text(BackToMemberProgress, style: TextStyle(decoration: TextDecoration.underline)),
+                              )
+                            : ((widget.owner && !_invitedMember)
+                                ? FlatButton(
+                                    onPressed: () => setState(() => _invitedMember = true),
+                                    child: Text(OpenMemberWithoutJuz, style: TextStyle(decoration: TextDecoration.underline)))
+                                : null)),
+
+                  // message
+                  if (_messageText != '') SizedBox(height: 8.0),
                   if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
                   if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),
                   if (members.length == 0)
@@ -657,8 +641,10 @@ class _GroupDetailState extends State<GroupDetail> {
                       if (_invitedMember) Container(padding: mainPadding, child: Text(AllMemberJoinJuz)),
                     ])),
                   if (_messageText != '' || snapShootMessage != '' || members.length == 0) SizedBox(height: 16.0),
-                  if (members.length > 0 && _invitedMember) Center(child: Text(MemberDidNotJoinJuz)),
-                  if (members.length > 0 && _invitedMember) SizedBox(height: 16.0),
+
+                  // without juz
+                  if (members.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
+                  if (members.length > 0 && _invitedMember) SizedBox(height: 8.0),
                   if (members.length > 0 && _invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
@@ -679,6 +665,8 @@ class _GroupDetailState extends State<GroupDetail> {
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
+
+                  // with juz
                   if (members.length > 0 && !_invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
@@ -690,7 +678,7 @@ class _GroupDetailState extends State<GroupDetail> {
                             child: Container(padding: verticalPadding, child: Text(LabelName)),
                           ),
                           Container(padding: verticalPadding, width: 110.0, child: Text(LabelProgress)),
-                          Container(padding: verticalPadding, width: 50.0, child: Text('')),
+                          Container(padding: verticalPadding, width: 50.0, child: Text(LabelAction)),
                         ],
                       ),
                     ),
@@ -786,9 +774,44 @@ class _GroupDetailState extends State<GroupDetail> {
                             ],
                           ),
                           SizedBox(height: 4.0),
+                          // update round form, replace this
+                          if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
+                              (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
+                            Form(
+                                key: _formKey,
+                                child: Container(
+                                    padding: sidePadding,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: _newRoundDeadLineFormController,
+                                            keyboardType: TextInputType.text,
+                                            readOnly: true,
+                                            onTap: () => _renderSelectDate(context),
+                                            decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                            validator: (value) {
+                                              if (value.isEmpty) {
+                                                return FormCreateGroupEndDateError;
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.0),
+                                        RaisedButton(
+                                          child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
+                                          onPressed: () {
+                                            if (_formKey.currentState.validate()) {
+                                              _apiStartNewRound();
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ))),
                         ],
                       ),
-                    )
+                    ),
                 ],
               ),
               if (snapShootLoading || _loadingOverlay) loadingOverlay(context)
