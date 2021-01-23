@@ -164,10 +164,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                         return WidgetCreateGroup(
                           loginKey: widget.loginKey,
                           title: CreateGroup,
-                          groupId: '',
                           reloadList: _reloadGroupList,
-                          deadline: '',
-                          reloadDetail: () => {},
                         );
                       }));
                     },

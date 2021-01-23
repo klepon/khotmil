@@ -6,18 +6,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_create.dart';
-import 'package:khotmil/fetch/group_get_groups.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
-import 'package:khotmil/fetch/group_update.dart';
 
 class WidgetCreateGroup extends StatefulWidget {
   final String loginKey;
   final String title;
-  final String groupId;
-  final String deadline;
   final Function reloadList;
-  final Function reloadDetail;
-  WidgetCreateGroup({Key key, this.loginKey, this.title, this.groupId, this.deadline, this.reloadList, this.reloadDetail}) : super(key: key);
+  WidgetCreateGroup({Key key, this.loginKey, this.title, this.reloadList}) : super(key: key);
 
   @override
   _WidgetCreateGroupState createState() => _WidgetCreateGroupState();
@@ -34,7 +29,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
   bool _searchAddressSuccess = false;
   String _searchAddressErrorMessage = '';
   String _lastCheckedAddress = '';
-  String _latlongOri = '';
   Address _closedValidAddress;
 
   List _apiReturnUsers = [];
@@ -72,39 +66,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     if (picked != null) _endDateFormController.text = (picked.toString()).split(' ')[0];
   }
 
-  void _apiUpdateGroup() async {
-    setState(() {
-      _messageText = '';
-      _loadingOverlay = true;
-    });
-
-    await fetchUpdateGroup(
-            widget.loginKey,
-            _nameFormController.text,
-            _addressFormController.text,
-            _latlongOri == '' ? _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString() : _latlongOri,
-            _roundFormController.text,
-            _endDateFormController.text,
-            widget.groupId)
-        .then((data) {
-      if (data[DataStatus] == StatusSuccess) {
-        widget.reloadList();
-        widget.reloadDetail(_nameFormController.text, _getTimeStamp());
-        Navigator.pop(context);
-      } else if (data[DataStatus] == StatusError) {
-        setState(() {
-          _messageText = data[DataMessage];
-          _loadingOverlay = false;
-        });
-      }
-    }).catchError((onError) {
-      setState(() {
-        _messageText = onError.toString();
-        _loadingOverlay = false;
-      });
-    });
-  }
-
   void _apiCreateGroup() async {
     setState(() {
       _messageText = '';
@@ -129,35 +90,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadList();
         Navigator.pop(context);
-      } else if (data[DataStatus] == StatusError) {
-        setState(() {
-          _messageText = data[DataMessage];
-          _loadingOverlay = false;
-        });
-      }
-    }).catchError((onError) {
-      setState(() {
-        _messageText = onError.toString();
-        _loadingOverlay = false;
-      });
-    });
-  }
-
-  void _apiGetGroup() async {
-    setState(() {
-      _messageText = '';
-      _loadingOverlay = true;
-    });
-
-    await fetchGetGroup(widget.loginKey, widget.groupId).then((data) {
-      if (data[DataStatus] == StatusSuccess) {
-        setState(() {
-          _loadingOverlay = false;
-          _nameFormController.text = data['group']['name'];
-          _addressFormController.text = data['group']['address'];
-          _endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(widget.deadline) * 1000).toString()).split(' ')[0];
-          _latlongOri = data['group']['latitude'] + ',' + data['group']['longitude'];
-        });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _messageText = data[DataMessage];
@@ -244,13 +176,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     });
   }
 
-  String _getTimeStamp() {
-    String ts = _endDateFormController.text == ''
-        ? DateTime.now().millisecondsSinceEpoch.toString()
-        : DateTime.parse(_endDateFormController.text + ' 00:00:00.000').millisecondsSinceEpoch.toString();
-    return ts.substring(0, ts.length - 3);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -261,10 +186,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
         _getLatLong();
       }
     });
-
-    if (widget.groupId != '') {
-      _apiGetGroup();
-    }
   }
 
   @override
@@ -292,31 +213,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.delete_forever),
-                      tooltip: DeleteGroup,
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            child: AlertDialog(
-                              title: Text(DeleteGroupWarningTitle),
-                              content: Text(DeleteGroupWarning),
-                              actions: [
-                                FlatButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text(CancelText),
-                                ),
-                                RaisedButton(
-                                  color: Colors.redAccent,
-                                  onPressed: () {
-                                    // _apiDeleteGroup();
-                                  },
-                                  child: Text(DeleteGroupConfirm),
-                                ),
-                              ],
-                            ));
-                      },
-                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: ConstrainedBox(
@@ -418,7 +314,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                                     setState(() {
                                                       _lastCheckedAddress = _closedValidAddress.addressLine;
                                                       _searchAddressSuccess = false;
-                                                      _latlongOri = '';
                                                     });
                                                   },
                                                 )),
@@ -431,7 +326,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                                       _addressFormController.text = _closedValidAddress.addressLine;
                                                       _lastCheckedAddress = _closedValidAddress.addressLine;
                                                       _searchAddressSuccess = false;
-                                                      _latlongOri = '';
                                                     });
                                                   },
                                                 )),
@@ -470,8 +364,8 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                     },
                                   ),
                                   SizedBox(height: 16.0),
-                                  if ('' == widget.groupId && _searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                                  if ('' == widget.groupId && _apiReturnUsers.length > 0)
+                                  if (_searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                                  if (_apiReturnUsers.length > 0)
                                     Container(
                                       padding: sidePaddingNarrow,
                                       child: Wrap(children: [
@@ -480,26 +374,25 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                             TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
                                       ]),
                                     ),
-                                  if ('' == widget.groupId)
-                                    TextFormField(
-                                      controller: _searchUserFormController,
-                                      keyboardType: TextInputType.text,
-                                      decoration: InputDecoration(
-                                        contentPadding: sidePaddingNarrow,
-                                        hintText: FormCreateGroupUids,
-                                      ),
-                                      onChanged: (value) {
-                                        if (value.length >= 3) {
-                                          _apiSearchUser(value);
-                                        } else if (_apiReturnUsers.length > 0) {
-                                          setState(() {
-                                            _apiReturnUsers = [];
-                                          });
-                                        }
-                                      },
+                                  TextFormField(
+                                    controller: _searchUserFormController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      contentPadding: sidePaddingNarrow,
+                                      hintText: FormCreateGroupUids,
                                     ),
-                                  if ('' == widget.groupId) SizedBox(height: 16.0),
-                                  if ('' == widget.groupId && _usersSelectedForInvite.length > 0)
+                                    onChanged: (value) {
+                                      if (value.length >= 3) {
+                                        _apiSearchUser(value);
+                                      } else if (_apiReturnUsers.length > 0) {
+                                        setState(() {
+                                          _apiReturnUsers = [];
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  if (_usersSelectedForInvite.length > 0)
                                     Container(
                                       padding: sidePaddingNarrow,
                                       child: Column(children: [
@@ -545,11 +438,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {
-                                if (widget.groupId == '') {
-                                  _apiCreateGroup();
-                                } else {
-                                  _apiUpdateGroup();
-                                }
+                                _apiCreateGroup();
                               }
                             },
                             height: 50.0,

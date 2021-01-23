@@ -6,12 +6,12 @@ import 'package:khotmil/fetch/group_invite_user.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 import 'package:khotmil/fetch/group_start_new_round.dart';
 import 'package:khotmil/fetch/member_update_progress.dart';
+import 'package:khotmil/widget/group_edit_group.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/member_join_round.dart';
 import 'package:khotmil/fetch/group_round_member.dart';
-import 'package:khotmil/widget/group_create_group.dart';
 
 import 'group_list_item.dart';
 
@@ -601,7 +601,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         : null,
                     editGroup: widget.owner
                         ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return WidgetCreateGroup(
+                              return WidgetEditGroup(
                                 loginKey: widget.loginKey,
                                 title: EditGroup,
                                 reloadList: () => widget.reloadList(),
