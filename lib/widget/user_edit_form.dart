@@ -10,16 +10,16 @@ import 'package:khotmil/fetch/user_get_data.dart';
 import 'package:khotmil/fetch/user_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EditAccountPage extends StatefulWidget {
+class WidgetEditAccount extends StatefulWidget {
   final String loginKey;
   final Function reloadAuth;
-  EditAccountPage({Key key, this.loginKey, this.reloadAuth}) : super(key: key);
+  WidgetEditAccount({Key key, this.loginKey, this.reloadAuth}) : super(key: key);
 
   @override
-  _EditAccountPageState createState() => _EditAccountPageState();
+  _WidgetEditAccountState createState() => _WidgetEditAccountState();
 }
 
-class _EditAccountPageState extends State<EditAccountPage> {
+class _WidgetEditAccountState extends State<WidgetEditAccount> {
   TextEditingController nickNameController = TextEditingController();
   TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();

@@ -10,20 +10,20 @@ import 'package:khotmil/fetch/group_get_groups.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 import 'package:khotmil/fetch/group_update.dart';
 
-class AddEditGroup extends StatefulWidget {
+class WidgetEditGroup extends StatefulWidget {
   final String loginKey;
   final String title;
   final String groupId;
   final String deadline;
   final Function reloadList;
   final Function reloadDetail;
-  AddEditGroup({Key key, this.loginKey, this.title, this.groupId, this.deadline, this.reloadList, this.reloadDetail}) : super(key: key);
+  WidgetEditGroup({Key key, this.loginKey, this.title, this.groupId, this.deadline, this.reloadList, this.reloadDetail}) : super(key: key);
 
   @override
-  _AddEditGroupState createState() => _AddEditGroupState();
+  _WidgetEditGroupState createState() => _WidgetEditGroupState();
 }
 
-class _AddEditGroupState extends State<AddEditGroup> {
+class _WidgetEditGroupState extends State<WidgetEditGroup> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 

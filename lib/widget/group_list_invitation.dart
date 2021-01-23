@@ -6,17 +6,17 @@ import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_list_item.dart';
 import 'package:sprintf/sprintf.dart';
 
-class GroupListInvitation extends StatefulWidget {
+class WidgetGroupListInvitation extends StatefulWidget {
   final String name;
   final String loginKey;
   final Function reloadGroupList;
-  GroupListInvitation({Key key, this.name, this.loginKey, this.reloadGroupList}) : super(key: key);
+  WidgetGroupListInvitation({Key key, this.name, this.loginKey, this.reloadGroupList}) : super(key: key);
 
   @override
-  _GroupListInvitationState createState() => _GroupListInvitationState();
+  _WidgetGroupListInvitationState createState() => _WidgetGroupListInvitationState();
 }
 
-class _GroupListInvitationState extends State<GroupListInvitation> {
+class _WidgetGroupListInvitationState extends State<WidgetGroupListInvitation> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loadingOverlay = false;
 
@@ -33,7 +33,7 @@ class _GroupListInvitationState extends State<GroupListInvitation> {
         padding: EdgeInsets.all(0.00),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return GroupDetail(
+            return WidgetGroupDetail(
                 groupId: group['id'],
                 groupName: group['name'],
                 progress: group['progress'].toString(),
@@ -47,7 +47,7 @@ class _GroupListInvitationState extends State<GroupListInvitation> {
                 reloadList: _reloadGroupList);
           }));
         },
-        child: GroupItem(
+        child: WidgetGroupItem(
           groupName: group['name'],
           progress: group['progress'].toString(),
           round: group['round'].toString(),

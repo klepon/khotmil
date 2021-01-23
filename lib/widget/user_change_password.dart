@@ -4,16 +4,16 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/user_update_password.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+class WidgetChangePassword extends StatefulWidget {
   final String loginKey;
   final Function logout;
-  ChangePasswordPage({Key key, this.loginKey, this.logout}) : super(key: key);
+  WidgetChangePassword({Key key, this.loginKey, this.logout}) : super(key: key);
 
   @override
-  _ChangePasswordPageState createState() => _ChangePasswordPageState();
+  _WidgetChangePasswordState createState() => _WidgetChangePasswordState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _WidgetChangePasswordState extends State<WidgetChangePassword> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();

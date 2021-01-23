@@ -4,18 +4,18 @@ import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
-class ValidationForm extends StatefulWidget {
+class WidgetValidationEmail extends StatefulWidget {
   final String futureMessage;
   final Function changeForm;
   final Function validationApi;
   final bool requiredUserPass;
-  ValidationForm({Key key, this.futureMessage, this.changeForm, this.validationApi, this.requiredUserPass}) : super(key: key);
+  WidgetValidationEmail({Key key, this.futureMessage, this.changeForm, this.validationApi, this.requiredUserPass}) : super(key: key);
 
   @override
-  _ValidationFormState createState() => _ValidationFormState();
+  _WidgetValidationEmailState createState() => _WidgetValidationEmailState();
 }
 
-class _ValidationFormState extends State<ValidationForm> {
+class _WidgetValidationEmailState extends State<WidgetValidationEmail> {
   TextEditingController codeController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();

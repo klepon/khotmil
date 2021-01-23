@@ -4,18 +4,18 @@ import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
-class RecoveryEmailValidationForm extends StatefulWidget {
+class WidgetRecoveryEmailValidation extends StatefulWidget {
   final String futureMessage;
   final Function changeForm;
   final Function validationRecoveryPasswordApi;
   final bool requiredEmail;
-  RecoveryEmailValidationForm({Key key, this.futureMessage, this.changeForm, this.validationRecoveryPasswordApi, this.requiredEmail}) : super(key: key);
+  WidgetRecoveryEmailValidation({Key key, this.futureMessage, this.changeForm, this.validationRecoveryPasswordApi, this.requiredEmail}) : super(key: key);
 
   @override
-  _RecoveryEmailValidationFormState createState() => _RecoveryEmailValidationFormState();
+  _WidgetRecoveryEmailValidationState createState() => _WidgetRecoveryEmailValidationState();
 }
 
-class _RecoveryEmailValidationFormState extends State<RecoveryEmailValidationForm> {
+class _WidgetRecoveryEmailValidationState extends State<WidgetRecoveryEmailValidation> {
   TextEditingController codeController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
 
-class GroupItem extends StatelessWidget {
+class WidgetGroupItem extends StatelessWidget {
   final String groupName;
   final String progress;
   final String round;
@@ -13,7 +13,7 @@ class GroupItem extends StatelessWidget {
   final Function editGroup;
   final Function deleteInvitation;
 
-  GroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.deleteInvitation})
+  WidgetGroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.deleteInvitation})
       : super(key: key);
 
   @override

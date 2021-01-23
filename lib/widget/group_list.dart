@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_list.dart';
-import 'package:khotmil/widget/group_add_edit.dart';
+import 'package:khotmil/widget/group_create_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_list_item.dart';
 import 'package:khotmil/widget/group_list_invitation.dart';
 import 'package:khotmil/widget/search_group.dart';
 import 'package:sprintf/sprintf.dart';
 
-class GroupList extends StatefulWidget {
+class WidgetGroupList extends StatefulWidget {
   final String name;
   final String loginKey;
-  GroupList({Key key, this.name, this.loginKey}) : super(key: key);
+  WidgetGroupList({Key key, this.name, this.loginKey}) : super(key: key);
 
   @override
-  _GroupListState createState() => _GroupListState();
+  _WidgetGroupListState createState() => _WidgetGroupListState();
 }
 
-class _GroupListState extends State<GroupList> {
+class _WidgetGroupListState extends State<WidgetGroupList> {
   void _reloadGroupList() {
     setState(() {});
   }
@@ -31,7 +31,7 @@ class _GroupListState extends State<GroupList> {
         padding: EdgeInsets.all(0.00),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return GroupDetail(
+            return WidgetGroupDetail(
                 groupId: group['id'],
                 groupName: group['name'],
                 progress: group['progress'].toString(),
@@ -45,7 +45,7 @@ class _GroupListState extends State<GroupList> {
                 reloadList: _reloadGroupList);
           }));
         },
-        child: GroupItem(
+        child: WidgetGroupItem(
           groupName: group['name'],
           progress: group['progress'].toString(),
           round: group['round'].toString(),
@@ -118,7 +118,7 @@ class _GroupListState extends State<GroupList> {
                       FlatButton(
                           child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return GroupListInvitation(
+                                return WidgetGroupListInvitation(
                                   name: widget.name,
                                   loginKey: widget.loginKey,
                                   reloadGroupList: _reloadGroupList,
@@ -161,7 +161,7 @@ class _GroupListState extends State<GroupList> {
                     child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return AddEditGroup(
+                        return WidgetCreateGroup(
                           loginKey: widget.loginKey,
                           title: CreateGroup,
                           groupId: '',
@@ -179,7 +179,7 @@ class _GroupListState extends State<GroupList> {
                     child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return SearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+                        return WidgetSearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
                       }));
                     },
                     height: 50.0,

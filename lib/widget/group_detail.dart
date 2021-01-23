@@ -11,11 +11,11 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/member_join_round.dart';
 import 'package:khotmil/fetch/group_round_member.dart';
-import 'package:khotmil/widget/group_add_edit.dart';
+import 'package:khotmil/widget/group_create_group.dart';
 
 import 'group_list_item.dart';
 
-class GroupDetail extends StatefulWidget {
+class WidgetGroupDetail extends StatefulWidget {
   final String groupId;
   final String groupName;
   final String progress;
@@ -28,7 +28,7 @@ class GroupDetail extends StatefulWidget {
   final bool isInvitation;
   final Function reloadList;
 
-  GroupDetail(
+  WidgetGroupDetail(
       {Key key,
       this.groupId,
       this.groupName,
@@ -44,10 +44,10 @@ class GroupDetail extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GroupDetailState createState() => _GroupDetailState();
+  _WidgetGroupDetailState createState() => _WidgetGroupDetailState();
 }
 
-class _GroupDetailState extends State<GroupDetail> {
+class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -572,7 +572,7 @@ class _GroupDetailState extends State<GroupDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GroupItem(
+                  WidgetGroupItem(
                     groupName: _detailName,
                     progress: _detailProgress != '' ? _detailProgress : widget.progress,
                     round: _detailRound != '' ? _detailRound : widget.round,
@@ -601,7 +601,7 @@ class _GroupDetailState extends State<GroupDetail> {
                         : null,
                     editGroup: widget.owner
                         ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return AddEditGroup(
+                              return WidgetCreateGroup(
                                 loginKey: widget.loginKey,
                                 title: EditGroup,
                                 reloadList: () => widget.reloadList(),

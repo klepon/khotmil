@@ -10,7 +10,7 @@ import 'package:khotmil/fetch/user_register.dart';
 import 'package:khotmil/fetch/user_validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
 import 'package:khotmil/widget/user_change_password.dart';
-import 'package:khotmil/widget/user_edit_account.dart';
+import 'package:khotmil/widget/user_edit_form.dart';
 import 'package:khotmil/widget/page_full_screen_image.dart';
 import 'package:khotmil/widget/group_list.dart';
 import 'package:khotmil/widget/user_login_form.dart';
@@ -239,7 +239,7 @@ class _AuthState extends State<Auth> {
   _getForm() {
     switch (_currentForm) {
       case FormEmailValidation:
-        return ValidationForm(
+        return WidgetValidationEmail(
           futureMessage: _futureMessage,
           changeForm: _changeForm,
           validationApi: _validationApi,
@@ -247,10 +247,10 @@ class _AuthState extends State<Auth> {
         );
 
       case FormRegisterEmail:
-        return RegisterForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
+        return WidgetRegisterForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
 
       case FormRecoveryPasswordValidation:
-        return RecoveryEmailValidationForm(
+        return WidgetRecoveryEmailValidation(
           futureMessage: _futureMessage,
           changeForm: _changeForm,
           validationRecoveryPasswordApi: _validationRecoveryPasswordApi,
@@ -258,7 +258,7 @@ class _AuthState extends State<Auth> {
         );
 
       case FormRecoveryPassword:
-        return RecoveryPasswordForm(
+        return WidgetRecoveryPassword(
           futureMessage: _futureMessage,
           changeForm: _changeForm,
           recoveryPasswordApi: _recoveryPasswordApi,
@@ -266,7 +266,7 @@ class _AuthState extends State<Auth> {
         );
 
       default:
-        return LoginForm(futureMessage: _futureMessage, changeForm: _changeForm, loginApi: _loginApi);
+        return WidgetUserLogin(futureMessage: _futureMessage, changeForm: _changeForm, loginApi: _loginApi);
     }
   }
 
@@ -303,7 +303,7 @@ class _AuthState extends State<Auth> {
           child: Stack(
         children: [
           _loginKey == ''
-              ? LoginRegister(currentForm: _getForm(), showLogo: _useLogo())
+              ? WidgetLoginRegister(currentForm: _getForm(), showLogo: _useLogo())
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -330,7 +330,7 @@ class _AuthState extends State<Auth> {
                       color: Colors.black45,
                     ),
                     Expanded(
-                      child: GroupList(name: _name, loginKey: _loginKey),
+                      child: WidgetGroupList(name: _name, loginKey: _loginKey),
                     ),
                   ],
                   // This trailing comma makes auto-formatting nicer for build methods.
@@ -362,11 +362,11 @@ class _AuthState extends State<Auth> {
                 children: [
                   ListTile(
                       title: Text(EditAccount),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WidgetEditAccount(loginKey: _loginKey, reloadAuth: _getLoginKey)))),
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),
                   ListTile(
                       title: Text(ChangePassword),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordPage(loginKey: _loginKey, logout: _logout)))),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WidgetChangePassword(loginKey: _loginKey, logout: _logout)))),
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),
                   ListTile(title: Text(DoaKhatamanQuran), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenImagePage(image: DoaKhatam)))),
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),

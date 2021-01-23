@@ -4,16 +4,16 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/widget/page_single_api.dart';
 
-class LoginRegister extends StatefulWidget {
+class WidgetLoginRegister extends StatefulWidget {
   final Widget currentForm;
   final bool showLogo;
-  LoginRegister({Key key, this.showLogo, this.currentForm}) : super(key: key);
+  WidgetLoginRegister({Key key, this.showLogo, this.currentForm}) : super(key: key);
 
   @override
-  _LoginRegisterState createState() => _LoginRegisterState();
+  _WidgetLoginRegisterState createState() => _WidgetLoginRegisterState();
 }
 
-class _LoginRegisterState extends State<LoginRegister> {
+class _WidgetLoginRegisterState extends State<WidgetLoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Container(

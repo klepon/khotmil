@@ -9,16 +9,16 @@ import 'package:sprintf/sprintf.dart';
 import 'group_detail.dart';
 import 'group_list_item.dart';
 
-class SearchGroup extends StatefulWidget {
+class WidgetSearchGroup extends StatefulWidget {
   final String loginKey;
   final Function reloadList;
-  SearchGroup({Key key, this.loginKey, this.reloadList}) : super(key: key);
+  WidgetSearchGroup({Key key, this.loginKey, this.reloadList}) : super(key: key);
 
   @override
-  _SearchGroupState createState() => _SearchGroupState();
+  _WidgetSearchGroupState createState() => _WidgetSearchGroupState();
 }
 
-class _SearchGroupState extends State<SearchGroup> {
+class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController _searchGroupByKeywordFormController = TextEditingController();
@@ -175,7 +175,7 @@ class _SearchGroupState extends State<SearchGroup> {
                   padding: EdgeInsets.all(0.00),
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return GroupDetail(
+                      return WidgetGroupDetail(
                           groupId: group['id'],
                           groupName: group['name'],
                           progress: group['progress'].toString(),
@@ -192,7 +192,7 @@ class _SearchGroupState extends State<SearchGroup> {
                           });
                     }));
                   },
-                  child: GroupItem(
+                  child: WidgetGroupItem(
                     groupName: group['name'],
                     progress: group['progress'].toString(),
                     round: group['round'].toString(),
