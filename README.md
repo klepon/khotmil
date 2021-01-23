@@ -51,8 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- edit group invite admin, also avoid re-seacrh for existing admin
-
 - join group update view
 - join group add confirmation modal
 - join group reskin join process

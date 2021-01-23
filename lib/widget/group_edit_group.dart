@@ -5,10 +5,12 @@ import 'package:geocoder/geocoder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
+import 'package:khotmil/fetch/delete_admin.dart';
 import 'package:khotmil/fetch/group_delete.dart';
 import 'package:khotmil/fetch/group_get_groups.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 import 'package:khotmil/fetch/group_update.dart';
+import 'package:sprintf/sprintf.dart';
 
 class WidgetEditGroup extends StatefulWidget {
   final String loginKey;
@@ -109,6 +111,32 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         _closedValidAddress = data.first;
       });
     }).catchError((onError) {});
+  }
+
+  void _apiDeleteAdmin(int adminId) async {
+    setState(() {
+      _loadingOverlay = true;
+      _messageText = '';
+    });
+
+    await fetchDeleteAdmin(widget.loginKey, adminId, widget.groupId).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _loadingOverlay = false;
+          _admins = _admins.where((i) => i[0] != adminId).toList();
+        });
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+          _messageText = data[DataMessage];
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+        _messageText = onError.toString();
+      });
+    });
   }
 
   void _apiDeleteGroup() async {
@@ -489,7 +517,28 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(admin[1]),
-                                              IconButton(icon: Icon(Icons.delete_forever), onPressed: () {}),
+                                              IconButton(
+                                                  icon: Icon(Icons.delete_forever),
+                                                  onPressed: () => showDialog(
+                                                      context: context,
+                                                      child: AlertDialog(
+                                                        title: Text(RemoveAdminWarningTitle),
+                                                        content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
+                                                        actions: [
+                                                          FlatButton(
+                                                            onPressed: () => Navigator.pop(context),
+                                                            child: Text(CancelText),
+                                                          ),
+                                                          RaisedButton(
+                                                            color: Colors.redAccent,
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                              _apiDeleteAdmin(admin[0]);
+                                                            },
+                                                            child: Text(RemoveAdminConfirm),
+                                                          ),
+                                                        ],
+                                                      ))),
                                             ],
                                           )
                                       ],
