@@ -51,8 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- group edit
-
 - invite user in group detail -> exclude invited user
 
 - join group update view

@@ -10,9 +10,8 @@ import 'package:khotmil/fetch/group_search_user.dart';
 
 class WidgetCreateGroup extends StatefulWidget {
   final String loginKey;
-  final String title;
   final Function reloadList;
-  WidgetCreateGroup({Key key, this.loginKey, this.title, this.reloadList}) : super(key: key);
+  WidgetCreateGroup({Key key, this.loginKey, this.reloadList}) : super(key: key);
 
   @override
   _WidgetCreateGroupState createState() => _WidgetCreateGroupState();
@@ -224,7 +223,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                 children: [
                                   SizedBox(height: 16.0),
                                   Center(
-                                    child: Text(widget.title, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                                    child: Text(CreateGroup, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                                   ),
                                   SizedBox(height: 16.0),
                                   if (_messageText != '') Text(_messageText),

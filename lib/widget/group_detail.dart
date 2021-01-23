@@ -114,31 +114,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     });
   }
 
-  // void _apiDeleteGroup() async {
-  //   Navigator.pop(context);
-  //   setState(() {
-  //     _loadingOverlay = true;
-  //     _messageText = '';
-  //   });
-
-  //   await fetchDeleteGroup(widget.loginKey, widget.groupId).then((data) {
-  //     if (data[DataStatus] == StatusSuccess) {
-  //       Navigator.pop(context);
-  //       widget.reloadList();
-  //     } else if (data[DataStatus] == StatusError) {
-  //       setState(() {
-  //         _loadingOverlay = false;
-  //         _messageText = data[DataMessage];
-  //       });
-  //     }
-  //   }).catchError((onError) {
-  //     setState(() {
-  //       _loadingOverlay = false;
-  //       _messageText = onError.toString();
-  //     });
-  //   });
-  // }
-
   void _apiRejectInvitaion() async {
     Navigator.pop(context);
     setState(() {
@@ -335,6 +310,10 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
         ...{..._usersSelectedForInvite}
       ];
     });
+  }
+
+  void _backToList() {
+    Navigator.pop(context);
   }
 
   @override
@@ -602,15 +581,15 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     editGroup: widget.owner
                         ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
                               return WidgetEditGroup(
-                                loginKey: widget.loginKey,
-                                title: EditGroup,
-                                reloadList: () => widget.reloadList(),
                                 groupId: widget.groupId,
-                                deadline: widget.deadline,
-                                reloadDetail: (name, deadline, color) {
+                                loginKey: widget.loginKey,
+                                backToList: _backToList,
+                                reloadList: () => widget.reloadList(),
+                                reloadDetail: (name, deadline, photo) {
                                   setState(() {
                                     _detailName = name;
                                     _detailDeadline = deadline;
+                                    _detailPhoto = photo;
                                   });
                                 },
                               );

@@ -88,6 +88,7 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
         await SharedPreferences.getInstance().then((prefs) async {
           prefs.setString(DisplayNamePref, data['name']);
           prefs.setString(UserPhotoPref, data['photo']);
+          Navigator.pop(context);
           return true;
         }).then((rs) {
           setState(() {

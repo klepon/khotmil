@@ -163,7 +163,6 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return WidgetCreateGroup(
                           loginKey: widget.loginKey,
-                          title: CreateGroup,
                           reloadList: _reloadGroupList,
                         );
                       }));
