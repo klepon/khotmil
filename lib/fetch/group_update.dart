@@ -14,7 +14,7 @@ Future fetchUpdateGroup(String key, String name, String address, String latlong,
       'address': address,
       'latlong': latlong,
       'round_end_date': date,
-      'member_ids': uids,
+      'admin_ids': uids,
       'gid': gid,
     };
 

@@ -38,6 +38,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
 
   List _apiReturnUsers = [];
   List<String> _excludeIds = new List<String>();
+  List _admins = [];
   List _usersSelectedForInvite = [];
   bool _searchUserLoading = false;
 
@@ -140,18 +141,24 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
       _messageText = '';
       _loadingOverlay = true;
     });
+
+    List adminIds = [];
+    for (var user in _usersSelectedForInvite) {
+      adminIds.add(user[0]);
+    }
+
     await fetchUpdateGroup(
-            widget.loginKey,
-            _nameFormController.text,
-            _addressFormController.text,
-            _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString(),
-            _endDateFormController.text,
-            widget.groupId,
-            _usersSelectedForInvite,
-            _image)
-        .then((data) {
+      widget.loginKey,
+      _nameFormController.text,
+      _addressFormController.text,
+      _closedValidAddress.coordinates.latitude.toString() + ',' + _closedValidAddress.coordinates.longitude.toString(),
+      _endDateFormController.text,
+      widget.groupId,
+      adminIds,
+      _image,
+    ).then((data) {
       if (data[DataStatus] == StatusSuccess) {
-        widget.reloadDetail(_nameFormController.text, _getTimeStamp(), data['photo']);
+        widget.reloadDetail(_nameFormController.text, _getTimeStamp(), data['photo'].toString());
         widget.reloadList();
         Navigator.pop(context);
       } else if (data[DataStatus] == StatusError) {
@@ -176,12 +183,20 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
 
     await fetchGetGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
+        for (var admin in data['group']['admins']) {
+          _excludeIds.add(admin[0].toString());
+        }
+
         setState(() {
           _loadingOverlay = false;
           _nameFormController.text = data['group']['name'];
           _addressFormController.text = data['group']['address'];
           _endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(data['group']['deadline']) * 1000).toString()).split(' ')[0];
           _photo = data['group']['photo'];
+          _admins = data['group']['admins'];
+          _excludeIds = [
+            ...{..._excludeIds}
+          ];
         });
 
         // fill api address with current state
@@ -464,14 +479,27 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                   SizedBox(height: 16.0),
 
                                   // user search
+                                  if (_admins != null && _admins.length > 0)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Admin Group:'),
+                                        for (var admin in _admins)
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(admin[1]),
+                                              IconButton(icon: Icon(Icons.delete_forever), onPressed: () {}),
+                                            ],
+                                          )
+                                      ],
+                                    ),
                                   if (_searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
                                   if (_apiReturnUsers.length > 0)
                                     Container(
                                       padding: sidePaddingNarrow,
                                       child: Wrap(children: [
-                                        for (var user in _apiReturnUsers)
-                                          // if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
-                                          TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                                        for (var user in _apiReturnUsers) TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
                                       ]),
                                     ),
                                   TextFormField(
