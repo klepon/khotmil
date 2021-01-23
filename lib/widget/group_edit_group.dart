@@ -37,6 +37,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   Address _closedValidAddress;
 
   List _apiReturnUsers = [];
+  List<String> _excludeIds = new List<String>();
   List _usersSelectedForInvite = [];
   bool _searchUserLoading = false;
 
@@ -199,12 +200,12 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     });
   }
 
-  void _apiSearchUser(String value, List<String> uids) async {
+  void _apiSearchUser(String value) async {
     setState(() {
       _searchUserLoading = true;
     });
 
-    await fetchSearchUser(widget.loginKey, value, uids).then((data) {
+    await fetchSearchUser(widget.loginKey, value, _excludeIds).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _apiReturnUsers = data['users'];
@@ -228,11 +229,15 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   void _addUid(userData) {
     _searchUserFormController.text = '';
     _usersSelectedForInvite.add(userData);
+    _excludeIds.add(userData[0].toString());
 
     setState(() {
       _apiReturnUsers = [];
       _usersSelectedForInvite = [
         ...{..._usersSelectedForInvite}
+      ];
+      _excludeIds = [
+        ...{..._excludeIds}
       ];
     });
   }
@@ -465,8 +470,8 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                       padding: sidePaddingNarrow,
                                       child: Wrap(children: [
                                         for (var user in _apiReturnUsers)
-                                          if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
-                                            TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                                          // if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
+                                          TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
                                       ]),
                                     ),
                                   TextFormField(
@@ -478,8 +483,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                     ),
                                     onChanged: (value) {
                                       if (value.length >= 3) {
-                                        // todo update list with existing admin
-                                        _apiSearchUser(value, new List<String>());
+                                        _apiSearchUser(value);
                                       } else if (_apiReturnUsers.length > 0) {
                                         setState(() {
                                           _apiReturnUsers = [];
