@@ -57,14 +57,13 @@ Restart connection and do all the step
 
 - group detail reskin join
 - group detail reskin update progress
-- group update restart round
-- group reskin update group
-- group detail add admin
 - group detail, click user name show profile info
 
+- group update restart round -> check aslo admin
+- group reskin update group for admin non owner
+- group detail add admin for admin non owner
 
 - add api notification for update or news release on register with key
-
 
 - user menu in add drawer
 -- edit akun - show admin list

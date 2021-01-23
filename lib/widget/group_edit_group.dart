@@ -370,7 +370,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                         )),
                                   ),
                                   SizedBox(height: 4.0),
-                                  Center(child: Text(EditPhotoText, style: TextStyle(color: Color(0xff747070)))),
+                                  if (_image != null || _photo != '') Center(child: Text(EditPhotoText, style: TextStyle(color: Color(0xff747070)))),
                                   SizedBox(height: 16.0),
                                   Center(
                                     child: Text(EditGroup, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
