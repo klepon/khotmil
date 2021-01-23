@@ -2,13 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchSearchUser(String key, String keyword) async {
+Future fetchSearchUser(String key, String keyword, List<String> uids) async {
   try {
     Response response = await Dio(dioOptions).post(
       'klepon/v1/search-user',
       data: {
         'user_key': key,
         'keyword': keyword,
+        'exclude': uids,
       },
     );
 

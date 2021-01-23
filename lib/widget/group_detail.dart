@@ -241,12 +241,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     });
   }
 
-  void _apiSearchUser(value) async {
+  void _apiSearchUser(String value, List<String> uids) async {
     setState(() {
       _searchUserLoading = true;
     });
 
-    await fetchSearchUser(widget.loginKey, value).then((data) {
+    await fetchSearchUser(widget.loginKey, value, uids).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _apiReturnUsers = data['users'];
@@ -476,8 +476,15 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                 ));
               }
             } else if (snapshot.hasData && _invitedMember) {
+              List<String> invitedIds = new List<String>();
+              for (var usfi in _usersSelectedForInvite) {
+                invitedIds.add(usfi[0].toString());
+              }
+
               var i = 1;
               for (var user in userWithoutJuz.values) {
+                invitedIds.add(user['uid']);
+
                 members.add(Container(
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
                   padding: EdgeInsets.symmetric(vertical: 6.0),
@@ -490,6 +497,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                 ));
                 i += 1;
               }
+
               // search user
               members.add(Column(
                 children: [
@@ -497,9 +505,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     Container(
                       padding: sidePaddingNarrow,
                       child: Wrap(children: [
-                        for (var user in _apiReturnUsers)
-                          if ((_usersSelectedForInvite.firstWhere((i) => i[0] == user[0], orElse: () => null)) == null)
-                            TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
+                        for (var user in _apiReturnUsers) TextButton(onPressed: () => _addUid(user), child: Text('@' + user[1])),
                       ]),
                     ),
                   if (_searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
@@ -512,7 +518,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     ),
                     onChanged: (value) {
                       if (value.length >= 3) {
-                        _apiSearchUser(value);
+                        _apiSearchUser(value, invitedIds);
                       } else if (_apiReturnUsers.length > 0) {
                         setState(() {
                           _apiReturnUsers = [];
@@ -596,18 +602,18 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             }))
                         : null,
                   ),
-                  if (userWithoutJuz.length > 0)
+                  if (widget.owner)
                     Container(
-                        child: (widget.owner && _invitedMember)
-                            ? FlatButton(
-                                onPressed: () => setState(() => _invitedMember = false),
-                                child: Text(BackToMemberProgress, style: TextStyle(decoration: TextDecoration.underline)),
-                              )
-                            : ((widget.owner && !_invitedMember)
-                                ? FlatButton(
-                                    onPressed: () => setState(() => _invitedMember = true),
-                                    child: Text(OpenMemberWithoutJuz, style: TextStyle(decoration: TextDecoration.underline)))
-                                : null)),
+                      child: _invitedMember
+                          ? FlatButton(
+                              onPressed: () => setState(() => _invitedMember = false),
+                              child: Text(BackToMemberProgress, style: TextStyle(decoration: TextDecoration.underline)),
+                            )
+                          : FlatButton(
+                              onPressed: () => setState(() => _invitedMember = true),
+                              child: Text(userWithoutJuz.length == 0 ? InviteMemberButtonLabel : OpenMemberWithoutJuz, style: TextStyle(decoration: TextDecoration.underline)),
+                            ),
+                    ),
 
                   // message
                   if (_messageText != '') SizedBox(height: 8.0),
@@ -622,9 +628,9 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                   if (_messageText != '' || snapShootMessage != '' || members.length == 0) SizedBox(height: 16.0),
 
                   // without juz
-                  if (members.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
-                  if (members.length > 0 && _invitedMember) SizedBox(height: 8.0),
-                  if (members.length > 0 && _invitedMember)
+                  if (userWithoutJuz.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
+                  if (userWithoutJuz.length > 0 && _invitedMember) SizedBox(height: 8.0),
+                  if (userWithoutJuz.length > 0 && _invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
                       padding: sidePadding,
@@ -638,7 +644,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         ],
                       ),
                     ),
-                  if (members.length > 0 && _invitedMember)
+                  if (_invitedMember)
                     Expanded(
                         child: SingleChildScrollView(
                             child: ConstrainedBox(
@@ -667,6 +673,8 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
+
+                  // update progress
                   if (!_invitedMember)
                     Container(
                       padding: mainPadding,
@@ -753,7 +761,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             ],
                           ),
                           SizedBox(height: 4.0),
-                          // update round form, replace this
                           if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
                               (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
                             Form(

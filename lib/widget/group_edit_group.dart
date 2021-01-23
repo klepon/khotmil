@@ -199,12 +199,12 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     });
   }
 
-  void _apiSearchUser(value) async {
+  void _apiSearchUser(String value, List<String> uids) async {
     setState(() {
       _searchUserLoading = true;
     });
 
-    await fetchSearchUser(widget.loginKey, value).then((data) {
+    await fetchSearchUser(widget.loginKey, value, uids).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _apiReturnUsers = data['users'];
@@ -478,7 +478,8 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                     ),
                                     onChanged: (value) {
                                       if (value.length >= 3) {
-                                        _apiSearchUser(value);
+                                        // todo update list with existing admin
+                                        _apiSearchUser(value, new List<String>());
                                       } else if (_apiReturnUsers.length > 0) {
                                         setState(() {
                                           _apiReturnUsers = [];

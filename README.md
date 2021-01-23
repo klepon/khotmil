@@ -51,7 +51,7 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- invite user in group detail -> exclude invited user
+- edit group invite admin, also avoid re-seacrh for existing admin
 
 - join group update view
 - join group add confirmation modal

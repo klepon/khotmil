@@ -80,6 +80,7 @@ const String DeleteGroupWarning = 'Anda akan menghapus group\n\nSemua data di gr
 const String DeleteGroupConfirm = 'Hapus';
 const String DeleteGroup = 'Hapus group';
 const String OpenMemberWithoutJuz = 'Lihat daftar undangan yg belum memilih juz';
+const String InviteMemberButtonLabel = 'Undang anggota bergabung';
 const String BackToMemberProgress = 'Kembali ke progres bacaan anggota';
 const String UpdateDeadline = 'Ganti deadline';
 const String MemberDidNotJoinJuz = 'Daftar nama teman yg belum memilih juz';

@@ -103,12 +103,12 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     });
   }
 
-  void _apiSearchUser(value) async {
+  void _apiSearchUser(String value) async {
     setState(() {
       _searchUserLoading = true;
     });
 
-    await fetchSearchUser(widget.loginKey, value).then((data) {
+    await fetchSearchUser(widget.loginKey, value, new List<String>()).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _apiReturnUsers = data['users'];
