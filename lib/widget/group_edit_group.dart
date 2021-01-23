@@ -511,7 +511,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('Admin Group:'),
+                                        Text(AdminsGroups, style: bold),
                                         for (var admin in _admins)
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
