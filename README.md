@@ -51,9 +51,9 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- join group update view
-- join group add confirmation modal
-- join group reskin join process
+- delete admin on delete group -> tinggal test
+
+- join group - photo user jadi photo group saat response sukses
 
 - group detail reskin join
 - group detail reskin update progress

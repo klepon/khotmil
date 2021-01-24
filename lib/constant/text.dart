@@ -130,12 +130,21 @@ const String CurrentJuz = 'Juz %s';
 const String InviterButton = 'Undang';
 
 const String SearchGroupTitle = 'Gabung Group';
+const String SearchGroupByMyAddress = 'Dekat Saya';
 const String LocationServicesDisabled = 'Pencarian lokasi tidak diijinkan';
 const String LocationServicesDisabledPermanently = 'Pencarian lokasi tidak diijinkan secara permanen, tidak bisa meminta ijin, silahkan ubah lewat app seting';
 const String LocationServicesDenied = 'Pencarian lokasi ditolak (ijin terdaftar: %s)';
 const String LocatingDevice = 'Mohon menunggu...\nMencari posisi Anda dan group di sekitar';
-const String SearchByRadiusLead = 'Group dalam radius %skm dari alamat %s';
+const String GroupNearMeInRadiusXLead = 'Group dalam radius %skm di dekat Anda\n%s';
+
+const String SearchGroupByTitle = 'Nama Group';
+const String LoadingSearchByKeyword = 'Mohon menunggu...\nMencari group dengan kata kunci "%s"';
 const String SearchByKeywordLead = 'Group dengan kata kunci "%s"';
+
+const String SearchGroupByAddress = 'Alamat Group';
+const String LoadingGroupByAddress = 'Mohon menunggu...\nMencari group di sekitar %s';
+const String SearchGroupByAddressLead = 'Group dalam radius %skm di sekitar\n%s';
+
 const String EditSearch = 'Rubah pencarian';
 const String ExpandRadiusTitle = 'Perluas radius';
 const String XKilometer = '%skm';
@@ -145,7 +154,7 @@ const String FindAroundErrorEmpty = 'Masukkan alamat';
 const String FindAroundErrorShort = 'Alamat terlalu pendek';
 const String FindButton = 'Cari';
 const String SearchByKeywordTitle = 'Atau cari dengan kata kunci';
-const String SearchByKeywordlabel = 'Nama atau alamat';
+const String SearchByKeywordlabel = 'Nama group';
 const String SearchByMyLocationTitle = 'Cari disekitar saya';
 const String SearchByMyLocationContinueButton = 'Cari disekitar alamat ini';
 

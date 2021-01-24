@@ -6,7 +6,7 @@ import 'package:khotmil/widget/group_create_group.dart';
 import 'package:khotmil/widget/group_detail.dart';
 import 'package:khotmil/widget/group_list_item.dart';
 import 'package:khotmil/widget/group_list_invitation.dart';
-import 'package:khotmil/widget/search_group.dart';
+import 'package:khotmil/widget/group_search_group.dart';
 import 'package:sprintf/sprintf.dart';
 
 class WidgetGroupList extends StatefulWidget {
