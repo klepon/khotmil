@@ -20,6 +20,7 @@ const String LogoutText = 'Keluar Aplikasi';
 const String RegisterText = 'Daftar';
 const String SaveText = 'Simpan';
 const String CancelText = 'Batal';
+const String BackText = 'Kembali';
 const String DonateText = 'Donasi';
 const String EmailValidationText = 'Validasi Email';
 const String RecoveryPasswordEmailValidationText = 'Validasi email dan buat password baru';
@@ -33,6 +34,7 @@ const String WelcomeMessage = 'Assalamu’alaikum %s!';
 const String SelectGroupToSeeProgress = "Pilih group untuk melihat progress bacaan";
 const String ThisGroupInviteYou = "Group berikut mengundang Anda";
 const String GroupInvitation = '%d undangan';
+const String InviteMember = 'Undangan';
 const String CreateGroup = 'Buat Group';
 const String EditGroup = 'Edit Group';
 const String JoinGroup = 'Gabung Group';
@@ -169,7 +171,7 @@ const String JoinGroupConfirmationTitle = 'Gabung Group';
 const String JoinGroupConfirmationDesc = 'Anda yakin akan bergabung dengan group %s pada putaran %s?';
 const String JoinGroupConfirmButton = 'Yakin';
 
-const String StartNewRound = 'Mulai putaran ';
+const String StartNewRound = 'Tutup Putaran ';
 const String OkText = 'OK';
 
 const String EditAccount = 'Edit Akun';

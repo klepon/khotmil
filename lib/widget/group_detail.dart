@@ -557,6 +557,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // group item banner
                   WidgetGroupItem(
                     groupName: _detailName,
                     progress: _detailProgress != '' ? _detailProgress : widget.progress,
@@ -602,18 +603,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             }))
                         : null,
                   ),
-                  if (widget.owner)
-                    Container(
-                      child: _invitedMember
-                          ? FlatButton(
-                              onPressed: () => setState(() => _invitedMember = false),
-                              child: Text(BackToMemberProgress, style: TextStyle(decoration: TextDecoration.underline)),
-                            )
-                          : FlatButton(
-                              onPressed: () => setState(() => _invitedMember = true),
-                              child: Text(userWithoutJuz.length == 0 ? InviteMemberButtonLabel : OpenMemberWithoutJuz, style: TextStyle(decoration: TextDecoration.underline)),
-                            ),
-                    ),
 
                   // message
                   if (_messageText != '') SizedBox(height: 8.0),
@@ -650,6 +639,18 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
+                  if (_invitedMember)
+                    Container(
+                      alignment: Alignment.center,
+                      padding: mainPadding,
+                      child: MaterialButton(
+                        child: Text(BackText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                        onPressed: () => setState(() => _invitedMember = false),
+                        height: 50.0,
+                        color: Color(int.parse('0xffC4C4C4')),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                      ),
+                    ),
 
                   // with juz
                   if (members.length > 0 && !_invitedMember)
@@ -674,8 +675,32 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
 
+                  // next round and invite button
+                  if (widget.owner && !_invitedMember)
+                    Container(
+                        padding: mainPadding,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            MaterialButton(
+                              child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                              onPressed: () {},
+                              height: 50.0,
+                              color: Color(int.parse('0xffF30F0F')),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                            MaterialButton(
+                              child: Text(InviteMember, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                              onPressed: () => setState(() => _invitedMember = true),
+                              height: 50.0,
+                              color: Color(int.parse('0xffC4C4C4')),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                          ],
+                        )),
+
                   // update progress
-                  if (!_invitedMember)
+                  if (1 == 2)
                     Container(
                       padding: mainPadding,
                       child: Column(

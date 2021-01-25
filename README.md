@@ -51,20 +51,21 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- join group - photo user jadi photo group saat response sukses
-
 - group detail reskin join
 - group detail reskin update progress
 - group detail, click user name show profile info
 
 - group update restart round -> check aslo admin
-- group reskin update group for admin non owner
+- group reskin update group for admin non owner, make sure uid not admin, but keep owner
 - group detail add admin for admin non owner
 
 - add api notification for update or news release on register with key
 
 - user menu in add drawer
 -- edit akun - show admin list
+-- edit akun - remove as admin, make sure assign to another admin as owner
 -- share
 
 - fix image resize using flutter core
+
+- wp plugin: delete group when delete user from wp user, or run cron to delete group without owner
