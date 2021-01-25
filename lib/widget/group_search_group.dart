@@ -81,7 +81,6 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
 
       Map<String, dynamic> data = await fetchSearchGroup(widget.loginKey, _radius, latlong, _keyword);
       if (data[DataStatus] == StatusSuccess) {
-        print(data);
         return {'latlong': latlong, 'address': addressLine, 'groups': data['groups']};
       } else if (data[DataStatus] == StatusError) {
         throw data[DataMessage];

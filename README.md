@@ -51,8 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- delete admin on delete group -> tinggal test
-
 - join group - photo user jadi photo group saat response sukses
 
 - group detail reskin join
