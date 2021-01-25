@@ -49,7 +49,8 @@ const String LabelAction = 'Aksi'; // detail group member list
 const String YourProgress = 'Progres Anda';
 const String ProgressTotal = 'Progres Total';
 const String ButtonRefresh = 'Muat ulang';
-const String ButtonJoin = 'Ambil';
+const String ButtonJoin = 'Gabung';
+const String ButtonAction = 'Aksi';
 const String ButtonOut = 'Keluar';
 const String ButtonRemove = 'Hapus';
 const String SubmitText = 'Submit';
@@ -117,8 +118,7 @@ const String FormCreateGroupAddressInvalid = 'Alamat group tidak terkonfirmasi';
 const String FormCreateGroupEndDateError = 'Deadline diperlukan';
 const String FormCreateGroupPreview = 'Preview';
 
-const String ConfirmTakingJuzTitle = 'Ambil Juz %s';
-const String ConfirmTakingJuzDesc = "Anda yakin akan bergabung dan mengambil juz %s?\n\nAnda tidak bisa membatalkan dan keluar hingga progress 100%";
+const String ConfirmTakingJuzDesc = "<p>Anda akan bergabung di:</p><strong>Juz %s</strong><br /><br /><p>Deadline setoran:</p><strong>%s</strong>";
 const String ConfirmTakingJuzButton = 'Ambil';
 
 const String ConfirmLeaveJuzTitle = 'Keluar Juz %s';

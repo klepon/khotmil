@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
+import 'package:intl/intl.dart';
 import 'package:khotmil/fetch/member_leave_group.dart';
 import 'package:khotmil/fetch/member_self_delete.dart';
 import 'package:khotmil/fetch/group_get_single_group.dart';
@@ -50,6 +53,7 @@ class WidgetGroupDetail extends StatefulWidget {
 class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final DateFormat formatter = DateFormat('dd-LLL-yyyy');
 
   String _messageText = '';
   String _detailName = '';
@@ -398,35 +402,44 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                 }
 
                 members.add(Container(
-                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black26))),
                   padding: EdgeInsets.symmetric(vertical: 6.0),
                   child: Row(
                     children: [
-                      Container(width: 32.0, child: Text(i.toString())),
-                      Expanded(child: Container(padding: EdgeInsets.only(right: 8.0), width: 32.0, child: Text((namesInJuz[i] != null ? namesInJuz[i].join(', ') : '')))),
+                      Container(width: 32.0, alignment: Alignment.center, child: Text(i.toString(), style: TextStyle(color: Colors.black87))),
+                      Expanded(
+                          child: Container(
+                              padding: EdgeInsets.only(right: 8.0),
+                              width: 32.0,
+                              child: Text((namesInJuz[i] != null ? namesInJuz[i].join(', ') : ''), style: TextStyle(color: Colors.black87)))),
                       Container(
                           padding: EdgeInsets.only(right: 8.0),
                           width: 110.0,
                           child: Stack(children: [
                             Container(
                                 padding: EdgeInsets.symmetric(vertical: 10.0),
-                                decoration:
-                                    BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
+                                // decoration:
+                                //     BoxDecoration(gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: [Colors.blue[100], Colors.blue[300]])),
+                                color: Colors.orange[200],
                                 width: (totalJuzProgress / 100) * 110,
                                 child: Text('')),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
-                              children: [Container(padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0), child: Text(totalJuzProgress.toString() + '%'))],
+                              children: [
+                                Container(
+                                    padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+                                    child: Text(totalJuzProgress.toString() + '%', style: TextStyle(color: Colors.black87)))
+                              ],
                             )
                           ])),
                       Container(
-                          width: 50.0,
+                          width: 60.0,
                           child: RaisedButton(
                               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               padding: EdgeInsets.all(0.0),
-                              color: myJuz[i] != null && myJuz[i]['progress'] == '100' ? Colors.redAccent : (myJuz[i] != null ? Colors.grey : Colors.green),
+                              color: myJuz[i] == null ? Colors.green : Colors.redAccent,
                               onPressed: () {
-                                if (myJuz[i] != null && myJuz[i]['progress'] == '100')
+                                if (myJuz[i] != null)
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
@@ -452,8 +465,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
-                                        title: Text(sprintf(ConfirmTakingJuzTitle, [i])),
-                                        content: Text(sprintf(ConfirmTakingJuzDesc, [i])),
+                                        content: Html(
+                                          data: sprintf(ConfirmTakingJuzDesc, [i, formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(_detailDeadline) * 1000))]),
+                                          style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                                        ),
+
+                                        // Text(sprintf(ConfirmTakingJuzDesc, [i])),
                                         actions: [
                                           FlatButton(
                                             onPressed: () => Navigator.pop(context),
@@ -465,12 +482,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                               Navigator.pop(context);
                                               _apiJoinRound(i.toString());
                                             },
-                                            child: Text(ConfirmTakingJuzButton),
+                                            child: Text(ButtonJoin),
                                           ),
                                         ],
                                       ));
                               },
-                              child: Text(myJuz[i] != null && myJuz[i]['progress'] == '100' ? ButtonOut : ButtonJoin))),
+                              child: Text(myJuz[i] == null ? ButtonJoin : ButtonAction))),
                     ],
                   ),
                 ));
@@ -656,7 +673,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                   if (members.length > 0 && !_invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
-                      padding: sidePadding,
+                      padding: sidePaddingNarrow,
                       child: Row(
                         children: [
                           Container(padding: verticalPadding, width: 32.0, child: Text(LabelJuz)),
@@ -673,7 +690,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         child: SingleChildScrollView(
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                                child: Container(padding: sidePadding, child: Column(children: members))))),
+                                child: Container(color: Colors.white, padding: sidePaddingNarrow, child: Column(children: members))))),
 
                   // next round and invite button
                   if (widget.owner && !_invitedMember)

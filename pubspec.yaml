@@ -37,6 +37,7 @@ dependencies:
   flutter_html: ^1.2.0
   image_picker: ^0.6.7+21
   image: ^2.1.19
+  intl: ^0.16.1
 
 
 dev_dependencies:

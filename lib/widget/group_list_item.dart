@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/text.dart';
 
@@ -15,6 +16,8 @@ class WidgetGroupItem extends StatelessWidget {
 
   WidgetGroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.deleteInvitation})
       : super(key: key);
+
+  final DateFormat formatter = DateFormat('dd-LLL-yy');
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +47,7 @@ class WidgetGroupItem extends StatelessWidget {
                           ]),
                           Row(children: [
                             Container(width: 95.0, child: Text(GroupDeadline, style: TextStyle(color: Colors.black))),
-                            Text(': ' + (DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000).toString()).split(' ')[0], style: TextStyle(color: Colors.black))
+                            Text(': ' + formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(deadline) * 1000)), style: TextStyle(color: Colors.black))
                           ]),
                           Row(children: [
                             Container(width: 95.0, child: Text(ProgressTotal, style: TextStyle(color: Colors.black))),
