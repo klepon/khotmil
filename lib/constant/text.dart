@@ -118,10 +118,10 @@ const String FormCreateGroupAddressInvalid = 'Alamat group tidak terkonfirmasi';
 const String FormCreateGroupEndDateError = 'Deadline diperlukan';
 const String FormCreateGroupPreview = 'Preview';
 
-const String ConfirmTakingJuzDesc = "<p>Anda akan bergabung di:</p><strong>Juz %s</strong><br /><br /><p>Deadline setoran:</p><strong>%s</strong>";
+const String ConfirmTakingJuzDesc = "<p>Anda akan bergabung di:<br /><br /><strong>Juz %s</strong><br /><br /><br /><br />Deadline setoran:<br /><br /><strong>%s</strong></p>";
 const String ConfirmTakingJuzButton = 'Ambil';
 
-const String ConfirmLeaveJuzTitle = 'Keluar Juz %s';
+const String JuzActionMessage = "<p>Masukkan progress setoran bacaan Juz anda<br /><br /><strong>Juz %s</strong></p>";
 const String ConfirmLeaveJuzDesc = "Anda yakin akan keluar juz %s?\n\nAnda tetap bisa bergabung sewaktu-waktu";
 const String ConfirmLeaveJuzButton = 'Keluar';
 

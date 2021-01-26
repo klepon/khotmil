@@ -67,7 +67,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
 
   bool _loadingOverlay = false;
   bool _invitedMember = false;
-  Map<String, dynamic> _activeJuz;
 
   List _apiReturnUsers = [];
   List _usersSelectedForInvite = [];
@@ -197,7 +196,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       _messageText = '';
     });
 
-    await fetchUpdateProgress(widget.loginKey, row['id'], row['juz'], row['progress']).then((data) {
+    await fetchUpdateProgress(widget.loginKey, row['id'], row['juz'].toString(), row['progress'].toString()).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         _apiGetDetail();
       } else if (data[DataStatus] == StatusError) {
@@ -356,7 +355,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
             Map<int, dynamic> progressInJuz = Map();
             Map<int, dynamic> myJuz = Map();
             Map<String, dynamic> userWithoutJuz = Map();
-            Map<String, dynamic> activeJuz = _activeJuz;
 
             if (snapshot.connectionState != ConnectionState.done) {
               snapShootLoading = true;
@@ -364,8 +362,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
 
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
-                print('======');
-                print(user);
                 if (user['juz'] == '0' && !user['isMe']) {
                   userWithoutJuz[user['uid']] = user;
                 } else {
@@ -415,17 +411,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       int.parse((((progressInJuz[i].fold(0, (previous, current) => previous + current)) / (progressInJuz[i].length * 100)) * 100).toStringAsFixed(0));
                 }
 
-                // if my juz
-                if (myJuz[i] != null) {
-                  // assign activeJuz
-                  if (activeJuz == null) {
-                    activeJuz = Map.from(myJuz[i]);
-                    // make sure activeJuz is valid, usualy after update/delete
-                  } else if (myJuz[int.parse(activeJuz['juz'])] == null) {
-                    activeJuz = Map.from(myJuz[i]);
-                  }
-                }
-
                 members.add(Container(
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black26))),
                   padding: EdgeInsets.symmetric(vertical: 6.0),
@@ -468,25 +453,117 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                               onPressed: () {
                                 if (myJuz[i] != null)
                                   showDialog(
-                                      context: context,
-                                      child: AlertDialog(
-                                        title: Text(sprintf(ConfirmLeaveJuzTitle, [i])),
-                                        content: Text(sprintf(ConfirmLeaveJuzDesc, [i])),
-                                        actions: [
-                                          FlatButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: Text(CancelText),
-                                          ),
-                                          RaisedButton(
-                                            color: Colors.redAccent,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              _apiLeaveRound(myJuz[i]['id']);
-                                            },
-                                            child: Text(ConfirmLeaveJuzButton),
-                                          ),
-                                        ],
-                                      ));
+                                    context: context,
+                                    builder: (context) {
+                                      Map<String, dynamic> _updatedProgress = {'id': myJuz[i]['id'], 'juz': i, 'progress': int.parse(myJuz[i]['progress'])};
+
+                                      return StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return AlertDialog(
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Html(
+                                                  data: sprintf(JuzActionMessage, [i]),
+                                                  style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: [20, 40, 80, 100]
+                                                      .map((progress) => GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _updatedProgress['progress'] = _updatedProgress['progress'] == 20 && progress == 20 ? 0 : progress;
+                                                            });
+                                                          },
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Container(
+                                                                padding: EdgeInsets.all(16.0),
+                                                                decoration: BoxDecoration(
+                                                                  color: (_updatedProgress['progress'] >= progress ? Colors.orange : Colors.white),
+                                                                  shape: BoxShape.circle,
+                                                                ),
+                                                              ),
+                                                              Text(progress.toString() + '%')
+                                                            ],
+                                                          )))
+                                                      .toList(),
+                                                ),
+                                                SizedBox(height: 24.0),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    MaterialButton(
+                                                      child: Text(SaveText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                        _apiUpdateProgress(_updatedProgress);
+                                                      },
+                                                      height: 50.0,
+                                                      color: Color(int.parse('0xff2DA310')),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                                    ),
+                                                    if (myJuz[i]['progress'] == '100')
+                                                      MaterialButton(
+                                                        child: Text(ConfirmLeaveJuzButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                        onPressed: () {
+                                                          showDialog(
+                                                              context: context,
+                                                              child: AlertDialog(
+                                                                content: Column(
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  children: [
+                                                                    Text(sprintf(ConfirmLeaveJuzDesc, [i])),
+                                                                    SizedBox(height: 16.0),
+                                                                    Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                                      children: [
+                                                                        MaterialButton(
+                                                                          child: Text(CancelText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                                          onPressed: () => Navigator.pop(context),
+                                                                          height: 50.0,
+                                                                          color: Color(int.parse('0xffC4C4C4')),
+                                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                                                        ),
+                                                                        MaterialButton(
+                                                                          child: Text(ConfirmLeaveJuzButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                                          onPressed: () {
+                                                                            Navigator.pop(context);
+                                                                            Navigator.pop(context);
+                                                                            _apiLeaveRound(myJuz[i]['id']);
+                                                                          },
+                                                                          height: 50.0,
+                                                                          color: Color(int.parse('0xffF30F0F')),
+                                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                                                        ),
+                                                                      ],
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ));
+                                                          //                   },
+                                                        },
+                                                        height: 50.0,
+                                                        color: Color(int.parse('0xffF30F0F')),
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                                      ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            actions: [
+                                              FlatButton(
+                                                onPressed: () => Navigator.pop(context),
+                                                child: Text(CancelText),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
 
                                 if (myJuz[i] == null)
                                   showDialog(
@@ -656,7 +733,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       if (!_invitedMember) Container(padding: mainPadding, child: Text(LoadingMember)),
                       if (_invitedMember) Container(padding: mainPadding, child: Text(AllMemberJoinJuz)),
                     ])),
-                  if (_messageText != '' || snapShootMessage != '' || members.length == 0) SizedBox(height: 16.0),
 
                   // without juz
                   if (userWithoutJuz.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
@@ -753,80 +829,80 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
                           ),
                           SizedBox(height: 4.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                  child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                                          margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
-                                          decoration: BoxDecoration(color: Colors.lightBlue),
-                                          child: GestureDetector(
-                                            child: Center(
-                                              child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
-                                                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                                            ),
-                                            onTap: () {
-                                              List keys = myJuz.keys.toList();
-                                              keys.sort();
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Expanded(
+                          //         child: Column(
+                          //       children: [
+                          //         Row(
+                          //           children: [
+                          //             Expanded(
+                          //               child: Container(
+                          //                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                          //                 margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
+                          //                 decoration: BoxDecoration(color: Colors.lightBlue),
+                          //                 child: GestureDetector(
+                          //                   child: Center(
+                          //                     child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
+                          //                         style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                          //                   ),
+                          //                   onTap: () {
+                          //                     List keys = myJuz.keys.toList();
+                          //                     keys.sort();
 
-                                              if (keys.length == 1) return;
+                          //                     if (keys.length == 1) return;
 
-                                              showDialog(
-                                                  context: context,
-                                                  child: SimpleDialog(
-                                                    title: const Text(SelectEditedJuz),
-                                                    children: keys.map((juz) {
-                                                      if (myJuz[juz]['isMe']) {
-                                                        return SimpleDialogOption(
-                                                          onPressed: () {
-                                                            Navigator.pop(context);
-                                                            setState(() {
-                                                              _activeJuz = Map.from(myJuz[juz]);
-                                                            });
-                                                          },
-                                                          child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
-                                                        );
-                                                      }
-                                                    }).toList(),
-                                                  ));
-                                            },
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [20, 40, 80, 100]
-                                        .map((progress) => GestureDetector(
-                                              onTap: () {
-                                                String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
+                          //                     showDialog(
+                          //                         context: context,
+                          //                         child: SimpleDialog(
+                          //                           title: const Text(SelectEditedJuz),
+                          //                           children: keys.map((juz) {
+                          //                             if (myJuz[juz]['isMe']) {
+                          //                               return SimpleDialogOption(
+                          //                                 onPressed: () {
+                          //                                   Navigator.pop(context);
+                          //                                   setState(() {
+                          //                                     _activeJuz = Map.from(myJuz[juz]);
+                          //                                   });
+                          //                                 },
+                          //                                 child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
+                          //                               );
+                          //                             }
+                          //                           }).toList(),
+                          //                         ));
+                          //                   },
+                          //                 ),
+                          //               ),
+                          //             )
+                          //           ],
+                          //         ),
+                          //         Row(
+                          //           children: [20, 40, 80, 100]
+                          //               .map((progress) => GestureDetector(
+                          //                     onTap: () {
+                          //                       String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
 
-                                                activeJuz['progress'] = newProgress;
-                                                setState(() {
-                                                  _activeJuz = activeJuz;
-                                                });
-                                              },
-                                              child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
-                                            ))
-                                        .toList(),
-                                  )
-                                ],
-                              )),
-                              RaisedButton(
-                                padding: EdgeInsets.symmetric(vertical: 25.0),
-                                child: Text(SubmitText),
-                                onPressed: () {
-                                  _apiUpdateProgress(activeJuz);
-                                },
-                              ),
-                            ],
-                          ),
+                          //                       activeJuz['progress'] = newProgress;
+                          //                       setState(() {
+                          //                         _activeJuz = activeJuz;
+                          //                       });
+                          //                     },
+                          //                     child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
+                          //                   ))
+                          //               .toList(),
+                          //         )
+                          //       ],
+                          //     )),
+                          //     RaisedButton(
+                          //       padding: EdgeInsets.symmetric(vertical: 25.0),
+                          //       child: Text(SubmitText),
+                          //       onPressed: () {
+                          //         _apiUpdateProgress(activeJuz);
+                          //       },
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(height: 4.0),
                           if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
                               (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
