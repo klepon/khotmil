@@ -51,8 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- group detail reskin update progress
-
 - group update restart round -> check aslo admin
 - group reskin update group for admin non owner, make sure uid not admin, but keep owner
 - group detail add admin for admin non owner

@@ -818,129 +818,47 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         )),
 
                   // update progress
-                  if (1 == 2)
-                    Container(
-                      padding: mainPadding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 4.0),
-                            child: Text(CurrentProgress, style: TextStyle(fontSize: 16.0)),
-                          ),
-                          SizedBox(height: 4.0),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Expanded(
-                          //         child: Column(
-                          //       children: [
-                          //         Row(
-                          //           children: [
-                          //             Expanded(
-                          //               child: Container(
-                          //                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                          //                 margin: EdgeInsets.only(bottom: 8.0, right: 16.0),
-                          //                 decoration: BoxDecoration(color: Colors.lightBlue),
-                          //                 child: GestureDetector(
-                          //                   child: Center(
-                          //                     child: Text(sprintf(CurrentJuz, [activeJuz != null ? activeJuz['juz'] : '']),
-                          //                         style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                          //                   ),
-                          //                   onTap: () {
-                          //                     List keys = myJuz.keys.toList();
-                          //                     keys.sort();
-
-                          //                     if (keys.length == 1) return;
-
-                          //                     showDialog(
-                          //                         context: context,
-                          //                         child: SimpleDialog(
-                          //                           title: const Text(SelectEditedJuz),
-                          //                           children: keys.map((juz) {
-                          //                             if (myJuz[juz]['isMe']) {
-                          //                               return SimpleDialogOption(
-                          //                                 onPressed: () {
-                          //                                   Navigator.pop(context);
-                          //                                   setState(() {
-                          //                                     _activeJuz = Map.from(myJuz[juz]);
-                          //                                   });
-                          //                                 },
-                          //                                 child: Text(sprintf(OptionJuz, [juz, myJuz[juz]['progress']])),
-                          //                               );
-                          //                             }
-                          //                           }).toList(),
-                          //                         ));
-                          //                   },
-                          //                 ),
-                          //               ),
-                          //             )
-                          //           ],
-                          //         ),
-                          //         Row(
-                          //           children: [20, 40, 80, 100]
-                          //               .map((progress) => GestureDetector(
-                          //                     onTap: () {
-                          //                       String newProgress = activeJuz['progress'] == '20' && progress == 20 ? '0' : progress.toString();
-
-                          //                       activeJuz['progress'] = newProgress;
-                          //                       setState(() {
-                          //                         _activeJuz = activeJuz;
-                          //                       });
-                          //                     },
-                          //                     child: radio((activeJuz != null ? int.parse(activeJuz['progress']) : 0) >= progress, progress.toString() + '%'),
-                          //                   ))
-                          //               .toList(),
-                          //         )
-                          //       ],
-                          //     )),
-                          //     RaisedButton(
-                          //       padding: EdgeInsets.symmetric(vertical: 25.0),
-                          //       child: Text(SubmitText),
-                          //       onPressed: () {
-                          //         _apiUpdateProgress(activeJuz);
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
-                          SizedBox(height: 4.0),
-                          if (int.parse(_detailDeadline) <= int.parse((DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0)) ||
-                              (_detailProgress != '' ? _detailProgress : widget.progress) == '100')
-                            Form(
-                                key: _formKey,
-                                child: Container(
-                                    padding: sidePadding,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: TextFormField(
-                                            controller: _newRoundDeadLineFormController,
-                                            keyboardType: TextInputType.text,
-                                            readOnly: true,
-                                            onTap: () => _renderSelectDate(context),
-                                            decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
-                                            validator: (value) {
-                                              if (value.isEmpty) {
-                                                return FormCreateGroupEndDateError;
-                                              }
-                                              return null;
-                                            },
-                                          ),
-                                        ),
-                                        SizedBox(width: 8.0),
-                                        RaisedButton(
-                                          child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
-                                          onPressed: () {
-                                            if (_formKey.currentState.validate()) {
-                                              _apiStartNewRound();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ))),
-                        ],
-                      ),
+                  Container(
+                    padding: mainPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 4.0),
+                        Form(
+                            key: _formKey,
+                            child: Container(
+                                padding: sidePadding,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _newRoundDeadLineFormController,
+                                        keyboardType: TextInputType.text,
+                                        readOnly: true,
+                                        onTap: () => _renderSelectDate(context),
+                                        decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return FormCreateGroupEndDateError;
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    RaisedButton(
+                                      child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
+                                      onPressed: () {
+                                        if (_formKey.currentState.validate()) {
+                                          _apiStartNewRound();
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ))),
+                      ],
                     ),
+                  ),
                 ],
               ),
               if (snapShootLoading || _loadingOverlay) loadingOverlay(context)
