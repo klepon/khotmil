@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:intl/intl.dart';
+import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/fetch/member_leave_group.dart';
 import 'package:khotmil/fetch/member_self_delete.dart';
 import 'package:khotmil/fetch/group_get_single_group.dart';
@@ -15,6 +16,7 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/member_join_round.dart';
 import 'package:khotmil/fetch/group_round_member.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'group_list_item.dart';
 
@@ -350,7 +352,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
             List<Widget> members = new List<Widget>();
             bool snapShootLoading = false;
             String snapShootMessage = '';
-            Map<int, dynamic> namesInJuz = Map();
+            Map<int, List<Widget>> namesInJuz = Map();
             Map<int, dynamic> progressInJuz = Map();
             Map<int, dynamic> myJuz = Map();
             Map<String, dynamic> userWithoutJuz = Map();
@@ -362,12 +364,35 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
 
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
+                print('======');
+                print(user);
                 if (user['juz'] == '0' && !user['isMe']) {
                   userWithoutJuz[user['uid']] = user;
                 } else {
                   // collect names in a juz
-                  if (namesInJuz[int.parse(user['juz'])] == null) namesInJuz[int.parse(user['juz'])] = [];
-                  namesInJuz[int.parse(user['juz'])].add(user['name']);
+                  if (namesInJuz[int.parse(user['juz'])] == null) {
+                    namesInJuz[int.parse(user['juz'])] = new List<Widget>();
+                  } else {
+                    namesInJuz[int.parse(user['juz'])].add(Text(', ', style: TextStyle(color: Colors.black87)));
+                  }
+
+                  namesInJuz[int.parse(user['juz'])].add(GestureDetector(
+                      onTap: () => showDialog(
+                          context: context,
+                          child: AlertDialog(
+                              content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(backgroundImage: user['photo'] != '' ? NetworkImage(user['photo']) : AssetImage(AnonImage), backgroundColor: Colors.white, radius: 60),
+                              SizedBox(height: 16.0),
+                              Text(user['fullname'] ?? ''),
+                              if (user['phone'] != '')
+                                FlatButton(
+                                    onPressed: () => launch("tel:" + user['phone']),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.phone), Text(user['phone'])])),
+                            ],
+                          ))),
+                      child: Text(user['name'], style: TextStyle(color: Colors.black87))));
 
                   // collect progress in a juz
                   if (progressInJuz[int.parse(user['juz'])] == null) progressInJuz[int.parse(user['juz'])] = [];
@@ -411,7 +436,9 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                           child: Container(
                               padding: EdgeInsets.only(right: 8.0),
                               width: 32.0,
-                              child: Text((namesInJuz[i] != null ? namesInJuz[i].join(', ') : ''), style: TextStyle(color: Colors.black87)))),
+                              child: Wrap(
+                                children: namesInJuz[i] != null ? namesInJuz[i] : [],
+                              ))),
                       Container(
                           padding: EdgeInsets.only(right: 8.0),
                           width: 110.0,
@@ -469,8 +496,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                           data: sprintf(ConfirmTakingJuzDesc, [i, formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(_detailDeadline) * 1000))]),
                                           style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
                                         ),
-
-                                        // Text(sprintf(ConfirmTakingJuzDesc, [i])),
                                         actions: [
                                           FlatButton(
                                             onPressed: () => Navigator.pop(context),
