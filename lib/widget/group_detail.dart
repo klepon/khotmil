@@ -675,9 +675,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       ]),
                     ),
                   SizedBox(height: 16.0),
-                  RaisedButton(
-                    child: Text(InviterButton),
-                    onPressed: () => _apiInviteUser(),
+                  MaterialButton(
+                    child: Text(InviterButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    onPressed: () => setState(() => _apiInviteUser()),
+                    height: 50.0,
+                    color: Color(int.parse('0xff2DA310')),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                   ),
                 ],
               ));
