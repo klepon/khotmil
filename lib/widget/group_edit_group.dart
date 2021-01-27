@@ -522,6 +522,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                                   onPressed: () => showDialog(
                                                       context: context,
                                                       child: AlertDialog(
+                                                        scrollable: true,
                                                         title: Text(RemoveAdminWarningTitle),
                                                         content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
                                                         actions: [
@@ -613,6 +614,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                               showDialog(
                                   context: context,
                                   child: AlertDialog(
+                                    scrollable: true,
                                     title: Text(DeleteGroupWarningTitle),
                                     content: Text(DeleteGroupWarning),
                                     actions: [

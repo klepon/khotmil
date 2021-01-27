@@ -172,7 +172,9 @@ const String JoinGroupConfirmationDesc = 'Anda yakin akan bergabung dengan group
 const String JoinGroupConfirmButton = 'Yakin';
 
 const String StartNewRound = 'Tutup Putaran ';
-const String OkText = 'OK';
+const String StartNewRoundMessage =
+    "Anda yakin akan menutup putaran ini?\n\nPutaran hanya dapat ditutup bilamana progress total sudah mencapai 100%.\n\nMenutup putaran akan membuka putaran selanjutnya.";
+const String OkText = 'Ya';
 
 const String EditAccount = 'Edit Akun';
 const String ChangePassword = 'Ubah Kode Kunci';

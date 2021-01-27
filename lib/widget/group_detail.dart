@@ -86,7 +86,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       lastDate: DateTime(date.year, date.month + 3),
       helpText: FormCreateGroupEndDate,
     );
-    if (picked != null) _newRoundDeadLineFormController.text = (picked.toString()).split(' ')[0];
+    if (picked != null) _newRoundDeadLineFormController.text = formatter.format(picked);
   }
 
   void _apiGetDetail() async {
@@ -376,18 +376,20 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       onTap: () => showDialog(
                           context: context,
                           child: AlertDialog(
+                              scrollable: true,
                               content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircleAvatar(backgroundImage: user['photo'] != '' ? NetworkImage(user['photo']) : AssetImage(AnonImage), backgroundColor: Colors.white, radius: 60),
-                              SizedBox(height: 16.0),
-                              Text(user['fullname'] ?? ''),
-                              if (user['phone'] != '')
-                                FlatButton(
-                                    onPressed: () => launch("tel:" + user['phone']),
-                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.phone), Text(user['phone'])])),
-                            ],
-                          ))),
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircleAvatar(
+                                      backgroundImage: user['photo'] != '' ? NetworkImage(user['photo']) : AssetImage(AnonImage), backgroundColor: Colors.white, radius: 60),
+                                  SizedBox(height: 16.0),
+                                  Text(user['fullname'] ?? ''),
+                                  if (user['phone'] != '')
+                                    FlatButton(
+                                        onPressed: () => launch("tel:" + user['phone']),
+                                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.phone), Text(user['phone'])])),
+                                ],
+                              ))),
                       child: Text(user['name'], style: TextStyle(color: Colors.black87))));
 
                   // collect progress in a juz
@@ -460,6 +462,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                       return StatefulBuilder(
                                         builder: (context, setState) {
                                           return AlertDialog(
+                                            scrollable: true,
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -508,6 +511,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                                           showDialog(
                                                               context: context,
                                                               child: AlertDialog(
+                                                                scrollable: true,
                                                                 content: Column(
                                                                   mainAxisSize: MainAxisSize.min,
                                                                   children: [
@@ -565,6 +569,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
+                                        scrollable: true,
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -698,6 +703,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             showDialog(
                                 context: context,
                                 child: AlertDialog(
+                                  scrollable: true,
                                   title: Text(DeleteInvitationWarningTitle),
                                   content: Text(DeleteInvitationWarning),
                                   actions: [
@@ -812,56 +818,46 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                               child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                               onPressed: () {
                                 showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    // TextEditingController _newRoundDeadLineFormController = TextEditingController();
-
-                                    return StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return AlertDialog(
-                                          content: Form(
-                                              key: _formKey,
-                                              child: Container(
-                                                  padding: sidePadding,
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: TextFormField(
-                                                          controller: _newRoundDeadLineFormController,
-                                                          keyboardType: TextInputType.text,
-                                                          readOnly: true,
-                                                          onTap: () => _renderSelectDate(context),
-                                                          decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
-                                                          validator: (value) {
-                                                            if (value.isEmpty) {
-                                                              return FormCreateGroupEndDateError;
-                                                            }
-                                                            return null;
-                                                          },
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 8.0),
-                                                      RaisedButton(
-                                                        child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
-                                                        onPressed: () {
-                                                          if (_formKey.currentState.validate()) {
-                                                            _apiStartNewRound();
-                                                          }
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ))),
-                                          actions: [
-                                            FlatButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              child: Text(CancelText),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
+                                    context: context,
+                                    child: AlertDialog(
+                                      scrollable: true,
+                                      content: Form(
+                                          key: _formKey,
+                                          child: Column(
+                                            children: [
+                                              Text(StartNewRoundMessage, textAlign: TextAlign.center),
+                                              SizedBox(height: 16.0),
+                                              TextFormField(
+                                                textAlign: TextAlign.center,
+                                                controller: _newRoundDeadLineFormController,
+                                                keyboardType: TextInputType.text,
+                                                readOnly: true,
+                                                onTap: () => _renderSelectDate(context),
+                                                decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                                validator: (value) {
+                                                  if (value.isEmpty) {
+                                                    return FormCreateGroupEndDateError;
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              SizedBox(height: 16.0),
+                                              MaterialButton(
+                                                child: Text(OkText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                onPressed: () {
+                                                  if (_formKey.currentState.validate()) {
+                                                    Navigator.pop(context);
+                                                    _apiStartNewRound();
+                                                  }
+                                                },
+                                                height: 50.0,
+                                                color: Color(int.parse('0xff2DA310')),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                              ),
+                                            ],
+                                          )),
+                                      actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))],
+                                    ));
                               },
                               height: 50.0,
                               color: Color(int.parse('0xffF30F0F')),
