@@ -122,8 +122,12 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     await fetchDeleteAdmin(widget.loginKey, adminId, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
-          _loadingOverlay = false;
           _admins = _admins.where((i) => i[0] != adminId).toList();
+          _excludeIds = _excludeIds.where((i) => int.parse(i) != adminId).toList();
+        });
+
+        setState(() {
+          _loadingOverlay = false;
         });
       } else if (data[DataStatus] == StatusError) {
         setState(() {
@@ -164,7 +168,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     });
   }
 
-  void _apiUpdateGroup() async {
+  void _apiUpdateGroup(BuildContext context) async {
     setState(() {
       _messageText = '';
       _loadingOverlay = true;
@@ -188,7 +192,8 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
       if (data[DataStatus] == StatusSuccess) {
         widget.reloadDetail(_nameFormController.text, _getTimeStamp(), data['photo'].toString());
         widget.reloadList();
-        Navigator.pop(context);
+        _apiGetGroup();
+        _showAlert(context);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _messageText = data[DataMessage];
@@ -222,6 +227,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
           _endDateFormController.text = (DateTime.fromMillisecondsSinceEpoch(int.parse(data['group']['deadline']) * 1000).toString()).split(' ')[0];
           _photo = data['group']['photo'];
           _admins = data['group']['admins'];
+          _usersSelectedForInvite = [];
           _excludeIds = [
             ...{..._excludeIds}
           ];
@@ -293,6 +299,14 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         ...{..._usersSelectedForInvite}
       ];
     });
+  }
+
+  _showAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(content: Text(UpdateGroupSuccess), actions: [
+              FlatButton(onPressed: () => Navigator.pop(context), child: Text(BackText)),
+            ]));
   }
 
   String _getTimeStamp() {
@@ -516,30 +530,32 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(admin[1]),
-                                              IconButton(
-                                                  icon: Icon(Icons.delete_forever),
-                                                  onPressed: () => showDialog(
-                                                      context: context,
-                                                      child: AlertDialog(
-                                                        scrollable: true,
-                                                        title: Text(RemoveAdminWarningTitle),
-                                                        content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
-                                                        actions: [
-                                                          FlatButton(
-                                                            onPressed: () => Navigator.pop(context),
-                                                            child: Text(CancelText),
-                                                          ),
-                                                          RaisedButton(
-                                                            color: Colors.redAccent,
-                                                            onPressed: () {
-                                                              Navigator.pop(context);
-                                                              _apiDeleteAdmin(admin[0]);
-                                                            },
-                                                            child: Text(RemoveAdminConfirm),
-                                                          ),
-                                                        ],
-                                                      ))),
+                                              Text(admin[1] + (admin[2] ? ' (owner)' : '')),
+                                              if (admin[2]) FlatButton(onPressed: () {}, child: Text('')),
+                                              if (!admin[2])
+                                                IconButton(
+                                                    icon: Icon(Icons.delete_forever),
+                                                    onPressed: () => showDialog(
+                                                        context: context,
+                                                        child: AlertDialog(
+                                                          scrollable: true,
+                                                          title: Text(RemoveAdminWarningTitle),
+                                                          content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
+                                                          actions: [
+                                                            FlatButton(
+                                                              onPressed: () => Navigator.pop(context),
+                                                              child: Text(CancelText),
+                                                            ),
+                                                            RaisedButton(
+                                                              color: Colors.redAccent,
+                                                              onPressed: () {
+                                                                Navigator.pop(context);
+                                                                _apiDeleteAdmin(admin[0]);
+                                                              },
+                                                              child: Text(RemoveAdminConfirm),
+                                                            ),
+                                                          ],
+                                                        ))),
                                             ],
                                           )
                                       ],
@@ -578,7 +594,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text('@' + user[1]),
+                                              Text('+' + user[1]),
                                               IconButton(icon: const Icon(Icons.delete_forever), onPressed: () => _removeUid(user)),
                                             ],
                                           ),
@@ -601,7 +617,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {
-                                _apiUpdateGroup();
+                                _apiUpdateGroup(context);
                               }
                             },
                             height: 50.0,

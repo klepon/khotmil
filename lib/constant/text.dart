@@ -95,6 +95,7 @@ const String ClosedAddressFoundTitle = 'Alamat terdekat yg ditemukan';
 const String ClosedAddressFoundDesc = 'Jika kurang tepat coba masukkan:\nNama jalan, Kota, Provinsi';
 const String UseCoordinateButtonText = 'Pakai kordinat';
 const String UseAddressButtonText = 'Pakai semua';
+const String UpdateGroupSuccess = 'Perubahan berhasil disimpan';
 
 const String FormLogin = 'form_login';
 const String FormRegisterEmail = 'form_register_email';
@@ -183,7 +184,7 @@ const String AboutAplication = 'Tentang Aplikasi';
 const String ShareAplikastion = 'Bagikan Aplikasi';
 
 const String DeleteInvitationWarningTitle = 'Hapus Undangan?';
-const String DeleteInvitationWarning = 'Anda akan menghapus undangan untuk bergabung dengan group ini.\nAnda bisa bergabung kembali lewat fitur Gabung Group.';
+const String DeleteInvitationWarning = 'Anda akan menghapus undangan untuk bergabung dengan group ini.\n\nAnda bisa bergabung kembali lewat fitur Gabung Group.';
 const String DeleteInvitationConfirm = 'Hapus';
 
 const String AdminsGroups = 'Admin Group';

@@ -350,6 +350,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
           future: _getMemberAPI,
           builder: (context, snapshot) {
             List<Widget> members = new List<Widget>();
+            bool isAdmin = widget.owner;
             bool snapShootLoading = false;
             String snapShootMessage = '';
             Map<int, List<Widget>> namesInJuz = Map();
@@ -363,6 +364,10 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
 
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
+                if (user['isAdmin']) {
+                  isAdmin = true;
+                }
+
                 if (user['juz'] == '0' && !user['isMe']) {
                   userWithoutJuz[user['uid']] = user;
                 } else {
@@ -722,7 +727,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                 ));
                           }
                         : null,
-                    editGroup: widget.owner
+                    editGroup: isAdmin
                         ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
                               return WidgetEditGroup(
                                 groupId: widget.groupId,
@@ -812,7 +817,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                 child: Container(color: Colors.white, padding: sidePaddingNarrow, child: Column(children: members))))),
 
                   // next round and invite button
-                  if (widget.owner && !_invitedMember)
+                  if (isAdmin && !_invitedMember)
                     Container(
                         padding: mainPadding,
                         child: Row(
