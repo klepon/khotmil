@@ -471,20 +471,16 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                   children: [20, 40, 80, 100]
                                                       .map((progress) => GestureDetector(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              _updatedProgress['progress'] = _updatedProgress['progress'] == 20 && progress == 20 ? 0 : progress;
-                                                            });
-                                                          },
+                                                          onTap: () => setState(() {
+                                                                _updatedProgress['progress'] = _updatedProgress['progress'] == 20 && progress == 20 ? 0 : progress;
+                                                              }),
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
                                                               Container(
                                                                 padding: EdgeInsets.all(16.0),
                                                                 decoration: BoxDecoration(
-                                                                  color: (_updatedProgress['progress'] >= progress ? Colors.orange : Colors.white),
-                                                                  shape: BoxShape.circle,
-                                                                ),
+                                                                    color: (_updatedProgress['progress'] >= progress ? Colors.orange : Colors.white), shape: BoxShape.circle),
                                                               ),
                                                               Text(progress.toString() + '%')
                                                             ],
@@ -569,23 +565,35 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                   showDialog(
                                       context: context,
                                       child: AlertDialog(
-                                        content: Html(
-                                          data: sprintf(ConfirmTakingJuzDesc, [i, formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(_detailDeadline) * 1000))]),
-                                          style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Html(
+                                              data: sprintf(ConfirmTakingJuzDesc, [i, formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(_detailDeadline) * 1000))]),
+                                              style: {
+                                                "*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)),
+                                                "strong": Style(
+                                                  fontSize: FontSize(20.0),
+                                                ),
+                                              },
+                                            ),
+                                            MaterialButton(
+                                              child: Text(ButtonJoin, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                _apiJoinRound(i.toString());
+                                              },
+                                              height: 50.0,
+                                              color: Color(int.parse('0xff2DA310')),
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                            ),
+                                          ],
                                         ),
                                         actions: [
                                           FlatButton(
                                             onPressed: () => Navigator.pop(context),
                                             child: Text(CancelText),
-                                          ),
-                                          RaisedButton(
-                                            color: Colors.redAccent,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              _apiJoinRound(i.toString());
-                                            },
-                                            child: Text(ButtonJoin),
-                                          ),
+                                          )
                                         ],
                                       ));
                               },
@@ -802,7 +810,59 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                           children: [
                             MaterialButton(
                               child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    // TextEditingController _newRoundDeadLineFormController = TextEditingController();
+
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return AlertDialog(
+                                          content: Form(
+                                              key: _formKey,
+                                              child: Container(
+                                                  padding: sidePadding,
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextFormField(
+                                                          controller: _newRoundDeadLineFormController,
+                                                          keyboardType: TextInputType.text,
+                                                          readOnly: true,
+                                                          onTap: () => _renderSelectDate(context),
+                                                          decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                                          validator: (value) {
+                                                            if (value.isEmpty) {
+                                                              return FormCreateGroupEndDateError;
+                                                            }
+                                                            return null;
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 8.0),
+                                                      RaisedButton(
+                                                        child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
+                                                        onPressed: () {
+                                                          if (_formKey.currentState.validate()) {
+                                                            _apiStartNewRound();
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ))),
+                                          actions: [
+                                            FlatButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child: Text(CancelText),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
                               height: 50.0,
                               color: Color(int.parse('0xffF30F0F')),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -816,49 +876,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                             ),
                           ],
                         )),
-
-                  // update progress
-                  Container(
-                    padding: mainPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 4.0),
-                        Form(
-                            key: _formKey,
-                            child: Container(
-                                padding: sidePadding,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: _newRoundDeadLineFormController,
-                                        keyboardType: TextInputType.text,
-                                        readOnly: true,
-                                        onTap: () => _renderSelectDate(context),
-                                        decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return FormCreateGroupEndDateError;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    RaisedButton(
-                                      child: Text(StartNewRound + (int.parse(widget.round) + 1).toString()),
-                                      onPressed: () {
-                                        if (_formKey.currentState.validate()) {
-                                          _apiStartNewRound();
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ))),
-                      ],
-                    ),
-                  ),
                 ],
               ),
               if (snapShootLoading || _loadingOverlay) loadingOverlay(context)
