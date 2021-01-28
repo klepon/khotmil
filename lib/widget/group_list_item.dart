@@ -71,7 +71,7 @@ class WidgetGroupItem extends StatelessWidget {
             ),
             child: CircleAvatar(backgroundImage: photo != '' ? NetworkImage(photo) : null, backgroundColor: Colors.white, radius: 60),
           ),
-          if (editGroup != null)
+          if (editGroup != null && deleteInvitation == null)
             Container(
               padding: EdgeInsets.only(top: 4.0),
               alignment: Alignment.topRight,

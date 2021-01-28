@@ -51,6 +51,10 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
+--bug group detail as admin not showing admin buttons, wrong group id???
+- edit akun - show admin list
+
+- group edit as admin error
 - group update restart round -> check aslo admin
 - group reskin update group for admin non owner, make sure uid not admin, but keep owner
 - group detail add admin for admin non owner
@@ -58,7 +62,6 @@ Restart connection and do all the step
 - add api notification for update or news release on register with key
 
 - user menu in add drawer
--- edit akun - show admin list
 -- edit akun - remove as admin, make sure assign to another admin as owner
 -- share
 

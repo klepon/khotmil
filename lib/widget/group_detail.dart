@@ -817,7 +817,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                 child: Container(color: Colors.white, padding: sidePaddingNarrow, child: Column(children: members))))),
 
                   // next round and invite button
-                  if (isAdmin && !_invitedMember)
+                  if (isAdmin && !_invitedMember && !widget.isInvitation)
                     Container(
                         padding: mainPadding,
                         child: Row(
