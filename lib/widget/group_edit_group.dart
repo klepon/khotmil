@@ -527,37 +527,38 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                       children: [
                                         Text(AdminsGroups, style: bold),
                                         for (var admin in _admins)
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(admin[1] + (admin[2] ? ' (owner)' : '')),
-                                              if (admin[2]) FlatButton(onPressed: () {}, child: Text('')),
-                                              if (!admin[2])
-                                                IconButton(
-                                                    icon: Icon(Icons.delete_forever),
-                                                    onPressed: () => showDialog(
-                                                        context: context,
-                                                        child: AlertDialog(
-                                                          scrollable: true,
-                                                          title: Text(RemoveAdminWarningTitle),
-                                                          content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
-                                                          actions: [
-                                                            FlatButton(
-                                                              onPressed: () => Navigator.pop(context),
-                                                              child: Text(CancelText),
-                                                            ),
-                                                            RaisedButton(
-                                                              color: Colors.redAccent,
-                                                              onPressed: () {
-                                                                Navigator.pop(context);
-                                                                _apiDeleteAdmin(admin[0]);
-                                                              },
-                                                              child: Text(RemoveAdminConfirm),
-                                                            ),
-                                                          ],
-                                                        ))),
-                                            ],
-                                          )
+                                          if (admin[0] != null)
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text(admin[1] + (admin[2] ? ' (owner)' : '')),
+                                                if (admin[2]) FlatButton(onPressed: () {}, child: Text('')),
+                                                if (!admin[2])
+                                                  IconButton(
+                                                      icon: Icon(Icons.delete_forever),
+                                                      onPressed: () => showDialog(
+                                                          context: context,
+                                                          child: AlertDialog(
+                                                            scrollable: true,
+                                                            title: Text(RemoveAdminWarningTitle),
+                                                            content: Text(sprintf(RemoveAdminWarning, [admin[1]])),
+                                                            actions: [
+                                                              FlatButton(
+                                                                onPressed: () => Navigator.pop(context),
+                                                                child: Text(CancelText),
+                                                              ),
+                                                              RaisedButton(
+                                                                color: Colors.redAccent,
+                                                                onPressed: () {
+                                                                  Navigator.pop(context);
+                                                                  _apiDeleteAdmin(admin[0]);
+                                                                },
+                                                                child: Text(RemoveAdminConfirm),
+                                                              ),
+                                                            ],
+                                                          ))),
+                                              ],
+                                            )
                                       ],
                                     ),
                                   if (_searchUserLoading) Center(child: CircularProgressIndicator(strokeWidth: 2.0)),

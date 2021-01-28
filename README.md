@@ -51,10 +51,10 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
---bug group detail as admin not showing admin buttons, wrong group id???
+- group update as admin fail
+
 - edit akun - show admin list
 
-- group edit as admin error
 - group update restart round -> check aslo admin
 - group reskin update group for admin non owner, make sure uid not admin, but keep owner
 - group detail add admin for admin non owner
