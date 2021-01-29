@@ -22,7 +22,7 @@ class FullScreenImagePage extends StatelessWidget {
                 SizedBox(height: 16.0),
                 MaterialButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                  child: Text(OKText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                   height: 38.0,
                   color: Color(int.parse('0xffF30F0F')),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
