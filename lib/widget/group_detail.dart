@@ -57,7 +57,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final DateFormat formatter = DateFormat('dd-LLL-yyyy');
 
-  String _messageText = '';
   String _detailName = '';
   String _detailRound = '';
   String _detailDeadline = '';
@@ -106,16 +105,16 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       } else {
         setState(() {});
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
@@ -123,7 +122,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     Navigator.pop(context);
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     await fetchLeaveGroup(widget.loginKey, widget.groupId).then((data) {
@@ -133,21 +131,20 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
   void _apiJoinRound(String juz) async {
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     await fetchJoinRound(widget.loginKey, widget.groupId, juz).then((data) {
@@ -156,21 +153,20 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
   void _apiLeaveRound(String mid) async {
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     await fetchDeleteMyMember(widget.loginKey, mid).then((data) {
@@ -179,21 +175,20 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
   void _apiUpdateProgress(row) async {
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     await fetchUpdateProgress(widget.loginKey, row['id'], row['juz'].toString(), row['progress'].toString()).then((data) {
@@ -202,21 +197,20 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
   void _apiInviteUser() async {
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     List uids = [];
@@ -235,14 +229,14 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
@@ -275,7 +269,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
   void _apiStartNewRound() async {
     setState(() {
       _loadingOverlay = true;
-      _messageText = '';
     });
 
     await fetchStartNewRound(widget.loginKey, widget.groupId, _newRoundDeadLineFormController.text).then((data) {
@@ -291,8 +284,8 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
-        _messageText = onError.toString();
       });
+      modalMessage(context, onError.toString());
     });
   }
 
@@ -748,8 +741,6 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                   ),
 
                   // message
-                  // if (_messageText != '') SizedBox(height: 8.0),
-                  // if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
                   if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),
                   if (members.length == 0)
                     Expanded(
@@ -825,7 +816,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            if (_detailProgress != '100')
+                            if (_detailProgress == '100')
                               MaterialButton(
                                 child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                                 onPressed: () {
