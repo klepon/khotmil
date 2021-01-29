@@ -195,18 +195,16 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         widget.reloadDetail(_nameFormController.text, _getTimeStamp(), data['photo'].toString());
         widget.reloadList();
         _apiGetGroup();
-        _showAlert(context);
         setState(() {
           _messageText = UpdateGroupSuccess;
         });
-        _showAlert(context);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
-        _showAlert(context);
       }
+      _showAlert(context);
     }).catchError((onError) {
       setState(() {
         _messageText = onError.toString();
@@ -312,11 +310,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   }
 
   _showAlert(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(content: Text(_messageText), actions: [
-              FlatButton(onPressed: () => Navigator.pop(context), child: Text(OKText)),
-            ]));
+    modalMessage(context, _messageText);
   }
 
   String _getTimeStamp() {

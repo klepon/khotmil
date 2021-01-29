@@ -77,6 +77,14 @@ Decoration pageBg = BoxDecoration(
   ),
 );
 
+modalMessage(BuildContext context, String message) {
+  showDialog(
+      context: context,
+      builder: (context) => AlertDialog(content: Text(message), actions: [
+            FlatButton(onPressed: () => Navigator.pop(context), child: Text(OKText)),
+          ]));
+}
+
 // double meters = 50;
 // double lat = -8.705877;
 // double long = 115.219421;
