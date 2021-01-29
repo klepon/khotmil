@@ -358,6 +358,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
             Map<int, dynamic> progressInJuz = Map();
             Map<int, dynamic> myJuz = Map();
             Map<String, dynamic> userWithoutJuz = Map();
+            List<String> usersIdInGroup = new List<String>();
 
             if (snapshot.connectionState != ConnectionState.done) {
               snapShootLoading = true;
@@ -365,6 +366,8 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
 
             if (snapshot.hasData) {
               for (var user in snapshot.data['users']) {
+                usersIdInGroup.add(user['uid']);
+
                 if (user['isAdmin']) {
                   isAdmin = true;
                 }
@@ -403,7 +406,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                   if (progressInJuz[int.parse(user['juz'])] == null) progressInJuz[int.parse(user['juz'])] = [];
                   progressInJuz[int.parse(user['juz'])].add(int.parse(user['progress']));
 
-                  // collect current active user juz
+                  // collect current active user juz, for button color etc
                   if (user['isMe']) {
                     myJuz[int.parse(user['juz'])] = user;
                   }
@@ -615,15 +618,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                 ));
               }
             } else if (snapshot.hasData && _invitedMember) {
-              List<String> invitedIds = new List<String>();
               for (var usfi in _usersSelectedForInvite) {
-                invitedIds.add(usfi[0].toString());
+                usersIdInGroup.add(usfi[0].toString());
               }
 
               var i = 1;
               for (var user in userWithoutJuz.values) {
-                invitedIds.add(user['uid']);
-
                 members.add(Container(
                   decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white24))),
                   padding: EdgeInsets.symmetric(vertical: 6.0),
@@ -657,7 +657,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     ),
                     onChanged: (value) {
                       if (value.length >= 3) {
-                        _apiSearchUser(value, invitedIds);
+                        _apiSearchUser(value, usersIdInGroup);
                       } else if (_apiReturnUsers.length > 0) {
                         setState(() {
                           _apiReturnUsers = [];
@@ -683,7 +683,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     ),
                   SizedBox(height: 16.0),
                   MaterialButton(
-                    child: Text(InviterButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    child: Text(InviteButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                     onPressed: () => setState(() => _apiInviteUser()),
                     height: 50.0,
                     color: Color(int.parse('0xff2DA310')),
@@ -759,6 +759,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     ])),
 
                   // without juz
+                  if (userWithoutJuz.length > 0 && _invitedMember) SizedBox(height: 8.0),
                   if (userWithoutJuz.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
                   if (userWithoutJuz.length > 0 && _invitedMember) SizedBox(height: 8.0),
                   if (userWithoutJuz.length > 0 && _invitedMember)

@@ -131,7 +131,7 @@ const String SelectEditedJuz = 'Pilih setoran juz';
 const String OptionJuz = 'Juz %s progres %s%';
 const String CurrentJuz = 'Juz %s';
 
-const String InviterButton = 'Undang';
+const String InviteButton = 'Undang';
 
 const String SearchGroupTitle = 'Gabung Group';
 const String SearchGroupByMyAddress = 'Dekat Saya';

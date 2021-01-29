@@ -51,6 +51,8 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
+- as admin invite member should exclude owner
+
 - as admin delete group
 
 - edit akun - show admin list
