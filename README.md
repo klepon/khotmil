@@ -51,7 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- as admin delete admin
 - as admin invite member
 - as admin restart round
 - as admin delete group

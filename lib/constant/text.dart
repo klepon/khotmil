@@ -192,4 +192,5 @@ const String AdminsGroups = 'Admin Group';
 
 const String RemoveAdminWarningTitle = 'Hapus Admin?';
 const String RemoveAdminWarning = 'Anda akan memberhentikan "%s" dari Admin\n\nAnda yakin?';
+const String RemoveAdminSuccess = 'Admin berhasil diberhentikan';
 const String RemoveAdminConfirm = 'Iya Berhentikan';

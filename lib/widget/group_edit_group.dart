@@ -124,9 +124,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         setState(() {
           _admins = _admins.where((i) => i[0] != adminId).toList();
           _excludeIds = _excludeIds.where((i) => int.parse(i) != adminId).toList();
-        });
-
-        setState(() {
+          _messageText = RemoveAdminSuccess;
           _loadingOverlay = false;
         });
       } else if (data[DataStatus] == StatusError) {
@@ -134,8 +132,8 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
-        _showAlert(context);
       }
+      _showAlert(context);
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
@@ -541,9 +539,9 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(admin[1] + (admin[2] ? ' (owner)' : '')),
-                                                if (admin[2]) FlatButton(onPressed: () {}, child: Text('')),
-                                                if (!admin[2])
+                                                Text(admin[1] + ' ' + admin[2]),
+                                                if (admin[2] != '') FlatButton(onPressed: () {}, child: Text('')),
+                                                if (admin[2] == '')
                                                   IconButton(
                                                       icon: Icon(Icons.delete_forever),
                                                       onPressed: () => showDialog(
