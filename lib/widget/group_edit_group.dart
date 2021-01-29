@@ -305,7 +305,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(content: Text(UpdateGroupSuccess), actions: [
-              FlatButton(onPressed: () => Navigator.pop(context), child: Text(BackText)),
+              FlatButton(onPressed: () => Navigator.pop(context), child: Text(OKText)),
             ]));
   }
 
@@ -618,6 +618,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {
+                                FocusScope.of(context).unfocus();
                                 _apiUpdateGroup(context);
                               }
                             },

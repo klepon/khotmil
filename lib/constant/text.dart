@@ -21,6 +21,7 @@ const String RegisterText = 'Daftar';
 const String SaveText = 'Simpan';
 const String CancelText = 'Batal';
 const String BackText = 'Kembali';
+const String OKText = 'OK';
 const String DonateText = 'Donasi';
 const String EmailValidationText = 'Validasi Email';
 const String RecoveryPasswordEmailValidationText = 'Validasi email dan buat password baru';
@@ -175,7 +176,7 @@ const String JoinGroupConfirmButton = 'Yakin';
 const String StartNewRound = 'Tutup Putaran ';
 const String StartNewRoundMessage =
     "Anda yakin akan menutup putaran ini?\n\nPutaran hanya dapat ditutup bilamana progress total sudah mencapai 100%.\n\nMenutup putaran akan membuka putaran selanjutnya.";
-const String OkText = 'Ya';
+const String YesText = 'Ya';
 
 const String EditAccount = 'Edit Akun';
 const String ChangePassword = 'Ubah Kode Kunci';

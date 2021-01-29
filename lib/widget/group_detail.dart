@@ -853,7 +853,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                                 ),
                                                 SizedBox(height: 16.0),
                                                 MaterialButton(
-                                                  child: Text(OkText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                  child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                                                   onPressed: () {
                                                     if (_formKey.currentState.validate()) {
                                                       Navigator.pop(context);

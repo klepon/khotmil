@@ -51,13 +51,11 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- group update as admin fail
-
+- group detail delete admin as admin
 - edit akun - show admin list
 
 - group update restart round -> check aslo admin
 - group reskin update group for admin non owner, make sure uid not admin, but keep owner
-- group detail add admin for admin non owner
 
 - add api notification for update or news release on register with key
 
