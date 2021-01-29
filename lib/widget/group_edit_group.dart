@@ -134,12 +134,14 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
+        _showAlert(context);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
       });
+      _showAlert(context);
     });
   }
 
@@ -159,12 +161,14 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
           _loadingOverlay = false;
           _messageText = data[DataMessage];
         });
+        _showAlert(context);
       }
     }).catchError((onError) {
       setState(() {
         _loadingOverlay = false;
         _messageText = onError.toString();
       });
+      _showAlert(context);
     });
   }
 
@@ -194,17 +198,23 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         widget.reloadList();
         _apiGetGroup();
         _showAlert(context);
+        setState(() {
+          _messageText = UpdateGroupSuccess;
+        });
+        _showAlert(context);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
+        _showAlert(context);
       }
     }).catchError((onError) {
       setState(() {
         _messageText = onError.toString();
         _loadingOverlay = false;
       });
+      _showAlert(context);
     });
   }
 
@@ -240,12 +250,14 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
           _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
+        _showAlert(context);
       }
     }).catchError((onError) {
       setState(() {
         _messageText = onError.toString();
         _loadingOverlay = false;
       });
+      _showAlert(context);
     });
   }
 
@@ -304,7 +316,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   _showAlert(BuildContext context) {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(content: Text(UpdateGroupSuccess), actions: [
+        builder: (context) => AlertDialog(content: Text(_messageText), actions: [
               FlatButton(onPressed: () => Navigator.pop(context), child: Text(OKText)),
             ]));
   }
@@ -390,8 +402,6 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                     child: Text(EditGroup, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                                   ),
                                   SizedBox(height: 16.0),
-                                  if (_messageText != '') Text(_messageText),
-                                  if (_messageText != '') SizedBox(height: 16.0),
 
                                   // group name
                                   TextFormField(
