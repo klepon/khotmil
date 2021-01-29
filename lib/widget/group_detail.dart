@@ -281,11 +281,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     await fetchStartNewRound(widget.loginKey, widget.groupId, _newRoundDeadLineFormController.text).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         _apiGetDetail();
+        modalMessage(context, StartNewRoundSuccess);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _messageText = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
@@ -747,8 +748,8 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                   ),
 
                   // message
-                  if (_messageText != '') SizedBox(height: 8.0),
-                  if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
+                  // if (_messageText != '') SizedBox(height: 8.0),
+                  // if (_messageText != '') Container(padding: mainPadding, child: Text(_messageText)),
                   if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),
                   if (members.length == 0)
                     Expanded(
@@ -823,7 +824,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            if (_detailProgress == '100')
+                            if (_detailProgress != '100')
                               MaterialButton(
                                 child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                                 onPressed: () {
