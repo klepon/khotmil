@@ -66,6 +66,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
     return FutureBuilder(
       future: fetchMyGroupList(widget.loginKey, 0),
       builder: (context, snapshot) {
+        String _versionMessage = '';
         String _responseMessage = '';
         String _dataMessage = '';
         bool _isLoading = true;
@@ -75,6 +76,10 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
         if (snapshot.connectionState != ConnectionState.done) {
           _responseMessage = LoadingGroups;
         } else if (snapshot.hasData) {
+          if (snapshot.data['new_version'] != '0') {
+            _versionMessage = snapshot.data['new_version'];
+          }
+
           if (snapshot.data['message'] != null) {
             _dataMessage = snapshot.data['message'];
           } else {
@@ -107,6 +112,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
 
         return Column(
           children: [
+            if (_versionMessage != '') Container(margin: mainPadding, padding: mainPadding, color: Colors.deepOrange, child: Text(_versionMessage)),
             if (_hasData)
               Container(
                   width: double.infinity,

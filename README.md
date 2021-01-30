@@ -51,11 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- add api notification for update or news release on register with key
-
-- user menu in add drawer
--- share
-
 - fix image resize using flutter core
 
 
