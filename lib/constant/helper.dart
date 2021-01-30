@@ -64,8 +64,8 @@ Container loadingOverlay(context) {
 
 BaseOptions dioOptions = new BaseOptions(
   baseUrl: ApiDomain,
-  connectTimeout: 5000,
-  receiveTimeout: 3000,
+  connectTimeout: 15000,
+  receiveTimeout: 13000,
 );
 
 Decoration pageBg = BoxDecoration(
