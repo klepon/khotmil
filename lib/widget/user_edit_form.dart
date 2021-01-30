@@ -6,9 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
+import 'package:khotmil/fetch/delete_admin.dart';
 import 'package:khotmil/fetch/user_get_data.dart';
 import 'package:khotmil/fetch/user_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sprintf/sprintf.dart';
 
 class WidgetEditAccount extends StatefulWidget {
   final String loginKey;
@@ -28,8 +30,8 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _loadingOverlay = false;
-  String _futureMessage = '';
   String _photo = '';
+  List<dynamic> _admins = new List<dynamic>();
 
   File _image;
   final picker = ImagePicker();
@@ -45,10 +47,9 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
     }
   }
 
-  _getUserData() async {
+  _apiGetUserData() async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
     });
 
     await fetchGetUserData(widget.loginKey).then((data) async {
@@ -60,28 +61,28 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
           emailController.text = data['email'];
           phoneController.text = data['phone'];
           _photo = data['photo'];
+          _admins = data['admins'].length == 0 ? new List() : data['admins'].entries.map((entry) => entry.value).toList();
         });
       }
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
-  _updateUserData() async {
+  _apiUpdateUserData() async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
     });
 
     await fetchUpdateUserData(widget.loginKey, nickNameController.text, fullNameController.text, emailController.text, phoneController.text, _image).then((data) async {
       if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
       }
 
       if (data[DataStatus] == StatusSuccess) {
@@ -106,15 +107,43 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
+    });
+  }
+
+  void _apiDeleteAdmin(int uid, String gid) async {
+    Navigator.pop(context);
+
+    setState(() {
+      _loadingOverlay = true;
+    });
+
+    await fetchDeleteAdmin(widget.loginKey, uid, gid).then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _loadingOverlay = false;
+        });
+        modalMessage(context, QuitAdminsGroupsSuccess);
+        _apiGetUserData();
+      } else if (data[DataStatus] == StatusError) {
+        setState(() {
+          _loadingOverlay = false;
+        });
+        modalMessage(context, data[DataMessage]);
+      }
+    }).catchError((onError) {
+      setState(() {
+        _loadingOverlay = false;
+      });
+      modalMessage(context, onError.toString());
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _getUserData();
+    _apiGetUserData();
   }
 
   @override
@@ -139,18 +168,20 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                 padding: mainPadding,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(child: Text(EditAccountFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
                     SizedBox(height: 16.0),
-                    FlatButton(
-                        onPressed: () => _getImage(),
-                        child: Stack(
-                          alignment: const Alignment(0.0, 0.8),
-                          children: [
-                            CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(_image != null ? _image.path : AnonImage), radius: 79),
-                            if (_image == null) Text(UploadPhoto),
-                          ],
-                        )),
+                    Center(
+                        child: FlatButton(
+                            onPressed: () => _getImage(),
+                            child: Stack(
+                              alignment: const Alignment(0.0, 0.8),
+                              children: [
+                                CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(_image != null ? _image.path : AnonImage), radius: 79),
+                                if (_image == null) Text(UploadPhoto),
+                              ],
+                            ))),
                     SizedBox(height: 8.0),
                     TextFormField(
                       controller: nickNameController,
@@ -187,17 +218,43 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
                     ),
+                    SizedBox(height: 24.0),
+                    if (_admins.length > 0) Text(AdminsGroups, style: bold, textAlign: TextAlign.left),
+                    if (_admins.length > 0)
+                      for (var admin in _admins)
+                        Row(
+                          children: [
+                            Text(admin['name']),
+                            IconButton(
+                                icon: Icon(Icons.delete_forever),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                          content: Column(mainAxisSize: MainAxisSize.min, children: [
+                                            Text(sprintf(QuitAdminsGroupsWarning, [admin['name']]), textAlign: TextAlign.center),
+                                            SizedBox(height: 24.0),
+                                            MaterialButton(
+                                              child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                              onPressed: () => _apiDeleteAdmin(admin['uid'], admin['id'].toString()),
+                                              padding: EdgeInsets.symmetric(horizontal: 32.0),
+                                              height: 50.0,
+                                              color: Color(int.parse('0xffF30F0F')),
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+                                            )
+                                          ]),
+                                          actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))]));
+                                }),
+                          ],
+                        ),
                     SizedBox(height: 8.0),
-                    // Text('list admin group disini'),
-                    SizedBox(height: 16.0),
-                    if (_futureMessage != '') Text(_futureMessage),
-                    SizedBox(height: 16.0),
+                    SizedBox(height: 24.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         MaterialButton(
                           child: Text(SaveText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                          onPressed: () => _updateUserData(),
+                          onPressed: () => _apiUpdateUserData(),
                           padding: EdgeInsets.symmetric(horizontal: 32.0),
                           height: 50.0,
                           color: Color(int.parse('0xff2DA310')),
