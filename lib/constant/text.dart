@@ -199,3 +199,5 @@ const String RemoveAdminSuccess = 'Admin berhasil diberhentikan';
 const String RemoveAdminConfirm = 'Iya Berhentikan';
 
 const String FormErrorMessage = 'Cek kembali form isian dan lengkapi yg ditandai merah';
+
+const String ShareLinksTitle = 'Bagikan aplikasi';

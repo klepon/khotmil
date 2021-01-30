@@ -9,6 +9,7 @@ import 'package:khotmil/fetch/user_recovery_pasword.dart';
 import 'package:khotmil/fetch/user_register.dart';
 import 'package:khotmil/fetch/user_validate_email.dart';
 import 'package:khotmil/fetch/validate_recovery_pasword.dart';
+import 'package:khotmil/widget/page_share_links.dart';
 import 'package:khotmil/widget/user_change_password.dart';
 import 'package:khotmil/widget/user_edit_form.dart';
 import 'package:khotmil/widget/page_full_screen_image.dart';
@@ -361,8 +362,8 @@ class _AuthState extends State<Auth> {
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),
                   ListTile(title: Text(AboutAplication), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiAboutApp)))),
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),
-                  // ListTile(title: Text(ShareAplikastion), onTap: () {}),
-                  // Container(width: double.infinity, height: 1.0, color: Colors.black26),
+                  ListTile(title: Text(ShareAplikastion), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ShareLinksPage()))),
+                  Container(width: double.infinity, height: 1.0, color: Colors.black26),
                   ListTile(title: Text(LogoutText), onTap: () => _logout()),
                   Container(width: double.infinity, height: 1.0, color: Colors.black26),
                 ],

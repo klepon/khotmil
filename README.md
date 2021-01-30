@@ -51,12 +51,9 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- edit akun - show admin list
-
 - add api notification for update or news release on register with key
 
 - user menu in add drawer
--- edit akun - remove as admin, make sure assign to another admin as owner
 -- share
 
 - fix image resize using flutter core
