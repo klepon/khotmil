@@ -51,11 +51,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- coba delete samsul dan semua groupnya buat tets bug 2 dibawah, sepertinya itu karan data lama yg salah
-
-- bug: undang samsul yg sudah pilih juz jadi admin, invitation muncul lagi, harusnya nggk karna sudah pilih juz
-- bug: undang samsul jadi admin, accept, edit icon tidak keluar
-
 - edit akun - show admin list
 
 - add api notification for update or news release on register with key
