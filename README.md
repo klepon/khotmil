@@ -19,7 +19,15 @@ samples, guidance on mobile development, and a full API reference.
 
 for building read this https://flutter.dev/docs/deployment/android
 
-$ flutter build appbundle
+$ flutter build appbundle // create bundle
+
+$ cd release folder // go to bundle folder
+
+$ flutter build apk // create apk
+
+$ cd release folder // go to apk folder
+
+$ flutter install // install on device via cable
 
 ## wireless debuging
 
@@ -48,6 +56,8 @@ Restart connection and do all the step
  $ adb kill-server
 
 ## improvment
+
+- upload image long response
 
 ## reskin and relogic
 
