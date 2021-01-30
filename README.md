@@ -51,7 +51,10 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- as admin delete group
+- coba delete samsul dan semua groupnya buat tets bug 2 dibawah, sepertinya itu karan data lama yg salah
+
+- bug: undang samsul yg sudah pilih juz jadi admin, invitation muncul lagi, harusnya nggk karna sudah pilih juz
+- bug: undang samsul jadi admin, accept, edit icon tidak keluar
 
 - edit akun - show admin list
 
@@ -63,4 +66,4 @@ Restart connection and do all the step
 
 - fix image resize using flutter core
 
-- wp plugin: delete group when delete user from wp user, or run cron to delete group without owner
+

@@ -5,10 +5,9 @@ import 'package:email_validator/email_validator.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
 class WidgetUserLogin extends StatefulWidget {
-  final String futureMessage;
   final Function changeForm;
   final Function loginApi;
-  WidgetUserLogin({Key key, this.futureMessage, this.changeForm, this.loginApi}) : super(key: key);
+  WidgetUserLogin({Key key, this.changeForm, this.loginApi}) : super(key: key);
 
   @override
   _WidgetUserLoginState createState() => _WidgetUserLoginState();
@@ -83,7 +82,6 @@ class _WidgetUserLoginState extends State<WidgetUserLogin> {
                 },
               ),
               SizedBox(height: 24.0),
-              if (widget.futureMessage != '') Text(widget.futureMessage),
               MaterialButton(
                 child: Text(LoginText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {

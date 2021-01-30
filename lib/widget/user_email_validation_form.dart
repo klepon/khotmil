@@ -5,11 +5,10 @@ import 'package:email_validator/email_validator.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
 class WidgetValidationEmail extends StatefulWidget {
-  final String futureMessage;
   final Function changeForm;
   final Function validationApi;
   final bool requiredUserPass;
-  WidgetValidationEmail({Key key, this.futureMessage, this.changeForm, this.validationApi, this.requiredUserPass}) : super(key: key);
+  WidgetValidationEmail({Key key, this.changeForm, this.validationApi, this.requiredUserPass}) : super(key: key);
 
   @override
   _WidgetValidationEmailState createState() => _WidgetValidationEmailState();
@@ -60,8 +59,6 @@ class _WidgetValidationEmailState extends State<WidgetValidationEmail> {
                   },
                 ),
               SizedBox(height: 16.0),
-              if (widget.futureMessage != '') Text(widget.futureMessage),
-              if (widget.futureMessage != '') SizedBox(height: 8.0),
               TextFormField(
                 controller: codeController,
                 maxLength: 6,

@@ -28,7 +28,6 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> {
-  String _futureMessage = '';
   String _currentForm = LoginText;
   String _loginKey = '';
   String _name = '';
@@ -61,29 +60,26 @@ class _AuthState extends State<Auth> {
     setState(() {
       _loginKey = '';
       _currentForm = FormLogin;
-      _futureMessage = '';
     });
   }
 
   _changeForm(text) {
     setState(() {
       _currentForm = text;
-      _futureMessage = '';
     });
   }
 
   _loginApi(String email, String password) async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
     });
 
     await fetchLoginUser(email, password).then((data) async {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
         return;
       }
 
@@ -103,15 +99,14 @@ class _AuthState extends State<Auth> {
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
   _registerApi(String name, String fullname, String email, String password, String phone, File photo) async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
       _name = name;
       _email = email;
       _password = password;
@@ -120,23 +115,22 @@ class _AuthState extends State<Auth> {
     await fetchRegisterUser(name, fullname, email, password, phone, photo).then((data) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = data[DataMessage];
         if (data[DataStatus] == StatusSuccess) {
           _currentForm = FormEmailValidation;
         }
       });
+      modalMessage(context, data[DataMessage]);
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
   _validationApi(String email, String password, String code) async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
       if ('' == _email || '' == _password) {
         _email = email;
         _password = password;
@@ -147,8 +141,8 @@ class _AuthState extends State<Auth> {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
         return;
       }
 
@@ -168,38 +162,36 @@ class _AuthState extends State<Auth> {
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
   _recoveryPasswordApi(String email) async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
       _email = email;
     });
 
     await fetchRecoveryPassword(email).then((data) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = data[DataMessage];
         if (data[DataStatus] == StatusSuccess) {
           _currentForm = FormRecoveryPasswordValidation;
         }
       });
+      modalMessage(context, data[DataMessage]);
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
   _validationRecoveryPasswordApi(String email, String password, String code) async {
     setState(() {
       _loadingOverlay = true;
-      _futureMessage = '';
       if ('' == _email || '' == _password) {
         _email = email;
         _password = password;
@@ -210,8 +202,8 @@ class _AuthState extends State<Auth> {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
-          _futureMessage = data[DataMessage];
         });
+        modalMessage(context, data[DataMessage]);
         return;
       }
 
@@ -231,8 +223,8 @@ class _AuthState extends State<Auth> {
     }).catchError((e) {
       setState(() {
         _loadingOverlay = false;
-        _futureMessage = e.toString();
       });
+      modalMessage(context, e.toString());
     });
   }
 
@@ -240,18 +232,16 @@ class _AuthState extends State<Auth> {
     switch (_currentForm) {
       case FormEmailValidation:
         return WidgetValidationEmail(
-          futureMessage: _futureMessage,
           changeForm: _changeForm,
           validationApi: _validationApi,
           requiredUserPass: '' == _email || '' == _password,
         );
 
       case FormRegisterEmail:
-        return WidgetRegisterForm(futureMessage: _futureMessage, changeForm: _changeForm, registerApi: _registerApi);
+        return WidgetRegisterForm(changeForm: _changeForm, registerApi: _registerApi);
 
       case FormRecoveryPasswordValidation:
         return WidgetRecoveryEmailValidation(
-          futureMessage: _futureMessage,
           changeForm: _changeForm,
           validationRecoveryPasswordApi: _validationRecoveryPasswordApi,
           requiredEmail: '' == _email,
@@ -259,14 +249,13 @@ class _AuthState extends State<Auth> {
 
       case FormRecoveryPassword:
         return WidgetRecoveryPassword(
-          futureMessage: _futureMessage,
           changeForm: _changeForm,
           recoveryPasswordApi: _recoveryPasswordApi,
           newPassword: false,
         );
 
       default:
-        return WidgetUserLogin(futureMessage: _futureMessage, changeForm: _changeForm, loginApi: _loginApi);
+        return WidgetUserLogin(changeForm: _changeForm, loginApi: _loginApi);
     }
   }
 

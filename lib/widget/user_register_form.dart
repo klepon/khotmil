@@ -10,10 +10,9 @@ import 'package:email_validator/email_validator.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
 class WidgetRegisterForm extends StatefulWidget {
-  final String futureMessage;
   final Function changeForm;
   final Function registerApi;
-  WidgetRegisterForm({Key key, this.futureMessage, this.changeForm, this.registerApi}) : super(key: key);
+  WidgetRegisterForm({Key key, this.changeForm, this.registerApi}) : super(key: key);
 
   @override
   _WidgetRegisterFormState createState() => _WidgetRegisterFormState();
@@ -111,12 +110,15 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
                     ],
                   )),
               SizedBox(height: 16.0),
-              if (widget.futureMessage != '') Text(widget.futureMessage),
               MaterialButton(
                 child: Text(RegisterText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {
+                  FocusScope.of(context).unfocus();
+
                   if (_formKey.currentState.validate()) {
                     widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text, _image);
+                  } else {
+                    modalMessage(context, FormErrorMessage);
                   }
                 },
                 minWidth: double.infinity,

@@ -195,3 +195,5 @@ const String RemoveAdminWarningTitle = 'Hapus Admin?';
 const String RemoveAdminWarning = 'Anda akan memberhentikan "%s" dari Admin\n\nAnda yakin?';
 const String RemoveAdminSuccess = 'Admin berhasil diberhentikan';
 const String RemoveAdminConfirm = 'Iya Berhentikan';
+
+const String FormErrorMessage = 'Cek kembali form isian dan lengkapi yg ditandai merah';
