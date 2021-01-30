@@ -658,7 +658,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                           ),
                           MaterialButton(
-                            child: Text(CancelText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                            child: Text(BackText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                             onPressed: () => Navigator.of(context).pop(),
                             height: 50.0,
                             color: Color(int.parse('0xff747070')),
