@@ -8,6 +8,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_admin.dart';
 import 'package:khotmil/fetch/group_delete.dart';
 import 'package:khotmil/fetch/group_get_groups.dart';
+import 'package:khotmil/fetch/group_search_by_name.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 import 'package:khotmil/fetch/group_update.dart';
 import 'package:sprintf/sprintf.dart';
@@ -38,6 +39,12 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   String _lastCheckedAddress = '';
   Address _closedValidAddress;
 
+  bool _searchNameLoading = false;
+  bool _nameExist = false;
+  String _searchNameMessage = '';
+  String _lastCheckedName = '';
+  String _originalName = '';
+
   List _apiReturnUsers = [];
   List<String> _excludeIds = new List<String>();
   List _admins = [];
@@ -50,6 +57,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   TextEditingController _endDateFormController = TextEditingController();
   TextEditingController _searchUserFormController = TextEditingController();
   FocusNode _focusAddressNode = FocusNode();
+  FocusNode _focusNameNode = FocusNode();
 
   File _image;
   final picker = ImagePicker();
@@ -111,6 +119,34 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         _closedValidAddress = data.first;
       });
     }).catchError((onError) {});
+  }
+
+  Future _getGroupName() async {
+    if (_lastCheckedName == _nameFormController.text || _originalName == _nameFormController.text) return;
+
+    setState(() {
+      _searchNameLoading = true;
+      _lastCheckedName = _nameFormController.text;
+    });
+
+    await fetchSearchGroupByName(_nameFormController.text, 'group').then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _nameExist = data['data'];
+          _searchNameMessage = data['data'] ? FormCreateGroupNameExist : '';
+          _searchNameLoading = false;
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _searchNameLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _searchNameLoading = false;
+      });
+    });
   }
 
   void _apiDeleteAdmin(int adminId) async {
@@ -227,6 +263,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
         }
 
         setState(() {
+          _originalName = data['group']['name'];
           _loadingOverlay = false;
           _nameFormController.text = data['group']['name'];
           _addressFormController.text = data['group']['address'];
@@ -331,6 +368,12 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
       }
     });
 
+    _nameFormController.addListener(() {
+      if (_nameFormController.text != '' && !_focusNameNode.hasFocus) {
+        _getGroupName();
+      }
+    });
+
     _apiGetGroup();
   }
 
@@ -341,7 +384,10 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
     _roundFormController.dispose();
     _endDateFormController.dispose();
     _searchUserFormController.dispose();
+
     _focusAddressNode.dispose();
+    _focusNameNode.dispose();
+
     super.dispose();
   }
 
@@ -400,13 +446,26 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                                     controller: _nameFormController,
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
+                                    focusNode: _focusNameNode,
                                     validator: (value) {
                                       if (value.isEmpty) {
                                         return FormCreateGroupNameError;
                                       }
+
+                                      if (value.isNotEmpty && _nameExist == true) {
+                                        return FormCreateGroupNameExistShort;
+                                      }
                                       return null;
                                     },
                                   ),
+                                  if (_searchNameLoading)
+                                    Container(
+                                        padding: verticalPadding,
+                                        child: Column(children: [
+                                          Center(child: LinearProgressIndicator()),
+                                          Text(FormCreateGroupNameChecking),
+                                        ])),
+                                  if (_searchNameMessage != '') Text(_searchNameMessage),
                                   SizedBox(height: 16.0),
 
                                   // group address
@@ -617,6 +676,8 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
                           MaterialButton(
                             child: Text(SaveText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                             onPressed: () async {
+                              FocusScope.of(context).unfocus();
+                              await _getGroupName();
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {

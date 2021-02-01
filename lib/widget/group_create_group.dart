@@ -185,7 +185,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
 
     setState(() {
       _searchNameLoading = true;
-      _lastCheckedAddress = _nameFormController.text;
+      _lastCheckedName = _nameFormController.text;
     });
 
     await fetchSearchGroupByName(_nameFormController.text, 'group').then((data) {
@@ -233,7 +233,10 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     _roundFormController.dispose();
     _endDateFormController.dispose();
     _searchUserFormController.dispose();
+
     _focusAddressNode.dispose();
+    _focusNameNode.dispose();
+
     super.dispose();
   }
 
@@ -265,33 +268,29 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                     child: Text(CreateGroup, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                                   ),
                                   SizedBox(height: 16.0),
-                                  Column(
-                                    children: [
-                                      TextFormField(
-                                        controller: _nameFormController,
-                                        keyboardType: TextInputType.text,
-                                        decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
-                                        focusNode: _focusNameNode,
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return FormCreateGroupNameError;
-                                          }
+                                  TextFormField(
+                                    controller: _nameFormController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
+                                    focusNode: _focusNameNode,
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return FormCreateGroupNameError;
+                                      }
 
-                                          if (value.isNotEmpty && _nameExist == true) {
-                                            return FormCreateGroupNameExistShort;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      if (_searchNameLoading)
-                                        Container(
-                                            padding: verticalPadding,
-                                            child: Column(children: [
-                                              Center(child: LinearProgressIndicator()),
-                                              Text(AddressValidateTitle),
-                                            ])),
-                                    ],
+                                      if (value.isNotEmpty && _nameExist == true) {
+                                        return FormCreateGroupNameExistShort;
+                                      }
+                                      return null;
+                                    },
                                   ),
+                                  if (_searchNameLoading)
+                                    Container(
+                                        padding: verticalPadding,
+                                        child: Column(children: [
+                                          Center(child: LinearProgressIndicator()),
+                                          Text(FormCreateGroupNameChecking),
+                                        ])),
                                   if (_searchNameMessage != '') Text(_searchNameMessage),
                                   SizedBox(height: 16.0),
                                   Row(
@@ -465,7 +464,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                           backgroundColor: Colors.white,
                                           radius: 79,
                                           child: CircleAvatar(
-                                            backgroundImage: AssetImage(_image != null ? _image.path : ''),
+                                            backgroundImage: _image == null ? null : AssetImage(_image.path),
                                             backgroundColor: Colors.white,
                                             radius: 72,
                                             child: Text(_image == null ? UploadGroupPhoto : '', textAlign: TextAlign.center),
@@ -486,6 +485,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                             child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                             onPressed: () async {
                               FocusScope.of(context).unfocus();
+                              await _getGroupName();
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {
