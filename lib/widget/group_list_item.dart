@@ -32,7 +32,7 @@ class WidgetGroupItem extends StatelessWidget {
               if (asHeader) SizedBox(height: 130.0, width: 0.0),
               Expanded(
                   child: Container(
-                      padding: asHeader ? EdgeInsets.fromLTRB(142.0, 16.0, 24.0, 8.0) : EdgeInsets.fromLTRB(70.0, 8.0, 16.0, 8.0),
+                      padding: asHeader ? EdgeInsets.fromLTRB(150.0, 8.0, 24.0, 8.0) : EdgeInsets.fromLTRB(78.0, 8.0, 16.0, 8.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: asHeader ? BorderRadius.zero : BorderRadius.only(topRight: Radius.circular(50.0), bottomRight: Radius.circular(50.0)),
@@ -73,7 +73,7 @@ class WidgetGroupItem extends StatelessWidget {
           ),
           if (editGroup != null && deleteInvitation == null)
             Container(
-              padding: EdgeInsets.only(top: 4.0),
+              padding: EdgeInsets.only(top: 12.0),
               alignment: Alignment.topRight,
               child: Column(
                 children: [
@@ -87,7 +87,7 @@ class WidgetGroupItem extends StatelessWidget {
             ),
           if (deleteInvitation != null)
             Container(
-              padding: EdgeInsets.only(top: 8.0),
+              padding: EdgeInsets.only(top: 12.0),
               alignment: Alignment.topRight,
               child: Column(
                 children: [

@@ -58,9 +58,26 @@ Restart connection and do all the step
 ## improvment
 
 - upload image long response
+- group option open/private; open anyone can joint, private need admin approval
 
 ## reskin and relogic
 
+- 
+- nama panggilan make unik
+- nama group make unique
+- list group order by gid desc
+- add refresh list dan detail on pull down
+- x undangan pindah ke orange area
+- notifikasi update dalam bentuk modal dan harus update, harus mark juga ver yg sekarang
+- nama kasih underline
+- kluar juz ganti button keluar juz
+- kasi button keluar group atas kanan bisa kapan saja
+- tutup putaran dan undangan anggota dibuat 2 baris tipis per button 
+- gabung group order: nama, alamat, dekat saya
+- search group name use auto complete, min 3 karakter
+
 - fix image resize using flutter core
+
+digitalamalindonesia
 
 
