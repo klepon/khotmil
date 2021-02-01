@@ -122,10 +122,21 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
   }
 
   Future _getGroupName() async {
-    if (_lastCheckedName == _nameFormController.text || _originalName == _nameFormController.text) return;
+    if (_lastCheckedName == _nameFormController.text || _originalName == _nameFormController.text) {
+      if (_searchNameMessage != '') {
+        setState(() {
+          _searchNameMessage = '';
+          _nameExist = false;
+        });
+      }
+
+      return;
+    }
 
     setState(() {
+      _nameExist = false;
       _searchNameLoading = true;
+      _searchNameMessage = '';
       _lastCheckedName = _nameFormController.text;
     });
 

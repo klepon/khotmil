@@ -7,6 +7,7 @@ import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:khotmil/fetch/group_search_by_name.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
 class WidgetRegisterForm extends StatefulWidget {
@@ -19,17 +20,23 @@ class WidgetRegisterForm extends StatefulWidget {
 }
 
 class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
-  TextEditingController nickNameController = TextEditingController();
-  TextEditingController fullNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController _nickNameController = TextEditingController();
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  FocusNode _focusNameNode = FocusNode();
+
+  bool _searchNameLoading = false;
+  bool _nameExist = false;
+  String _searchNameMessage = '';
+  String _lastCheckedName = '';
 
   File _image;
   final picker = ImagePicker();
 
-  Future _getImage() async {
+  _getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -37,6 +44,69 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  _getGroupName() async {
+    if (_lastCheckedName == _nickNameController.text) {
+      if (_searchNameMessage != '') {
+        setState(() {
+          _searchNameMessage = '';
+          _nameExist = false;
+        });
+      }
+
+      return;
+    }
+
+    setState(() {
+      _nameExist = false;
+      _searchNameLoading = true;
+      _searchNameMessage = '';
+      _lastCheckedName = _nickNameController.text;
+    });
+
+    await fetchSearchGroupByName(_nickNameController.text, 'user').then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _nameExist = data['data'];
+          _searchNameMessage = data['data'] ? NickNameExistMessage : '';
+          _searchNameLoading = false;
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _searchNameLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _searchNameLoading = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nickNameController.addListener(() {
+      if (_nickNameController.text != '' && !_focusNameNode.hasFocus) {
+        _getGroupName();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _nickNameController.dispose();
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+
+    _focusNameNode.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -50,25 +120,38 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
             children: [
               Center(child: Text(RegisterWithEmailFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
               TextFormField(
-                controller: nickNameController,
+                controller: _nickNameController,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(hintText: EnterNickName, errorStyle: errorTextStyle),
+                focusNode: _focusNameNode,
                 validator: (value) {
                   if (value.isEmpty) {
                     return NameRequired;
                   }
+
+                  if (value.isNotEmpty && _nameExist == true) {
+                    return NickNameExistShort;
+                  }
                   return null;
                 },
               ),
+              if (_searchNameLoading)
+                Container(
+                    padding: verticalPadding,
+                    child: Column(children: [
+                      Center(child: LinearProgressIndicator()),
+                      Text(NickNameChecking),
+                    ])),
+              if (_searchNameMessage != '') Text(_searchNameMessage),
               SizedBox(height: 8.0),
               TextFormField(
-                controller: fullNameController,
+                controller: _fullNameController,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(hintText: EnterFullName, errorStyle: errorTextStyle),
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                controller: emailController,
+                controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
                 validator: (value) {
@@ -80,7 +163,7 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                controller: passwordController,
+                controller: _passwordController,
                 keyboardType: TextInputType.visiblePassword,
                 enableSuggestions: false,
                 autocorrect: false,
@@ -95,7 +178,7 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
               ),
               SizedBox(height: 8.0),
               TextFormField(
-                controller: phoneController,
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
               ),
@@ -114,9 +197,10 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
                 child: Text(RegisterText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
+                  await _getGroupName();
 
                   if (_formKey.currentState.validate()) {
-                    widget.registerApi(nickNameController.text, fullNameController.text, emailController.text, passwordController.text, phoneController.text, _image);
+                    widget.registerApi(_nickNameController.text, _fullNameController.text, _emailController.text, _passwordController.text, _phoneController.text, _image);
                   } else {
                     modalMessage(context, FormErrorMessage);
                   }
@@ -142,15 +226,5 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
             ],
           ),
         ));
-  }
-
-  @override
-  void dispose() {
-    nickNameController.dispose();
-    fullNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    phoneController.dispose();
-    super.dispose();
   }
 }

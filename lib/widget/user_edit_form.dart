@@ -7,6 +7,7 @@ import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_admin.dart';
+import 'package:khotmil/fetch/group_search_by_name.dart';
 import 'package:khotmil/fetch/user_get_data.dart';
 import 'package:khotmil/fetch/user_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,12 +23,19 @@ class WidgetEditAccount extends StatefulWidget {
 }
 
 class _WidgetEditAccountState extends State<WidgetEditAccount> {
-  TextEditingController nickNameController = TextEditingController();
-  TextEditingController fullNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController _nickNameController = TextEditingController();
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  FocusNode _focusNameNode = FocusNode();
+
+  bool _searchNameLoading = false;
+  bool _nameExist = false;
+  String _searchNameMessage = '';
+  String _lastCheckedName = '';
+  String _originalName = '';
 
   bool _loadingOverlay = false;
   String _photo = '';
@@ -36,7 +44,7 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
   File _image;
   final picker = ImagePicker();
 
-  Future _getImage() async {
+  _getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -47,6 +55,45 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
     }
   }
 
+  _getGroupName() async {
+    if (_lastCheckedName == _nickNameController.text || _originalName == _nickNameController.text) {
+      if (_searchNameMessage != '') {
+        setState(() {
+          _searchNameMessage = '';
+          _nameExist = false;
+        });
+      }
+
+      return;
+    }
+
+    setState(() {
+      _nameExist = false;
+      _searchNameLoading = true;
+      _searchNameMessage = '';
+      _lastCheckedName = _nickNameController.text;
+    });
+
+    await fetchSearchGroupByName(_nickNameController.text, 'user').then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _nameExist = data['data'];
+          _searchNameMessage = data['data'] ? NickNameExistMessage : '';
+          _searchNameLoading = false;
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _searchNameLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _searchNameLoading = false;
+      });
+    });
+  }
+
   _apiGetUserData() async {
     setState(() {
       _loadingOverlay = true;
@@ -55,11 +102,12 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
     await fetchGetUserData(widget.loginKey).then((data) async {
       if (data['email'] != null && data['email'] != '') {
         setState(() {
+          _originalName = data['name'];
           _loadingOverlay = false;
-          fullNameController.text = data['fullname'];
-          nickNameController.text = data['name'];
-          emailController.text = data['email'];
-          phoneController.text = data['phone'];
+          _fullNameController.text = data['fullname'];
+          _nickNameController.text = data['name'];
+          _emailController.text = data['email'];
+          _phoneController.text = data['phone'];
           _photo = data['photo'];
           _admins = data['admins'].length == 0 ? new List() : data['admins'].entries.map((entry) => entry.value).toList();
         });
@@ -77,7 +125,7 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
       _loadingOverlay = true;
     });
 
-    await fetchUpdateUserData(widget.loginKey, nickNameController.text, fullNameController.text, emailController.text, phoneController.text, _image).then((data) async {
+    await fetchUpdateUserData(widget.loginKey, _nickNameController.text, _fullNameController.text, _emailController.text, _phoneController.text, _image).then((data) async {
       if (data[DataStatus] == StatusError) {
         setState(() {
           _loadingOverlay = false;
@@ -94,10 +142,10 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
         }).then((rs) {
           setState(() {
             _loadingOverlay = false;
-            fullNameController.text = data['fullname'];
-            nickNameController.text = data['name'];
-            emailController.text = data['email'];
-            phoneController.text = data['phone'];
+            _fullNameController.text = data['fullname'];
+            _nickNameController.text = data['name'];
+            _emailController.text = data['email'];
+            _phoneController.text = data['phone'];
             _photo = data['photo'];
           });
 
@@ -144,14 +192,23 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
   void initState() {
     super.initState();
     _apiGetUserData();
+
+    _nickNameController.addListener(() {
+      if (_nickNameController.text != '' && !_focusNameNode.hasFocus) {
+        _getGroupName();
+      }
+    });
   }
 
   @override
   void dispose() {
-    nickNameController.dispose();
-    fullNameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
+    _nickNameController.dispose();
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+
+    _focusNameNode.dispose();
+
     super.dispose();
   }
 
@@ -184,25 +241,38 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                             ))),
                     SizedBox(height: 8.0),
                     TextFormField(
-                      controller: nickNameController,
+                      controller: _nickNameController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(hintText: EnterNickName, errorStyle: errorTextStyle),
+                      focusNode: _focusNameNode,
                       validator: (value) {
                         if (value.isEmpty) {
                           return NameRequired;
                         }
+
+                        if (value.isNotEmpty && _nameExist == true) {
+                          return NickNameExistShort;
+                        }
                         return null;
                       },
                     ),
+                    if (_searchNameLoading)
+                      Container(
+                          padding: verticalPadding,
+                          child: Column(children: [
+                            Center(child: LinearProgressIndicator()),
+                            Text(NickNameChecking),
+                          ])),
+                    if (_searchNameMessage != '') Text(_searchNameMessage),
                     SizedBox(height: 8.0),
                     TextFormField(
-                      controller: fullNameController,
+                      controller: _fullNameController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(hintText: EnterFullName, errorStyle: errorTextStyle),
                     ),
                     SizedBox(height: 8.0),
                     TextFormField(
-                      controller: emailController,
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
                       validator: (value) {
@@ -214,7 +284,7 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                     ),
                     SizedBox(height: 8.0),
                     TextFormField(
-                      controller: phoneController,
+                      controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(hintText: EnterPhone, errorStyle: errorTextStyle),
                     ),
@@ -254,7 +324,16 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                       children: [
                         MaterialButton(
                           child: Text(SaveText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                          onPressed: () => _apiUpdateUserData(),
+                          onPressed: () async {
+                            FocusScope.of(context).unfocus();
+                            await _getGroupName();
+
+                            if (_formKey.currentState.validate()) {
+                              _apiUpdateUserData();
+                            } else {
+                              modalMessage(context, FormErrorMessage);
+                            }
+                          },
                           padding: EdgeInsets.symmetric(horizontal: 32.0),
                           height: 50.0,
                           color: Color(int.parse('0xff2DA310')),

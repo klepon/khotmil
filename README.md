@@ -62,9 +62,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- 
-- nama panggilan make unik
-- nama group make unique
 - list group order by gid desc
 - add refresh list dan detail on pull down
 - x undangan pindah ke orange area
