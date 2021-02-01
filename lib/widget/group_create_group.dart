@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_create.dart';
+import 'package:khotmil/fetch/group_search_by_name.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 
 class WidgetCreateGroup extends StatefulWidget {
@@ -34,12 +35,18 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
   List _usersSelectedForInvite = [];
   bool _searchUserLoading = false;
 
+  bool _searchNameLoading = false;
+  bool _nameExist = false;
+  String _searchNameMessage = '';
+  String _lastCheckedName = '';
+
   TextEditingController _nameFormController = TextEditingController();
   TextEditingController _addressFormController = TextEditingController();
   TextEditingController _roundFormController = TextEditingController();
   TextEditingController _endDateFormController = TextEditingController();
   TextEditingController _searchUserFormController = TextEditingController();
   FocusNode _focusAddressNode = FocusNode();
+  FocusNode _focusNameNode = FocusNode();
 
   File _image;
   final picker = ImagePicker();
@@ -175,6 +182,35 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     });
   }
 
+  Future _getGroupName() async {
+    if (_lastCheckedName == _nameFormController.text) return;
+
+    setState(() {
+      _searchNameLoading = true;
+      _searchNameMessage = '';
+      _lastCheckedAddress = _nameFormController.text;
+    });
+
+    await fetchSearchGroupByName(_nameFormController.text, 'group').then((data) {
+      if (data[DataStatus] == StatusSuccess) {
+        setState(() {
+          _nameExist = data['data'];
+          _searchNameMessage = FormCreateGroupNameExist;
+          _searchNameLoading = false;
+        });
+      }
+      if (data[DataStatus] == StatusError) {
+        setState(() {
+          _searchNameLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        _searchNameLoading = false;
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -183,6 +219,12 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
     _focusAddressNode.addListener(() {
       if (_addressFormController.text != '' && !_focusAddressNode.hasFocus) {
         _getLatLong();
+      }
+    });
+
+    _nameFormController.addListener(() {
+      if (_nameFormController.text != '' && !_focusNameNode.hasFocus) {
+        _getGroupName();
       }
     });
   }
@@ -228,17 +270,32 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                   SizedBox(height: 16.0),
                                   if (_messageText != '') Text(_messageText),
                                   if (_messageText != '') SizedBox(height: 16.0),
-                                  TextFormField(
-                                    controller: _nameFormController,
-                                    keyboardType: TextInputType.text,
-                                    decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
-                                    validator: (value) {
-                                      if (value.isEmpty) {
-                                        return FormCreateGroupNameError;
-                                      }
-                                      return null;
-                                    },
+                                  Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: _nameFormController,
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(contentPadding: sidePaddingNarrow, hintText: FormCreateGroupName, errorStyle: errorTextStyle),
+                                        focusNode: _focusNameNode,
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return FormCreateGroupNameError;
+                                          }
+
+                                          if (value.isNotEmpty && _nameExist == true) {
+                                            return FormCreateGroupNameExistShort;
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      if (_searchNameLoading)
+                                        Container(
+                                          padding: verticalPadding,
+                                          child: LinearProgressIndicator(),
+                                        ),
+                                    ],
                                   ),
+                                  if (_searchNameMessage != '') Text(_searchNameMessage),
                                   SizedBox(height: 16.0),
                                   Row(
                                     children: [
@@ -247,6 +304,8 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                         controller: _addressFormController,
                                         keyboardType: TextInputType.multiline,
                                         decoration: InputDecoration(hintText: FormCreateGroupAddress, contentPadding: sidePaddingNarrow, errorStyle: errorTextStyle),
+                                        maxLines: null,
+                                        focusNode: _focusAddressNode,
                                         validator: (value) {
                                           if (value.isEmpty) {
                                             return FormCreateGroupAddressError;
@@ -258,8 +317,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
 
                                           return null;
                                         },
-                                        maxLines: null,
-                                        focusNode: _focusAddressNode,
                                       )),
                                       IconButton(
                                           icon: Icon(Icons.search),
@@ -434,6 +491,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                           MaterialButton(
                             child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                             onPressed: () async {
+                              FocusScope.of(context).unfocus();
                               await _getLatLong();
 
                               if (_formKey.currentState.validate()) {
