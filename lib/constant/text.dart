@@ -115,6 +115,7 @@ const String FormCreateGroupEndDate = 'Deadline bacaan';
 const String FormCreateGroupRound = 'Putaran Ke-';
 const String FormCreateGroupUids = 'Undang anggota';
 const String FormCreateGroupNameError = 'Nama group diperlukan';
+const String FormCreateGroupNameChecking = 'Mohon tunggu, memeriksa nama group';
 const String FormCreateGroupNameExistShort = 'Nama group sudah digunakan';
 const String FormCreateGroupNameExist = 'Nama group tidak tersedia, silahkan pilih nama lain.';
 const String FormCreateGroupAddressError = 'Alamat group diperlukan';

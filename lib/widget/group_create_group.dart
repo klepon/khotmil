@@ -185,7 +185,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
 
     setState(() {
       _searchNameLoading = true;
-      _searchNameMessage = '';
       _lastCheckedAddress = _nameFormController.text;
     });
 
@@ -193,7 +192,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _nameExist = data['data'];
-          _searchNameMessage = FormCreateGroupNameExist;
+          _searchNameMessage = data['data'] ? FormCreateGroupNameExist : '';
           _searchNameLoading = false;
         });
       }
@@ -286,9 +285,11 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                       ),
                                       if (_searchNameLoading)
                                         Container(
-                                          padding: verticalPadding,
-                                          child: LinearProgressIndicator(),
-                                        ),
+                                            padding: verticalPadding,
+                                            child: Column(children: [
+                                              Center(child: LinearProgressIndicator()),
+                                              Text(AddressValidateTitle),
+                                            ])),
                                     ],
                                   ),
                                   if (_searchNameMessage != '') Text(_searchNameMessage),
@@ -321,15 +322,12 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                           })
                                     ],
                                   ),
-                                  SizedBox(height: 16.0),
                                   if (_searchAddressLoading)
                                     Container(
                                         padding: verticalPadding,
                                         child: Column(children: [
-                                          Text(AddressValidateTitle, style: bold),
-                                          SizedBox(height: 16.0),
-                                          Center(child: CircularProgressIndicator()),
-                                          SizedBox(height: 16.0),
+                                          Center(child: LinearProgressIndicator()),
+                                          Text(AddressValidateTitle),
                                         ])),
                                   if (_searchAddressErrorMessage != '')
                                     Container(
