@@ -396,7 +396,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.phone), Text(user['phone'])])),
                                 ],
                               ))),
-                      child: Text(user['name'], style: TextStyle(color: Colors.black87))));
+                      child: Text(user['name'], style: TextStyle(color: Colors.black87, decoration: TextDecoration.underline))));
 
                   // collect progress in a juz
                   if (progressInJuz[int.parse(user['juz'])] == null) progressInJuz[int.parse(user['juz'])] = [];
