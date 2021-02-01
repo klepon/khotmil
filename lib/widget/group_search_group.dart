@@ -28,7 +28,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
 
   int _radius = 5;
   String _keyword = '';
-  String _searchBy = SearchGroupByMyAddress;
+  String _searchBy = SearchGroupByTitle;
 
   bool _searchAddressLoading = false;
   String _searchAddressErrorMessage = '';
@@ -233,18 +233,6 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                       children: [
                         Expanded(
                           flex: 1,
-                          child: (_searchBy != SearchGroupByMyAddress)
-                              ? FlatButton(
-                                  onPressed: () => _resetKeywordAddress(SearchGroupByMyAddress),
-                                  child: Text(SearchGroupByMyAddress,
-                                      textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)))
-                              : Container(
-                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0))),
-                                  padding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
-                                  child: Text(SearchGroupByMyAddress, textAlign: TextAlign.center, style: TextStyle(color: Colors.black87))),
-                        ),
-                        Expanded(
-                          flex: 1,
                           child: (_searchBy != SearchGroupByTitle)
                               ? FlatButton(
                                   onPressed: () => _resetKeywordAddress(SearchGroupByTitle),
@@ -265,6 +253,18 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0))),
                                   padding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
                                   child: Text(SearchGroupByAddress, textAlign: TextAlign.center, style: TextStyle(color: Colors.black87))),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: (_searchBy != SearchGroupByMyAddress)
+                              ? FlatButton(
+                                  onPressed: () => _resetKeywordAddress(SearchGroupByMyAddress),
+                                  child: Text(SearchGroupByMyAddress,
+                                      textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)))
+                              : Container(
+                                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0))),
+                                  padding: EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
+                                  child: Text(SearchGroupByMyAddress, textAlign: TextAlign.center, style: TextStyle(color: Colors.black87))),
                         ),
                       ],
                     ),
