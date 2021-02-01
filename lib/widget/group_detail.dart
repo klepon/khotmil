@@ -88,13 +88,14 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     if (picked != null) _newRoundDeadLineFormController.text = formatter.format(picked);
   }
 
-  void _apiGetDetail() async {
+  Future<void> _apiGetDetail() async {
     widget.reloadList();
 
     await fetchGetSingleGroup(widget.loginKey, widget.groupId).then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _loadingOverlay = false;
+          _detailName = data['group']['name'];
           _detailProgress = data['group']['progress'].toString();
           _detailPhoto = data['group']['photo'];
           _detailMyProgress = data['group']['my_progress'].toString();
@@ -340,7 +341,9 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(title: Text(AppTitle)),
-      body: FutureBuilder(
+      body: RefreshIndicator(
+        onRefresh: () => _apiGetDetail(),
+        child: FutureBuilder(
           future: _getMemberAPI,
           builder: (context, snapshot) {
             List<Widget> members = new List<Widget>();
@@ -804,10 +807,12 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     ),
                   if (members.length > 0 && !_invitedMember)
                     Expanded(
-                        child: SingleChildScrollView(
-                            child: ConstrainedBox(
-                                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                                child: Container(color: Colors.white, padding: sidePaddingNarrow, child: Column(children: members))))),
+                      child: SingleChildScrollView(
+                        child: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                            child: Container(color: Colors.white, padding: sidePaddingNarrow, child: Column(children: members))),
+                      ),
+                    ),
 
                   // next round and invite button
                   if (isAdmin && !_invitedMember && !widget.isInvitation)
@@ -879,7 +884,9 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
               ),
               if (snapShootLoading || _loadingOverlay) loadingOverlay(context)
             ]);
-          }),
+          },
+        ),
+      ),
     );
   }
 }

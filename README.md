@@ -62,8 +62,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- list group order by gid desc
-- add refresh list dan detail on pull down
 - x undangan pindah ke orange area
 - notifikasi update dalam bentuk modal dan harus update, harus mark juga ver yg sekarang
 - nama kasih underline

@@ -294,36 +294,38 @@ class _AuthState extends State<Auth> {
         children: [
           _loginKey == ''
               ? WidgetLoginRegister(currentForm: _getForm(), showLogo: _useLogo())
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Expanded(
-                        child: FlatButton(
+              : RefreshIndicator(
+                  onRefresh: () => _getLoginKey(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: FlatButton(
+                              padding: mainPadding,
+                              onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                              child: Row(children: [
+                                CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
+                                SizedBox(width: 8.0),
+                                Text(_name, style: TextStyle(fontSize: 20.0)),
+                              ])),
+                        ),
+                        FlatButton(
                             padding: mainPadding,
-                            onPressed: () => _scaffoldKey.currentState.openDrawer(),
-                            child: Row(children: [
-                              CircleAvatar(backgroundImage: _photo != '' ? NetworkImage(_photo) : AssetImage(AnonImage)),
-                              SizedBox(width: 8.0),
-                              Text(_name, style: TextStyle(fontSize: 20.0)),
-                            ])),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
+                            child: Text(DonateText)),
+                      ])),
+                      Container(
+                        height: 1.0,
+                        width: double.infinity,
+                        color: Colors.black45,
                       ),
-                      FlatButton(
-                          padding: mainPadding,
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
-                          child: Text(DonateText)),
-                    ])),
-                    Container(
-                      height: 1.0,
-                      width: double.infinity,
-                      color: Colors.black45,
-                    ),
-                    Expanded(
-                      child: WidgetGroupList(name: _name, loginKey: _loginKey),
-                    ),
-                  ],
-                  // This trailing comma makes auto-formatting nicer for build methods.
+                      Expanded(
+                        child: WidgetGroupList(name: _name, loginKey: _loginKey),
+                      ),
+                    ],
+                  ),
                 ),
           if (_loadingOverlay) loadingOverlay(context)
         ],
