@@ -22,7 +22,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _messageText = '';
   bool _loadingOverlay = false;
 
   bool _searchAddressLoading = false;
@@ -74,7 +73,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
 
   void _apiCreateGroup() async {
     setState(() {
-      _messageText = '';
       _loadingOverlay = true;
     });
 
@@ -98,15 +96,15 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
         Navigator.pop(context);
       } else if (data[DataStatus] == StatusError) {
         setState(() {
-          _messageText = data[DataMessage];
           _loadingOverlay = false;
         });
+        modalMessage(context, data[DataMessage]);
       }
     }).catchError((onError) {
       setState(() {
-        _messageText = onError.toString();
         _loadingOverlay = false;
       });
+      modalMessage(context, onError.toString());
     });
   }
 
@@ -268,8 +266,6 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
                                     child: Text(CreateGroup, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                                   ),
                                   SizedBox(height: 16.0),
-                                  if (_messageText != '') Text(_messageText),
-                                  if (_messageText != '') SizedBox(height: 16.0),
                                   Column(
                                     children: [
                                       TextFormField(
