@@ -1,4 +1,4 @@
-const String ApiDomain = 'https://test.arahjalan.com/wp-json/';
+const String ApiDomain = 'https://khotmil.digitalamalindonesia.com/wp-json/';
 const String ApiVersion = '1.0';
 const String ApiDonation = 'klepon/v1/get-donation-info';
 const String ApiAboutApp = 'klepon/v1/get-about-app';
