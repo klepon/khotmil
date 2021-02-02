@@ -204,22 +204,6 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                         ]))),
               ),
             if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: pageBg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _myGroupList(context),
-            ),
             Container(
               padding: mainPadding,
               child: Row(
@@ -252,9 +236,24 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
-          // This trailing comma makes auto-formatting nicer for build methods.
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: pageBg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _myGroupList(context),
+            ),
+          ],
         ));
   }
 }
