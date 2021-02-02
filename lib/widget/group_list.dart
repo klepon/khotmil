@@ -156,7 +156,13 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                   SizedBox(height: 24.0),
                   _createOrJoinGroup(),
                   SizedBox(height: 24.0),
-                  if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
+                  MaterialButton(
+                    child: Text(ButtonRefresh, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                    onPressed: () => setState(() {}),
+                    height: 40.0,
+                    color: Color(int.parse('0xffC4C4C4')),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                  ),
                 ],
               ));
         }
@@ -247,7 +253,14 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                           _loopGroups(snapshot.data['groups'], context),
                         ]))),
               ),
-            if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
+            if (_showRefreshButton)
+              MaterialButton(
+                child: Text(ButtonRefresh, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                onPressed: () => setState(() {}),
+                height: 40.0,
+                color: Color(int.parse('0xffC4C4C4')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              ),
             _createOrJoinGroup(),
           ],
         );
