@@ -214,7 +214,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   MaterialButton(
-                    child: Text(CreateGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    child: Text(CreateGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return WidgetCreateGroup(
@@ -223,18 +223,18 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                         );
                       }));
                     },
-                    height: 50.0,
+                    height: 40.0,
                     color: Color(int.parse('0xffF30F0F')),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                   ),
                   MaterialButton(
-                    child: Text(JoinGroup, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    child: Text(JoinGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return WidgetSearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
                       }));
                     },
-                    height: 50.0,
+                    height: 40.0,
                     color: Color(int.parse('0xff2DA310')),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                   ),

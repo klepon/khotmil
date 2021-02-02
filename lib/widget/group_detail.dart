@@ -819,61 +819,61 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            if (_detailProgress == '100')
-                              MaterialButton(
-                                child: Text(StartNewRound, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      child: AlertDialog(
-                                        scrollable: true,
-                                        content: Form(
-                                            key: _formKey,
-                                            child: Column(
-                                              children: [
-                                                Text(StartNewRoundMessage, textAlign: TextAlign.center),
-                                                SizedBox(height: 16.0),
-                                                TextFormField(
-                                                  textAlign: TextAlign.center,
-                                                  controller: _newRoundDeadLineFormController,
-                                                  keyboardType: TextInputType.text,
-                                                  readOnly: true,
-                                                  onTap: () => _renderSelectDate(context),
-                                                  decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
-                                                  validator: (value) {
-                                                    if (value.isEmpty) {
-                                                      return FormCreateGroupEndDateError;
-                                                    }
-                                                    return null;
-                                                  },
-                                                ),
-                                                SizedBox(height: 16.0),
-                                                MaterialButton(
-                                                  child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                                                  onPressed: () {
-                                                    if (_formKey.currentState.validate()) {
-                                                      Navigator.pop(context);
-                                                      _apiStartNewRound();
-                                                    }
-                                                  },
-                                                  height: 50.0,
-                                                  color: Color(int.parse('0xff2DA310')),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                                                ),
-                                              ],
-                                            )),
-                                        actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))],
-                                      ));
-                                },
-                                height: 50.0,
-                                color: Color(int.parse('0xffF30F0F')),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                              ),
+                            // if (_detailProgress == '100')
                             MaterialButton(
-                              child: Text(InviteMember, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                              child: Text(StartNewRound, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    child: AlertDialog(
+                                      scrollable: true,
+                                      content: Form(
+                                          key: _formKey,
+                                          child: Column(
+                                            children: [
+                                              Text(StartNewRoundMessage, textAlign: TextAlign.center),
+                                              SizedBox(height: 16.0),
+                                              TextFormField(
+                                                textAlign: TextAlign.center,
+                                                controller: _newRoundDeadLineFormController,
+                                                keyboardType: TextInputType.text,
+                                                readOnly: true,
+                                                onTap: () => _renderSelectDate(context),
+                                                decoration: InputDecoration(hintText: FormCreateGroupEndDate, errorStyle: errorTextStyle),
+                                                validator: (value) {
+                                                  if (value.isEmpty) {
+                                                    return FormCreateGroupEndDateError;
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              SizedBox(height: 16.0),
+                                              MaterialButton(
+                                                child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                onPressed: () {
+                                                  if (_formKey.currentState.validate()) {
+                                                    Navigator.pop(context);
+                                                    _apiStartNewRound();
+                                                  }
+                                                },
+                                                height: 50.0,
+                                                color: Color(int.parse('0xff2DA310')),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                              ),
+                                            ],
+                                          )),
+                                      actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))],
+                                    ));
+                              },
+                              height: 40.0,
+                              color: Color(int.parse('0xffF30F0F')),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                            ),
+                            MaterialButton(
+                              child: Text(InviteMember, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
                               onPressed: () => setState(() => _invitedMember = true),
-                              height: 50.0,
-                              color: Color(int.parse('0xffC4C4C4')),
+                              height: 40.0,
+                              color: Color(int.parse('0xff2DA310')),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
                             ),
                           ],
