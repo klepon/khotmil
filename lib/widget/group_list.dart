@@ -26,6 +26,42 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
     setState(() {});
   }
 
+  Widget _createOrJoinGroup() {
+    return Container(
+      padding: mainPadding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          MaterialButton(
+            child: Text(CreateGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return WidgetCreateGroup(
+                  loginKey: widget.loginKey,
+                  reloadList: _reloadGroupList,
+                );
+              }));
+            },
+            height: 40.0,
+            color: Color(int.parse('0xffF30F0F')),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          ),
+          MaterialButton(
+            child: Text(JoinGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return WidgetSearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
+              }));
+            },
+            height: 40.0,
+            color: Color(int.parse('0xff2DA310')),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _loopGroups(groups, context) {
     List<Widget> buttons = new List<Widget>();
     for (var i = 0; i < groups.length; i += 1) {
@@ -117,6 +153,10 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                   if (_dataMessage != '') Text(sprintf(WelcomeMessage, [widget.name]), textAlign: TextAlign.center),
                   if (_dataMessage != '') SizedBox(height: 20.0),
                   if (_dataMessage != '') Text(_dataMessage, textAlign: TextAlign.center),
+                  SizedBox(height: 24.0),
+                  _createOrJoinGroup(),
+                  SizedBox(height: 24.0),
+                  if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
                 ],
               ));
         }
@@ -208,39 +248,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                         ]))),
               ),
             if (_showRefreshButton) RaisedButton(onPressed: () => setState(() {}), child: Text(ButtonRefresh)),
-            Container(
-              padding: mainPadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MaterialButton(
-                    child: Text(CreateGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return WidgetCreateGroup(
-                          loginKey: widget.loginKey,
-                          reloadList: _reloadGroupList,
-                        );
-                      }));
-                    },
-                    height: 40.0,
-                    color: Color(int.parse('0xffF30F0F')),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                  MaterialButton(
-                    child: Text(JoinGroup, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return WidgetSearchGroup(loginKey: widget.loginKey, reloadList: _reloadGroupList);
-                      }));
-                    },
-                    height: 40.0,
-                    color: Color(int.parse('0xff2DA310')),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                ],
-              ),
-            ),
+            _createOrJoinGroup(),
           ],
         );
       },
