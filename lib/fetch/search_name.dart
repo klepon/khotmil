@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 
-Future fetchSearchGroupByName(String keyword, String latlong) async {
+Future fetchSearchName(String keyword, String latlong) async {
   try {
     Response response = await Dio(dioOptions).post('klepon/v1/search-name', data: {
       'keyword': keyword,

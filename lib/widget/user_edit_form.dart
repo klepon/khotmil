@@ -7,7 +7,7 @@ import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_admin.dart';
-import 'package:khotmil/fetch/group_search_by_name.dart';
+import 'package:khotmil/fetch/search_name.dart';
 import 'package:khotmil/fetch/user_get_data.dart';
 import 'package:khotmil/fetch/user_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,7 +74,7 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
       _lastCheckedName = _nickNameController.text;
     });
 
-    await fetchSearchGroupByName(_nickNameController.text, 'user').then((data) {
+    await fetchSearchName(_nickNameController.text, 'user').then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _nameExist = data['data'];

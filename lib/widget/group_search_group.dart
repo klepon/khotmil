@@ -29,6 +29,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
   int _radius = 5;
   String _keyword = '';
   String _searchBy = SearchGroupByTitle;
+  bool _searchSilently = false;
 
   bool _searchAddressLoading = false;
   String _searchAddressErrorMessage = '';
@@ -149,6 +150,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
   void _resetKeywordAddress(String tab) {
     setState(() {
       _keyword = '';
+      _searchSilently = false;
       _searchAddressErrorMessage = '';
       _closedValidAddress = null;
       _searchGroupByKeywordFormController.text = '';
@@ -312,31 +314,40 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
-                                          child: TextFormField(
-                                        controller: _searchGroupByKeywordFormController,
-                                        keyboardType: TextInputType.text,
-                                        decoration: InputDecoration(
-                                          hintText: SearchByKeywordlabel,
-                                          hintStyle: TextStyle(color: Color(int.parse('0xff747070'))),
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
-                                          errorStyle: TextStyle(color: Colors.redAccent),
-                                          filled: true,
-                                          fillColor: Color(int.parse('0xffC4C4C4')),
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(100.0), borderSide: BorderSide(width: 0, style: BorderStyle.none)),
+                                        child: TextFormField(
+                                          controller: _searchGroupByKeywordFormController,
+                                          keyboardType: TextInputType.text,
+                                          decoration: InputDecoration(
+                                            hintText: SearchByKeywordlabel,
+                                            hintStyle: TextStyle(color: Color(int.parse('0xff747070'))),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+                                            errorStyle: TextStyle(color: Colors.redAccent),
+                                            filled: true,
+                                            fillColor: Color(int.parse('0xffC4C4C4')),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(100.0), borderSide: BorderSide(width: 0, style: BorderStyle.none)),
+                                          ),
+                                          style: TextStyle(color: Color(int.parse('0xff747070'))),
+                                          onChanged: (value) {
+                                            if (value.length >= 3) {
+                                              setState(() {
+                                                _keyword = _searchGroupByKeywordFormController.text;
+                                                _searchSilently = true;
+                                              });
+                                            }
+                                          },
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return SearchGroupByKeywordErrorEmpty;
+                                            }
+
+                                            if (value.length < 3) {
+                                              return SearchGroupByKeywordErrorShort;
+                                            }
+
+                                            return null;
+                                          },
                                         ),
-                                        style: TextStyle(color: Color(int.parse('0xff747070'))),
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return SearchGroupByKeywordErrorEmpty;
-                                          }
-
-                                          if (value.length < 3) {
-                                            return SearchGroupByKeywordErrorShort;
-                                          }
-
-                                          return null;
-                                        },
-                                      )),
+                                      ),
                                       SizedBox(width: 8.0),
                                       MaterialButton(
                                         child: Text(FindButton, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
@@ -346,6 +357,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
 
                                             setState(() {
                                               _keyword = _searchGroupByKeywordFormController.text;
+                                              _searchSilently = false;
                                             });
                                           }
                                         },
@@ -355,6 +367,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                                       ),
                                     ],
                                   )),
+                              if (snapLoading && _searchSilently) LinearProgressIndicator(),
                             ],
                           ),
                         if (_searchBy == SearchGroupByAddress)
@@ -388,7 +401,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                                             return FindAroundErrorEmpty;
                                           }
 
-                                          if (value.length < 10) {
+                                          if (value.length < 4) {
                                             return FindAroundErrorShort;
                                           }
 
@@ -426,7 +439,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                   ),
 
                   // loading
-                  if (snapLoading)
+                  if (snapLoading && !_searchSilently)
                     Container(
                         padding: mainPadding,
                         child: Column(children: [
@@ -440,7 +453,7 @@ class _WidgetSearchGroupState extends State<WidgetSearchGroup> {
                         ])),
 
                   // if message
-                  if (snapMessage != '') Container(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text(snapMessage, textAlign: TextAlign.center)),
+                  if (snapMessage != '' && !_searchSilently) Container(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text(snapMessage, textAlign: TextAlign.center)),
 
                   // result groups
                   if (groups.length > 0)

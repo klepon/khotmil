@@ -62,9 +62,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- tutup putaran dan undangan anggota dibuat 2 baris tipis per button 
-- search group name use auto complete, min 3 karakter
-
 - fix image resize using flutter core
 
 digitalamalindonesia
