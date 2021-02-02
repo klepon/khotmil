@@ -512,7 +512,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                                                     ),
                                                     if (myJuz[i]['progress'] == '100')
                                                       MaterialButton(
-                                                        child: Text(ConfirmLeaveJuzButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                        child: Text(ButtonQuitJuz, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                                                         onPressed: () {
                                                           showDialog(
                                                               context: context,

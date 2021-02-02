@@ -62,7 +62,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- notifikasi update dalam bentuk modal dan harus update, harus mark juga ver yg sekarang
 - kluar juz ganti button keluar juz
 - kasi button keluar group atas kanan bisa kapan saja
 - tutup putaran dan undangan anggota dibuat 2 baris tipis per button 

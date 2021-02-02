@@ -156,7 +156,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
             ],
           );
 
-        // notofication message, listing
+        // notification message, listing
         return Column(
           children: [
             if (_versionMessage != '' && _currentAppVersion == ApiVersion)
@@ -170,6 +170,8 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                   style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
                 ),
               ),
+
+            // welcome/intro message
             if (_hasData)
               Container(
                   width: double.infinity,
@@ -194,6 +196,8 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                     Text(SelectGroupToSeeProgress),
                     if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
                   ])),
+
+            // list group render only
             if (_hasData)
               Expanded(
                 child: SingleChildScrollView(
