@@ -44,7 +44,9 @@ class _AuthState extends State<Auth> {
     setState(() {
       _loadingOverlay = true;
     });
+
     final prefs = await SharedPreferences.getInstance();
+
     setState(() {
       _loadingOverlay = false;
       _loginKey = prefs.getString(LoginKeyPref) ?? '';

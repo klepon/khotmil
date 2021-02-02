@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_list.dart';
@@ -8,6 +10,7 @@ import 'package:khotmil/widget/group_list_item.dart';
 import 'package:khotmil/widget/group_list_invitation.dart';
 import 'package:khotmil/widget/group_search_group.dart';
 import 'package:sprintf/sprintf.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WidgetGroupList extends StatefulWidget {
   final String name;
@@ -67,6 +70,9 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
       future: fetchMyGroupList(widget.loginKey, 0),
       builder: (context, snapshot) {
         String _versionMessage = '';
+        String _currentAppVersion = '';
+        String _versionMessageCtaText = '';
+        String _versionMessageCtaLink = '';
         String _responseMessage = '';
         String _dataMessage = '';
         bool _isLoading = true;
@@ -76,8 +82,12 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
         if (snapshot.connectionState != ConnectionState.done) {
           _responseMessage = LoadingGroups;
         } else if (snapshot.hasData) {
-          if (snapshot.data['new_version'] != '0') {
-            _versionMessage = snapshot.data['new_version'];
+          _currentAppVersion = snapshot.data['khotmil_app_version'];
+          _versionMessageCtaText = snapshot.data['app_version_cta_text'];
+          _versionMessageCtaLink = snapshot.data['app_version_cta_link'];
+
+          if (snapshot.data['app_version_message'] != '0') {
+            _versionMessage = snapshot.data['app_version_message'];
           }
 
           if (snapshot.data['message'] != null) {
@@ -92,6 +102,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
           _isLoading = false;
         }
 
+        // response message, loading indicator, data message
         if (_isLoading || _dataMessage != '' || _responseMessage != '') {
           return Container(
               width: double.infinity,
@@ -110,9 +121,55 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
               ));
         }
 
+        // update warning blocking
+        if (_versionMessage != '' && _currentAppVersion != ApiVersion)
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                margin: mainPadding,
+                padding: mainPadding,
+                color: Colors.deepOrange,
+                child: Html(
+                  data: sprintf(_versionMessage, [_currentAppVersion]),
+                  style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                ),
+              ),
+              SizedBox(height: 8.0),
+              MaterialButton(
+                child: Text(_versionMessageCtaText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                onPressed: () => launch(_versionMessageCtaLink),
+                height: 50.0,
+                color: Color(int.parse('0xff2DA310')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              ),
+              SizedBox(height: 24.0),
+              MaterialButton(
+                child: Text(ButtonRefresh, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                onPressed: () => _reloadGroupList(),
+                height: 50.0,
+                color: Color(int.parse('0xff2DA310')),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              ),
+            ],
+          );
+
+        // notofication message, listing
         return Column(
           children: [
-            if (_versionMessage != '') Container(margin: mainPadding, padding: mainPadding, color: Colors.deepOrange, child: Text(_versionMessage)),
+            if (_versionMessage != '' && _currentAppVersion == ApiVersion)
+              Container(
+                width: double.infinity,
+                margin: mainPadding,
+                padding: mainPadding,
+                color: Colors.deepOrange,
+                child: Html(
+                  data: sprintf(_versionMessage, [_currentAppVersion]),
+                  style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                ),
+              ),
             if (_hasData)
               Container(
                   width: double.infinity,
