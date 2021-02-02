@@ -196,8 +196,12 @@ const String DeleteInvitationWarningTitle = 'Hapus Undangan?';
 const String DeleteInvitationWarning = 'Anda akan menghapus undangan untuk bergabung dengan group ini.\n\nAnda bisa bergabung kembali lewat fitur Gabung Group.';
 const String DeleteInvitationConfirm = 'Hapus';
 
+const String LeaveGroupWarningTitle = 'Keluar Group?';
+const String LeaveGroupWarning = 'Anda yakin akan keluar dari group ini?\n\nAnda bisa bergabung kembali lewat fitur Gabung Group.';
+const String LeaveGroupConfirm = 'Keluar';
+
 const String AdminsGroups = 'Admin Group';
-const String QuitAdminsGroupsWarning = "Anda yakin ini berhenti sebagai admin di group %s?";
+const String QuitAdminsGroupsWarning = "Anda yakin ingin berhenti sebagai admin di group %s?";
 const String QuitAdminsGroupsSuccess = 'Berhenti sebagai admin berhasil';
 
 const String RemoveAdminWarningTitle = 'Hapus Admin?';

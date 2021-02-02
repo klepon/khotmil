@@ -62,8 +62,6 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- kluar juz ganti button keluar juz
-- kasi button keluar group atas kanan bisa kapan saja
 - tutup putaran dan undangan anggota dibuat 2 baris tipis per button 
 - search group name use auto complete, min 3 karakter
 

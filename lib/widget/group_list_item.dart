@@ -12,9 +12,9 @@ class WidgetGroupItem extends StatelessWidget {
   final String yourProgress;
   final bool asHeader;
   final Function editGroup;
-  final Function deleteInvitation;
+  final Function leaveGroup;
 
-  WidgetGroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.deleteInvitation})
+  WidgetGroupItem({Key key, this.groupName, this.progress, this.round, this.deadline, this.photo, this.yourProgress, this.asHeader, this.editGroup, this.leaveGroup})
       : super(key: key);
 
   final DateFormat formatter = DateFormat('dd-LLL-yy');
@@ -71,7 +71,7 @@ class WidgetGroupItem extends StatelessWidget {
             ),
             child: CircleAvatar(backgroundImage: photo != '' ? NetworkImage(photo) : null, backgroundColor: Colors.white, radius: 60),
           ),
-          if (editGroup != null && deleteInvitation == null)
+          if (editGroup != null)
             Container(
               padding: EdgeInsets.only(top: 12.0),
               alignment: Alignment.topRight,
@@ -85,9 +85,9 @@ class WidgetGroupItem extends StatelessWidget {
                 ],
               ),
             ),
-          if (deleteInvitation != null)
+          if (leaveGroup != null && editGroup == null)
             Container(
-              padding: EdgeInsets.only(top: 12.0),
+              padding: EdgeInsets.only(top: editGroup == null ? 12.0 : 56.0),
               alignment: Alignment.topRight,
               child: Column(
                 children: [
@@ -96,7 +96,7 @@ class WidgetGroupItem extends StatelessWidget {
                     icon: Icon(Icons.delete_forever),
                     color: Colors.black,
                     iconSize: 32.0,
-                    onPressed: () => deleteInvitation(),
+                    onPressed: () => leaveGroup(),
                   ),
                 ],
               ),

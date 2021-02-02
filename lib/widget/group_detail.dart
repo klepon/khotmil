@@ -704,26 +704,24 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     photo: _detailPhoto != '' ? _detailPhoto : widget.photo,
                     yourProgress: _detailMyProgress != '' ? _detailMyProgress : widget.yourProgress,
                     asHeader: true,
-                    deleteInvitation: widget.isInvitation
-                        ? () {
-                            showDialog(
-                                context: context,
-                                child: AlertDialog(
-                                  scrollable: true,
-                                  title: Text(DeleteInvitationWarningTitle),
-                                  content: Text(DeleteInvitationWarning),
-                                  actions: [
-                                    FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText)),
-                                    RaisedButton(
-                                        color: Colors.redAccent,
-                                        onPressed: () {
-                                          _apiRejectInvitaion();
-                                        },
-                                        child: Text(DeleteInvitationConfirm)),
-                                  ],
-                                ));
-                          }
-                        : null,
+                    leaveGroup: widget.owner
+                        ? null
+                        : () => showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              scrollable: true,
+                              title: Text(widget.isInvitation ? DeleteInvitationWarningTitle : LeaveGroupWarningTitle),
+                              content: Text(widget.isInvitation ? DeleteInvitationWarning : LeaveGroupWarning),
+                              actions: [
+                                FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText)),
+                                RaisedButton(
+                                    color: Colors.redAccent,
+                                    onPressed: () {
+                                      _apiRejectInvitaion();
+                                    },
+                                    child: Text(widget.isInvitation ? DeleteInvitationConfirm : LeaveGroupConfirm)),
+                              ],
+                            )),
                     editGroup: isAdmin
                         ? () => Navigator.push(context, MaterialPageRoute(builder: (context) {
                               return WidgetEditGroup(
