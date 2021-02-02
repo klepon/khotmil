@@ -8,7 +8,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/delete_admin.dart';
 import 'package:khotmil/fetch/group_delete.dart';
 import 'package:khotmil/fetch/group_get_groups.dart';
-import 'package:khotmil/fetch/group_search_by_name.dart';
+import 'package:khotmil/fetch/search_name.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 import 'package:khotmil/fetch/group_update.dart';
 import 'package:sprintf/sprintf.dart';
@@ -140,7 +140,7 @@ class _WidgetEditGroupState extends State<WidgetEditGroup> {
       _lastCheckedName = _nameFormController.text;
     });
 
-    await fetchSearchGroupByName(_nameFormController.text, 'group').then((data) {
+    await fetchSearchName(_nameFormController.text, 'group').then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _nameExist = data['data'];

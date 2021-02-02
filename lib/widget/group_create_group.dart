@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:khotmil/fetch/group_create.dart';
-import 'package:khotmil/fetch/group_search_by_name.dart';
+import 'package:khotmil/fetch/search_name.dart';
 import 'package:khotmil/fetch/group_search_user.dart';
 
 class WidgetCreateGroup extends StatefulWidget {
@@ -199,7 +199,7 @@ class _WidgetCreateGroupState extends State<WidgetCreateGroup> {
       _lastCheckedName = _nameFormController.text;
     });
 
-    await fetchSearchGroupByName(_nameFormController.text, 'group').then((data) {
+    await fetchSearchName(_nameFormController.text, 'group').then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _nameExist = data['data'];

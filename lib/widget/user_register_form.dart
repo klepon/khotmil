@@ -7,7 +7,7 @@ import 'package:khotmil/constant/assets.dart';
 import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:khotmil/fetch/group_search_by_name.dart';
+import 'package:khotmil/fetch/search_name.dart';
 
 // ini harusya hanya display page dan form saja, prosess di auth
 class WidgetRegisterForm extends StatefulWidget {
@@ -65,7 +65,7 @@ class _WidgetRegisterFormState extends State<WidgetRegisterForm> {
       _lastCheckedName = _nickNameController.text;
     });
 
-    await fetchSearchGroupByName(_nickNameController.text, 'user').then((data) {
+    await fetchSearchName(_nickNameController.text, 'user').then((data) {
       if (data[DataStatus] == StatusSuccess) {
         setState(() {
           _nameExist = data['data'];
