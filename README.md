@@ -62,12 +62,10 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- x undangan pindah ke orange area
 - notifikasi update dalam bentuk modal dan harus update, harus mark juga ver yg sekarang
 - kluar juz ganti button keluar juz
 - kasi button keluar group atas kanan bisa kapan saja
 - tutup putaran dan undangan anggota dibuat 2 baris tipis per button 
-- gabung group order: nama, alamat, dekat saya
 - search group name use auto complete, min 3 karakter
 
 - fix image resize using flutter core

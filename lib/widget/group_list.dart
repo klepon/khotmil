@@ -118,18 +118,23 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
                   width: double.infinity,
                   padding: mainPadding,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (snapshot.data['invitation'] > 0)
+                      Container(
+                        margin: EdgeInsets.only(bottom: 8.0),
+                        width: double.infinity,
+                        child: FlatButton(
+                            color: Colors.deepOrange,
+                            child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return WidgetGroupListInvitation(
+                                    name: widget.name,
+                                    loginKey: widget.loginKey,
+                                    reloadGroupList: _reloadGroupList,
+                                  );
+                                }))),
+                      ),
                     Text(sprintf(WelcomeMessage, [widget.name])),
                     Text(SelectGroupToSeeProgress),
-                    if (snapshot.data['invitation'] > 0)
-                      FlatButton(
-                          child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return WidgetGroupListInvitation(
-                                  name: widget.name,
-                                  loginKey: widget.loginKey,
-                                  reloadGroupList: _reloadGroupList,
-                                );
-                              }))),
                     if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
                   ])),
             if (_hasData)
