@@ -294,27 +294,28 @@ class _WidgetEditAccountState extends State<WidgetEditAccount> {
                       for (var admin in _admins)
                         Row(
                           children: [
-                            Text(admin['name']),
-                            IconButton(
-                                icon: Icon(Icons.delete_forever),
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                          content: Column(mainAxisSize: MainAxisSize.min, children: [
-                                            Text(sprintf(QuitAdminsGroupsWarning, [admin['name']]), textAlign: TextAlign.center),
-                                            SizedBox(height: 24.0),
-                                            MaterialButton(
-                                              child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                                              onPressed: () => _apiDeleteAdmin(admin['uid'], admin['id'].toString()),
-                                              padding: EdgeInsets.symmetric(horizontal: 32.0),
-                                              height: 50.0,
-                                              color: Color(int.parse('0xffF30F0F')),
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
-                                            )
-                                          ]),
-                                          actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))]));
-                                }),
+                            Container(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text(admin['name'])),
+                            if (!admin['owner'])
+                              IconButton(
+                                  icon: Icon(Icons.delete_forever),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                            content: Column(mainAxisSize: MainAxisSize.min, children: [
+                                              Text(sprintf(QuitAdminsGroupsWarning, [admin['name']]), textAlign: TextAlign.center),
+                                              SizedBox(height: 24.0),
+                                              MaterialButton(
+                                                child: Text(YesText, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                                                onPressed: () => _apiDeleteAdmin(admin['uid'], admin['id'].toString()),
+                                                padding: EdgeInsets.symmetric(horizontal: 32.0),
+                                                height: 50.0,
+                                                color: Color(int.parse('0xffF30F0F')),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100.0)),
+                                              )
+                                            ]),
+                                            actions: [FlatButton(onPressed: () => Navigator.pop(context), child: Text(CancelText))]));
+                                  }),
                           ],
                         ),
                     SizedBox(height: 8.0),
