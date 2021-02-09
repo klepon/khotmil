@@ -15,7 +15,8 @@ import 'package:url_launcher/url_launcher.dart';
 class WidgetGroupList extends StatefulWidget {
   final String name;
   final String loginKey;
-  WidgetGroupList({Key key, this.name, this.loginKey}) : super(key: key);
+  final Function getLoginKey;
+  WidgetGroupList({Key key, this.name, this.loginKey, this.getLoginKey}) : super(key: key);
 
   @override
   _WidgetGroupListState createState() => _WidgetGroupListState();
@@ -112,7 +113,6 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
         String _responseMessage = '';
         String _dataMessage = '';
         bool _isLoading = true;
-        bool _showRefreshButton = false;
         bool _hasData = false;
 
         if (snapshot.connectionState != ConnectionState.done) {
@@ -134,7 +134,6 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
           _isLoading = false;
         } else if (snapshot.hasError) {
           _responseMessage = snapshot.error.toString();
-          _showRefreshButton = true;
           _isLoading = false;
         }
 
@@ -142,10 +141,11 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
         if (_isLoading || _dataMessage != '' || _responseMessage != '') {
           return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
             return SingleChildScrollView(
+              physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minWidth: MediaQuery.of(context).size.width,
-                    minHeight: constraints.maxHeight + 10.0,
+                    minHeight: constraints.maxHeight,
                   ),
                   child: Container(
                     child: Column(
@@ -202,68 +202,76 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
             ],
           );
 
-        // notification message, listing
-        return Column(
-          children: [
-            if (_versionMessage != '' && _currentAppVersion == ApiVersion)
-              Container(
-                width: double.infinity,
-                margin: mainPadding,
-                padding: mainPadding,
-                color: Colors.deepOrange,
-                child: Html(
-                  data: sprintf(_versionMessage, [_currentAppVersion]),
-                  style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
-                ),
-              ),
+        // main return; notification message, and listing
+        return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          return SingleChildScrollView(
+              physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width,
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: Container(
+                      height: constraints.maxHeight,
+                      child: Column(
+                        children: [
+                          // notification message
+                          if (_versionMessage != '' && _currentAppVersion == ApiVersion)
+                            Container(
+                              width: double.infinity,
+                              margin: mainPadding,
+                              padding: mainPadding,
+                              color: Colors.deepOrange,
+                              child: Html(
+                                data: sprintf(_versionMessage, [_currentAppVersion]),
+                                style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(20.0))},
+                              ),
+                            ),
 
-            // welcome/intro message
-            if (_hasData)
-              Container(
-                  width: double.infinity,
-                  padding: mainPadding,
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    if (snapshot.data['invitation'] > 0)
-                      Container(
-                        margin: EdgeInsets.only(bottom: 8.0),
-                        width: double.infinity,
-                        child: FlatButton(
-                            color: Colors.deepOrange,
-                            child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return WidgetGroupListInvitation(
-                                    name: widget.name,
-                                    loginKey: widget.loginKey,
-                                    reloadGroupList: _reloadGroupList,
-                                  );
-                                }))),
-                      ),
-                    Text(sprintf(WelcomeMessage, [widget.name])),
-                    Text(SelectGroupToSeeProgress),
-                    if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
-                  ])),
+                          // welcome/intro message
+                          if (_hasData)
+                            Container(
+                                width: double.infinity,
+                                padding: mainPadding,
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  if (snapshot.data['invitation'] > 0)
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 8.0),
+                                      width: double.infinity,
+                                      child: FlatButton(
+                                          color: Colors.deepOrange,
+                                          child: Text(sprintf(GroupInvitation, [snapshot.data['invitation']]), style: boldLink),
+                                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                return WidgetGroupListInvitation(
+                                                  name: widget.name,
+                                                  loginKey: widget.loginKey,
+                                                  reloadGroupList: _reloadGroupList,
+                                                );
+                                              }))),
+                                    ),
+                                  Text(sprintf(WelcomeMessage, [widget.name])),
+                                  Text(SelectGroupToSeeProgress),
+                                  if (snapshot.data['invitation'] == 0) SizedBox(height: 8.0),
+                                ])),
 
-            // list group render only
-            if (_hasData)
-              Expanded(
-                child: SingleChildScrollView(
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
-                        child: Column(children: [
-                          _loopGroups(snapshot.data['groups'], context),
-                        ]))),
-              ),
-            if (_showRefreshButton)
-              MaterialButton(
-                child: Text(ButtonRefresh, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-                onPressed: () => setState(() {}),
-                height: 40.0,
-                color: Color(int.parse('0xffC4C4C4')),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-              ),
-            _createOrJoinGroup(),
-          ],
-        );
+                          // list group render only
+                          if (_hasData)
+                            Expanded(
+                                child: RefreshIndicator(
+                              onRefresh: () => widget.getLoginKey(),
+                              child: SingleChildScrollView(
+                                  child: ConstrainedBox(
+                                      constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
+                                      child: Column(children: [
+                                        _loopGroups(snapshot.data['groups'], context),
+                                      ]))),
+                            )),
+
+                          // create | join group
+                          _createOrJoinGroup(),
+                        ],
+                      ))));
+        });
       },
     );
   }
@@ -271,8 +279,7 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        // decoration: pageBg,
-        color: Colors.red,
+        decoration: pageBg,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

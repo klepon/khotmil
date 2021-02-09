@@ -63,7 +63,7 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- Refresh di halaman depan tidak jalan kalo list tidak penuh
-- utup putaran selalu muncul, tapi add estriction respon on click
+- update refresh di detail
+- tutup putaran selalu muncul, tapi add estriction respon on click
 - reset password gagal, showing invalid login
 - bug undang member as admin, otomatis undang member group, issue jika ybs sudah menjadi member, akan muncul invitation notice

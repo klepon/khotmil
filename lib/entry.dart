@@ -332,7 +332,7 @@ class _AuthState extends State<Auth> {
 
                       // group list or welcome message
                       Expanded(
-                        child: WidgetGroupList(name: _name, loginKey: _loginKey),
+                        child: WidgetGroupList(name: _name, loginKey: _loginKey, getLoginKey: _getLoginKey),
                       ),
                     ],
                   ),
