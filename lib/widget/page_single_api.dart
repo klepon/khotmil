@@ -68,10 +68,13 @@ class _SingleApiPageState extends State<SingleApiPage> {
                   if (_message != '')
                     Html(
                       data: _message,
-                      style: {"*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0)), "strong": Style(fontSize: FontSize(16.0))},
+                      style: {
+                        "*": Style(textAlign: TextAlign.center, fontSize: FontSize(14.0), lineHeight: 1.5, margin: EdgeInsets.only(bottom: 24.0)),
+                        "strong": Style(fontSize: FontSize(16.0))
+                      },
                     ),
                   SizedBox(
-                    height: 54.0,
+                    height: 24.0,
                   ),
                   if (_message != '')
                     MaterialButton(

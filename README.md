@@ -59,11 +59,11 @@ Restart connection and do all the step
 
 - upload image long response
 - group option open/private; open anyone can joint, private need admin approval
+- fix image resize using flutter core
 
 ## reskin and relogic
 
-- fix image resize using flutter core
-
-digitalamalindonesia
-
-
+- Refresh di halaman depan tidak jalan kalo list tidak penuh
+- utup putaran selalu muncul, tapi add estriction respon on click
+- reset password gagal, showing invalid login
+- bug undang member as admin, otomatis undang member group, issue jika ybs sudah menjadi member, akan muncul invitation notice
