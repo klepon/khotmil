@@ -140,31 +140,31 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
 
         // response message, loading indicator, data message
         if (_isLoading || _dataMessage != '' || _responseMessage != '') {
-          return Container(
-              width: double.infinity,
-              padding: mainPadding,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (_responseMessage != '') Text(_responseMessage),
-                  if (_isLoading) SizedBox(height: 16.0),
-                  if (_isLoading) Center(child: CircularProgressIndicator()),
-                  if (_dataMessage != '') Text(sprintf(WelcomeMessage, [widget.name]), textAlign: TextAlign.center),
-                  if (_dataMessage != '') SizedBox(height: 20.0),
-                  if (_dataMessage != '') Text(_dataMessage, textAlign: TextAlign.center),
-                  SizedBox(height: 24.0),
-                  _createOrJoinGroup(),
-                  SizedBox(height: 24.0),
-                  MaterialButton(
-                    child: Text(ButtonRefresh, style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-                    onPressed: () => setState(() {}),
-                    height: 40.0,
-                    color: Color(int.parse('0xffC4C4C4')),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width,
+                    minHeight: constraints.maxHeight + 10.0,
                   ),
-                ],
-              ));
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (_responseMessage != '') Text(_responseMessage),
+                        if (_isLoading) SizedBox(height: 16.0),
+                        if (_isLoading) Center(child: CircularProgressIndicator()),
+                        if (_dataMessage != '') Text(sprintf(WelcomeMessage, [widget.name]), textAlign: TextAlign.center),
+                        if (_dataMessage != '') SizedBox(height: 20.0),
+                        if (_dataMessage != '') Text(_dataMessage, textAlign: TextAlign.center),
+                        SizedBox(height: 24.0),
+                        _createOrJoinGroup(),
+                      ],
+                    ),
+                  )),
+            );
+          });
         }
 
         // update warning blocking
@@ -271,7 +271,8 @@ class _WidgetGroupListState extends State<WidgetGroupList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: pageBg,
+        // decoration: pageBg,
+        color: Colors.red,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -295,12 +295,16 @@ class _AuthState extends State<Auth> {
           child: Stack(
         children: [
           _loginKey == ''
+              // login form
               ? WidgetLoginRegister(currentForm: _getForm(), showLogo: _useLogo())
+
+              // if loged in
               : RefreshIndicator(
                   onRefresh: () => _getLoginKey(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // header; profile and donation button
                       Container(
                           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         Expanded(
@@ -318,11 +322,15 @@ class _AuthState extends State<Auth> {
                             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleApiPage(apiUrl: ApiDonation))),
                             child: Text(DonateText)),
                       ])),
+
+                      // header divider
                       Container(
                         height: 1.0,
                         width: double.infinity,
                         color: Colors.black45,
                       ),
+
+                      // group list or welcome message
                       Expanded(
                         child: WidgetGroupList(name: _name, loginKey: _loginKey),
                       ),
