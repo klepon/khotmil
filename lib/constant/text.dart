@@ -14,6 +14,7 @@ const String EmailRequired = 'Email diperlukan';
 const String EnterPhone = 'Nomor Telepon/WA';
 const String PhoneRequired = 'Nomor Telepon/WA diperlukan';
 const String EnterPassword = 'Password';
+const String EnterOldPassword = 'Password saat ini';
 const String EnterNewPassword = 'Password baru';
 const String PasswordRequired = 'Password diperlukan';
 const String UploadPhoto = 'Upload photo';

@@ -91,7 +91,7 @@ class _WidgetChangePasswordState extends State<WidgetChangePassword> {
                       enableSuggestions: false,
                       autocorrect: false,
                       obscureText: true,
-                      decoration: InputDecoration(hintText: EnterPassword, errorStyle: errorTextStyle),
+                      decoration: InputDecoration(hintText: EnterOldPassword, errorStyle: errorTextStyle),
                       validator: (value) {
                         if (value.isEmpty) {
                           return PasswordRequired;

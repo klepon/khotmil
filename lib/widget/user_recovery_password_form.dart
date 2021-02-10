@@ -3,12 +3,11 @@ import 'package:khotmil/constant/helper.dart';
 import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
 
-// ini harusya hanya display page dan form saja, prosess di auth
+// ini harusya hanya display page dan form saja, prosess di entry.dart
 class WidgetRecoveryPassword extends StatefulWidget {
-  final bool newPassword;
   final Function changeForm;
   final Function recoveryPasswordApi;
-  WidgetRecoveryPassword({Key key, this.newPassword, this.changeForm, this.recoveryPasswordApi}) : super(key: key);
+  WidgetRecoveryPassword({Key key, this.changeForm, this.recoveryPasswordApi}) : super(key: key);
 
   @override
   _WidgetRecoveryPasswordState createState() => _WidgetRecoveryPasswordState();
@@ -29,52 +28,26 @@ class _WidgetRecoveryPasswordState extends State<WidgetRecoveryPassword> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Center(child: Text(RecoveryPasswordFormTitle, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0))),
-              if (!widget.newPassword)
-                TextFormField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
-                  validator: (value) {
-                    if (value.isEmpty || !EmailValidator.validate(value)) {
-                      return EmailRequired;
-                    }
-                    return null;
-                  },
-                ),
-              if (widget.newPassword)
-                TextFormField(
-                  controller: passwordController,
-                  keyboardType: TextInputType.visiblePassword,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  obscureText: true,
-                  decoration: InputDecoration(hintText: EnterNewPassword, errorStyle: errorTextStyle),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return PasswordRequired;
-                    }
-                    return null;
-                  },
-                ),
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(hintText: EnterEmail, errorStyle: errorTextStyle),
+                validator: (value) {
+                  if (value.isEmpty || !EmailValidator.validate(value)) {
+                    return EmailRequired;
+                  }
+                  return null;
+                },
+              ),
               SizedBox(height: 16.0),
-              if (!widget.newPassword)
-                RaisedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {
-                      widget.recoveryPasswordApi(emailController.text);
-                    }
-                  },
-                  child: Text(SubmitText),
-                ),
-              if (widget.newPassword)
-                RaisedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {
-                      widget.recoveryPasswordApi(emailController.text);
-                    }
-                  },
-                  child: Text(SubmitText),
-                ),
+              RaisedButton(
+                onPressed: () async {
+                  if (_formKey.currentState.validate()) {
+                    widget.recoveryPasswordApi(emailController.text);
+                  }
+                },
+                child: Text(SubmitText),
+              ),
               SizedBox(height: 16.0),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

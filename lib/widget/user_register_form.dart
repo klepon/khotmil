@@ -9,7 +9,7 @@ import 'package:khotmil/constant/text.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:khotmil/fetch/search_name.dart';
 
-// ini harusya hanya display page dan form saja, prosess di auth
+// ini harusya hanya display page dan form saja, prosess di entry.dart
 class WidgetRegisterForm extends StatefulWidget {
   final Function changeForm;
   final Function registerApi;

@@ -254,7 +254,6 @@ class _AuthState extends State<Auth> {
         return WidgetRecoveryPassword(
           changeForm: _changeForm,
           recoveryPasswordApi: _recoveryPasswordApi,
-          newPassword: false,
         );
 
       default:
