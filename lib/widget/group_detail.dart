@@ -662,6 +662,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                     },
                   ),
                   SizedBox(height: 16.0),
+                  if (_usersSelectedForInvite.length > 0) Text(MemberInviteListMessage),
                   if (_usersSelectedForInvite.length > 0)
                     Container(
                       padding: sidePaddingNarrow,
@@ -678,6 +679,8 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       ]),
                     ),
                   SizedBox(height: 16.0),
+
+                  // submit invite user
                   MaterialButton(
                     child: Text(InviteButton, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
                     onPressed: () => setState(() => _apiInviteUser()),
@@ -741,7 +744,7 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         : null,
                   ),
 
-                  // message
+                  // snapShoot, and welcome message, and loader
                   if (snapShootMessage != '') Container(padding: mainPadding, child: Text(snapShootMessage)),
                   if (members.length == 0)
                     Expanded(
@@ -750,10 +753,15 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                       if (_invitedMember) Container(padding: mainPadding, child: Text(AllMemberJoinJuz)),
                     ])),
 
-                  // without juz
-                  if (userWithoutJuz.length > 0 && _invitedMember) SizedBox(height: 8.0),
+                  // without juz - no invitation message
+                  if (_invitedMember) SizedBox(height: 8.0),
+                  if (userWithoutJuz.length == 0 && _invitedMember) Container(padding: sidePadding, child: Text(InviteMemberWelcomeMessage)),
+
+                  // without juz - member list message
                   if (userWithoutJuz.length > 0 && _invitedMember) Container(padding: sidePadding, child: Text(MemberDidNotJoinJuz)),
                   if (userWithoutJuz.length > 0 && _invitedMember) SizedBox(height: 8.0),
+
+                  // without juz - table header
                   if (userWithoutJuz.length > 0 && _invitedMember)
                     Container(
                       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12))),
@@ -768,12 +776,16 @@ class _WidgetGroupDetailState extends State<WidgetGroupDetail> {
                         ],
                       ),
                     ),
+
+                  // without juz - member list, invitation form and submit button, inside "members" array
                   if (_invitedMember)
                     Expanded(
                         child: SingleChildScrollView(
                             child: ConstrainedBox(
                                 constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width),
                                 child: Container(padding: sidePadding, child: Column(children: members))))),
+
+                  // without juz - back button
                   if (_invitedMember)
                     Container(
                       alignment: Alignment.center,

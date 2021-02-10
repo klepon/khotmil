@@ -91,6 +91,8 @@ const String OpenMemberWithoutJuz = 'Lihat daftar undangan yg belum memilih juz'
 const String InviteMemberButtonLabel = 'Undang anggota bergabung';
 const String BackToMemberProgress = 'Kembali ke progres bacaan anggota';
 const String UpdateDeadline = 'Ganti deadline';
+const String InviteMemberWelcomeMessage = 'Undang anggota utuk bergabung\nKetik nama pada isian dibawah untuk memulai pencarian';
+const String MemberInviteListMessage = 'Daftar anggota untuk di undang';
 const String MemberDidNotJoinJuz = 'Daftar nama teman yg belum memilih juz';
 const String AllMemberJoinJuz = 'Semua teman telah memilih juz';
 const String LoadingMember = 'Memuat anggota group';
@@ -138,7 +140,7 @@ const String SelectEditedJuz = 'Pilih setoran juz';
 const String OptionJuz = 'Juz %s progres %s%';
 const String CurrentJuz = 'Juz %s';
 
-const String InviteButton = 'Undang';
+const String InviteButton = 'Kirim Undangan';
 
 const String SearchGroupTitle = 'Gabung Group';
 const String SearchGroupByMyAddress = 'Dekat Saya';

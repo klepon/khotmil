@@ -64,4 +64,3 @@ Restart connection and do all the step
 ## reskin and relogic
 
 - reset password gagal, showing invalid login
-- bug undang member as admin, otomatis undang member group, issue jika ybs sudah menjadi member, akan muncul invitation notice
