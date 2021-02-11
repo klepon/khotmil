@@ -206,8 +206,6 @@ class _AuthState extends State<Auth> {
           _loadingOverlay = false;
         });
         modalMessage(context, data[DataMessage]);
-
-        // modalMessage(context, data[DataMessage] + "\n\n" + data['debug']['pass'] + "\n" + data['debug']['email'] + "\n" + data['debug']['rp_code'].toString());
         return;
       }
 
@@ -222,8 +220,6 @@ class _AuthState extends State<Auth> {
             _loadingOverlay = false;
           });
           _getLoginKey();
-
-          // modalMessage(context, data['key'] + "\n\n" + data['debug']['pass'] + "\n" + data['debug']['email'] + "\n" + data['debug']['rp_code'].toString());
         });
       }
     }).catchError((e) {
