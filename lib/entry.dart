@@ -195,18 +195,19 @@ class _AuthState extends State<Auth> {
   _validationRecoveryPasswordApi(String email, String password, String code) async {
     setState(() {
       _loadingOverlay = true;
-      if ('' == _email || '' == _password) {
+      if ('' == _email && '' != email) {
         _email = email;
-        _password = password;
       }
     });
 
-    await fetchRecoveryPasword('' == _email ? email : _email, '' == _password ? password : _password, code).then((data) async {
+    await fetchRecoveryPasword('' == _email ? email : _email, password, code).then((data) async {
       if (data[DataMessage] != null && data[DataMessage] != '') {
         setState(() {
           _loadingOverlay = false;
         });
         modalMessage(context, data[DataMessage]);
+
+        // modalMessage(context, data[DataMessage] + "\n\n" + data['debug']['pass'] + "\n" + data['debug']['email'] + "\n" + data['debug']['rp_code'].toString());
         return;
       }
 
@@ -221,6 +222,8 @@ class _AuthState extends State<Auth> {
             _loadingOverlay = false;
           });
           _getLoginKey();
+
+          // modalMessage(context, data['key'] + "\n\n" + data['debug']['pass'] + "\n" + data['debug']['email'] + "\n" + data['debug']['rp_code'].toString());
         });
       }
     }).catchError((e) {

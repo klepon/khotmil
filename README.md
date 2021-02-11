@@ -63,4 +63,3 @@ Restart connection and do all the step
 
 ## reskin and relogic
 
-- reset password gagal, showing invalid login
