@@ -21,11 +21,11 @@ for building read this https://flutter.dev/docs/deployment/android
 
 $ flutter build appbundle // create bundle
 
-$ cd release folder // go to bundle folder
+$ cd build/app/outputs/bundle/release/ // go to bundle folder
 
 $ flutter build apk // create apk
 
-$ cd release folder // go to apk folder
+$ cd ../../flutter-apk/ // go to apk folder
 
 $ flutter install // install on device via cable
 
